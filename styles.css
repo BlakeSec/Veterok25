@@ -45,10 +45,10 @@
     /* Dimensions */
     --header-height: 80px;
     --time-column-width: 80px;
-    --track-column-width: 250px;
+    --track-column-width: 265px;
     --hour-height: 120px;
     --border-radius: 12px;
-    --card-padding: 16px;
+    --card-padding: 12px;
 }
 
 * {
@@ -66,7 +66,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1250px;
     margin: 0 auto;
     padding: 0 24px;
 }
@@ -339,12 +339,12 @@ input:checked + .toggle-slider:before {
 }
 
 .activity-card.short-activity .activity-time {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
 }
 
 .activity-card.short-activity .track-badge {
-    font-size: 0.65rem;
-    padding: 1px 6px;
+    font-size: 0.55rem;
+    padding: 1px 4px;
 }
 
 .activity-card:hover {
@@ -383,18 +383,27 @@ input:checked + .toggle-slider:before {
     padding: var(--card-padding); /* Add padding like regular cards */
     z-index: 2;
     background-color: var(--color-white);
-    border: 1px solid var(--color-card-border);
-    border-left: 3px solid var(--color-accent-green);
+    background-image: linear-gradient(rgba(253, 126, 20, 0.03), rgba(253, 126, 20, 0.03)); /* Very slight orange tint */
+    border: 1px solid var(--color-accent-orange);
     border-radius: var(--border-radius); /* Add border radius like regular cards */
     box-shadow: 0 2px 6px var(--color-shadow);
     font-weight: 500;
 }
 
-/* Center text elements inside general events */
+/* Center text elements inside general events (desktop only) */
 .activity-card.general-event .activity-title,
-.activity-card.general-event .activity-time,
-.mobile-activity.general-event .activity-title,
-.mobile-activity.general-event .activity-time {
+.activity-card.general-event .activity-time {
+    text-align: center;
+}
+
+/* Time display for general events */
+.activity-card.general-event .activity-time {
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Center only title for mobile general events, time stays left-aligned */
+.mobile-activity.general-event .activity-title {
     text-align: center;
 }
 
@@ -414,10 +423,23 @@ input:checked + .toggle-slider:before {
 }
 
 .activity-time {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--color-text-secondary);
-    margin-bottom: 8px;
     font-weight: 500;
+}
+
+/* Container for time and track badge */
+.activity-meta-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    gap: 4px;
+}
+
+/* Center time in general events by overriding justify-content */
+.activity-card.general-event .activity-meta-container {
+    justify-content: center;
 }
 
 .activity-description {
@@ -432,9 +454,9 @@ input:checked + .toggle-slider:before {
 
 .track-badge {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 1px 6px;
     border-radius: 12px;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 500;
     margin-top: auto;
     text-transform: uppercase;
@@ -745,16 +767,22 @@ footer {
     }
 
     .mobile-activity.general-event {
-        border-left-color: var(--color-accent-green);
         background-color: var(--color-white);
-        border: 1px solid var(--color-card-border);
-        border-left: 3px solid var(--color-accent-green);
+        background-image: linear-gradient(rgba(253, 126, 20, 0.03), rgba(253, 126, 20, 0.03)); /* Very slight orange tint */
+        border: 1px solid var(--color-accent-orange);
         border-radius: var(--border-radius);
         box-shadow: 0 2px 6px var(--color-shadow);
         font-weight: 500;
-        text-align: center;
         margin-left: 8px;
         margin-right: 8px;
+    }
+
+    /* Time display for general events on mobile */
+    .mobile-activity.general-event .activity-time {
+        font-size: 0.8rem;
+        text-align: center;
+        display: block;
+        margin-top: 5px;
     }
 
     /* Mobile time marker with meal */
@@ -787,6 +815,27 @@ footer {
         line-height: 1.4;
     }
 
+    /* Larger font size for time and badges on mobile */
+    .mobile-activity .activity-time {
+        font-size: 0.8rem;
+    }
+
+    .mobile-activity .track-badge {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+    }
+
+    /* Adjust spacing for meta container on mobile */
+    .mobile-activity .activity-meta-container {
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    /* Center time in general events on mobile */
+    .mobile-activity.general-event .activity-meta-container {
+        justify-content: center;
+    }
+
     /* Adaptive font sizing for short activities on mobile (only for time and badge) */
     .mobile-activity.short-activity .activity-time {
         font-size: 0.75rem;
@@ -794,7 +843,7 @@ footer {
 
     .mobile-activity.short-activity .track-badge {
         font-size: 0.65rem;
-        padding: 1px 6px;
+        padding: 2px 6px;
     }
 
     /* Meal badge styling for mobile time labels */

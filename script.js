@@ -305,7 +305,13 @@ function displayDesktopSchedule(activities, timeRange) {
         time.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
 
         card.appendChild(title);
-        card.appendChild(time);
+
+        // Create a container for time and track badge
+        const metaContainer = document.createElement('div');
+        metaContainer.className = 'activity-meta-container';
+
+        // Add time to the container
+        metaContainer.appendChild(time);
 
         // Only add track badge for regular activities (not general events)
         if (!activity.type || activity.type !== 'general') {
@@ -323,8 +329,11 @@ function displayDesktopSchedule(activities, timeRange) {
                 trackBadge.classList.add('all-tracks');
             }
             trackBadge.textContent = activity.track;
-            card.appendChild(trackBadge);
+            metaContainer.appendChild(trackBadge);
         }
+
+        // Add the container to the card
+        card.appendChild(metaContainer);
 
 
         // Add click event to open modal
@@ -480,7 +489,13 @@ function displayMobileSchedule(activities, timeRange) {
                     time.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
 
                     mobileActivity.appendChild(title);
-                    mobileActivity.appendChild(time);
+
+                    // Create a container for time and track badge
+                    const metaContainer = document.createElement('div');
+                    metaContainer.className = 'activity-meta-container';
+
+                    // Add time to the container
+                    metaContainer.appendChild(time);
 
                     // Only add track badge for regular activities (not general events)
                     if (!activity.type || activity.type !== 'general') {
@@ -498,8 +513,11 @@ function displayMobileSchedule(activities, timeRange) {
                             trackBadge.classList.add('all-tracks');
                         }
                         trackBadge.textContent = activity.track;
-                        mobileActivity.appendChild(trackBadge);
+                        metaContainer.appendChild(trackBadge);
                     }
+
+                    // Add the container to the mobile activity
+                    mobileActivity.appendChild(metaContainer);
 
                     // Add click event to open modal
                     mobileActivity.addEventListener('click', () => {
