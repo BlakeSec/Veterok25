@@ -530,6 +530,21 @@ function openActivityModal(activity) {
     modalTitle.textContent = activity.title;
     modalTime.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
     modalTrack.textContent = activity.track;
+
+    // Add track-specific class to the track badge
+    modalTrack.className = 'track-badge'; // Reset classes
+    if (activity.track === '🧠 Geek Zone') {
+        modalTrack.classList.add('geek-track');
+    } else if (activity.track === '🏃‍♂️ Active Arena') {
+        modalTrack.classList.add('active-track');
+    } else if (activity.track === '💬 Soft Skills Hub') {
+        modalTrack.classList.add('soft-skills');
+    } else if (activity.track === '🌿 Hobby Grove') {
+        modalTrack.classList.add('hobby-track');
+    } else if (activity.track === 'Все треки') {
+        modalTrack.classList.add('all-tracks');
+    }
+
     modalDescription.textContent = activity.description;
 
     const activityId = getActivityId(activity);
