@@ -24,7 +24,7 @@
       "dayName": "Четверг",
       "timeStart": "18:00",
       "timeEnd": "19:00",
-      "track": "Geek Track",
+      "track": "🧠 Geek Zone",
       "title": "🪢 Воркшоп  \"Вяжем морские узлы\"",
       "description": ""
     },
@@ -51,7 +51,7 @@
       "dayName": "Пятница",
       "timeStart": "11:00",
       "timeEnd": "12:00",
-      "track": "Geek Track",
+      "track": "🧠 Geek Zone",
       "title": "Embedded Masterclass",
       "description": ""
     },
@@ -60,7 +60,7 @@
       "dayName": "Пятница",
       "timeStart": "15:00",
       "timeEnd": "16:00",
-      "track": "Geek Track",
+      "track": "🧠 Geek Zone",
       "title": "Embedded Masterclass ч2",
       "description": ""
     },
@@ -87,7 +87,7 @@
       "dayName": "Суббота",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Geek Track",
+      "track": "🧠 Geek Zone",
       "title": "Воркшоп: \"Хакерские приемы для iPhone\"",
       "description": ""
     },
@@ -105,7 +105,7 @@
       "dayName": "Суббота",
       "timeStart": "20:00",
       "timeEnd": "22:00",
-      "track": "Geek Track",
+      "track": "🧠 Geek Zone",
       "title": "Дискуссионный кружок \n\"Психоактивные вещества\"",
       "description": ""
     },
@@ -123,7 +123,7 @@
       "dayName": "Воскресенье",
       "timeStart": "11:00",
       "timeEnd": "14:00",
-      "track": "Geek Track",
+      "track": "🧠 Geek Zone",
       "title": "🍥 Воркшоп: генерируем аниме по мотивам кэмпа",
       "description": ""
     },
@@ -132,7 +132,7 @@
       "dayName": "Четверг",
       "timeStart": "17:00",
       "timeEnd": "18:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "🍻 🏃🏻‍♀️ Пивная миля",
       "description": ""
     },
@@ -141,7 +141,7 @@
       "dayName": "Пятница",
       "timeStart": "08:00",
       "timeEnd": "09:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "🤸🏽‍♀️🏃🏻‍♂️🏋🏻‍♀️ Зарядки и пробежки",
       "description": ""
     },
@@ -150,7 +150,7 @@
       "dayName": "Пятница",
       "timeStart": "10:00",
       "timeEnd": "11:00 🍲",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "💪 Силовая тренировка на пенках",
       "description": ""
     },
@@ -159,7 +159,7 @@
       "dayName": "Пятница",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "Мастер-класс по оказанию первой помощи",
       "description": ""
     },
@@ -168,7 +168,7 @@
       "dayName": "Пятница",
       "timeStart": "15:00",
       "timeEnd": "16:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "Мастер-класс по кикеру\nТурнир по кикеру",
       "description": ""
     },
@@ -177,7 +177,7 @@
       "dayName": "Пятница",
       "timeStart": "17:00",
       "timeEnd": "18:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "🍻 🏃🏻‍♀️ ОСОШ: пивное ориентирование (+безалко версия!)",
       "description": ""
     },
@@ -186,7 +186,7 @@
       "dayName": "Суббота",
       "timeStart": "08:00",
       "timeEnd": "09:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "🤸🏽‍♀️🏃🏻‍♂️🏋🏻‍♀️ Зарядки и пробежки",
       "description": ""
     },
@@ -195,7 +195,7 @@
       "dayName": "Суббота",
       "timeStart": "10:00",
       "timeEnd": "11:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "💪 Силовая тренировка на пенках",
       "description": ""
     },
@@ -204,7 +204,7 @@
       "dayName": "Суббота",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "💃🏻🕺🏼 Воркшоп по парным танцам",
       "description": ""
     },
@@ -213,7 +213,7 @@
       "dayName": "Суббота",
       "timeStart": "13:00",
       "timeEnd": "14:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "Ultimate Frisbee",
       "description": ""
     },
@@ -222,7 +222,7 @@
       "dayName": "Суббота",
       "timeStart": "20:00",
       "timeEnd": "22:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "🍻⚾️ Flunkyball",
       "description": ""
     },
@@ -231,7 +231,7 @@
       "dayName": "Воскресенье",
       "timeStart": "08:00",
       "timeEnd": "09:00",
-      "track": "Active Track",
+      "track": "🏃‍♂️ Active Arena",
       "title": "🤸🏽‍♀️🏃🏻‍♂️🏋🏻‍♀️ Зарядки и пробежки",
       "description": ""
     },
@@ -240,7 +240,7 @@
       "dayName": "Четверг",
       "timeStart": "19:00",
       "timeEnd": "20:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Практикум \"Задай вопрос психотерапевту\" (1)",
       "description": ""
     },
@@ -249,7 +249,7 @@
       "dayName": "Пятница",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Воркшоп по ненасильственному общению",
       "description": ""
     },
@@ -258,7 +258,7 @@
       "dayName": "Пятнца",
       "timeStart": "15:00",
       "timeEnd": "17:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Лекция: Метакогнитивная терапия",
       "description": ""
     },
@@ -267,7 +267,7 @@
       "dayName": "Пятница",
       "timeStart": "17:00",
       "timeEnd": "18:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Лекция: \"Виза О-1 в штаты и виза таланта UK\"",
       "description": ""
     },
@@ -276,7 +276,7 @@
       "dayName": "Пятница",
       "timeStart": "19:00",
       "timeEnd": "20:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Практикум \"Задай вопрос психотерапевту\" (2)",
       "description": ""
     },
@@ -285,7 +285,7 @@
       "dayName": "Суббота",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Воркшоп по конфликтному менеджменту",
       "description": ""
     },
@@ -294,7 +294,7 @@
       "dayName": "Суббота",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Лекция \"Как создать команду мечты за 21 день\"",
       "description": ""
     },
@@ -303,7 +303,7 @@
       "dayName": "Суббота",
       "timeStart": "19:00",
       "timeEnd": "22:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Blood on the Clocktower",
       "description": ""
     },
@@ -312,7 +312,7 @@
       "dayName": "Воскресенье",
       "timeStart": "11:30",
       "timeEnd": "13:00",
-      "track": "Soft Skills",
+      "track": "💬 Soft Skills Hub",
       "title": "Лекция \"Что делать с деньгами в новой реальности\"",
       "description": ""
     },
@@ -321,7 +321,7 @@
       "dayName": "Четверг",
       "timeStart": "19:00",
       "timeEnd": "20:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Страбоскопическая медитация",
       "description": ""
     },
@@ -330,7 +330,7 @@
       "dayName": "Пятница",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Терапевтическая прогулка (Urban Therapy Walks)",
       "description": ""
     },
@@ -339,7 +339,7 @@
       "dayName": "Пятница",
       "timeStart": "15:00",
       "timeEnd": "17:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Мастер-клас по игре на волынке",
       "description": ""
     },
@@ -348,7 +348,7 @@
       "dayName": "Пятница",
       "timeStart": "17:00",
       "timeEnd": "19:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Мастер класс по игре в ГО",
       "description": ""
     },
@@ -357,7 +357,7 @@
       "dayName": "Пятница",
       "timeStart": "19:00",
       "timeEnd": "20:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Страбоскопическая медитация",
       "description": ""
     },
@@ -366,7 +366,7 @@
       "dayName": "Суббота",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Мастер-класс по цианотипии",
       "description": ""
     },
@@ -375,7 +375,7 @@
       "dayName": "Суббота",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Мастер-класс \"Горячие беляши\"",
       "description": ""
     },
@@ -384,7 +384,7 @@
       "dayName": "Суббота",
       "timeStart": "19:00",
       "timeEnd": "22:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "♣️ Турнир по покеру",
       "description": ""
     },
@@ -393,7 +393,7 @@
       "dayName": "Воскресенье",
       "timeStart": "11:00",
       "timeEnd": "13:00",
-      "track": "Hobby Track",
+      "track": "🌿 Hobby Grove",
       "title": "Мастер-класс по молекулярной кухне",
       "description": ""
     }

@@ -15,19 +15,20 @@
     --color-accent-pink: #f06595;
     --color-accent-purple: #7950f2;
     --color-accent-yellow: #fcc419;
+    --color-accent-orange: #fd7e14;
 
     /* Track colors (softer versions) */
     --color-geek-track: var(--color-accent-blue);
-    --color-active-track: var(--color-accent-green);
-    --color-soft-skills: var(--color-accent-pink);
-    --color-hobby-track: var(--color-accent-purple);
+    --color-active-track: var(--color-accent-orange);
+    --color-soft-skills: var(--color-accent-purple);
+    --color-hobby-track: var(--color-accent-green);
     --color-all-tracks: var(--color-accent-yellow);
 
     /* Track column background colors (very subtle) */
     --color-geek-track-bg: rgba(51, 154, 240, 0.03);
-    --color-active-track-bg: rgba(64, 192, 87, 0.03);
-    --color-soft-skills-bg: rgba(240, 101, 149, 0.03);
-    --color-hobby-track-bg: rgba(121, 80, 242, 0.03);
+    --color-active-track-bg: rgba(253, 126, 20, 0.03);
+    --color-soft-skills-bg: rgba(121, 80, 242, 0.03);
+    --color-hobby-track-bg: rgba(64, 192, 87, 0.03);
     --color-all-tracks-bg: rgba(252, 196, 25, 0.05);
 
     /* Functional colors */
@@ -283,19 +284,19 @@ input:checked + .toggle-slider:before {
 }
 
 /* Add very subtle background colors to track columns */
-.track-column[data-track="Geek Track"] {
+.track-column[data-track="🧠 Geek Zone"] {
     background-color: var(--color-geek-track-bg);
 }
 
-.track-column[data-track="Active Track"] {
+.track-column[data-track="🏃‍♂️ Active Arena"] {
     background-color: var(--color-active-track-bg);
 }
 
-.track-column[data-track="Soft Skills"] {
+.track-column[data-track="💬 Soft Skills Hub"] {
     background-color: var(--color-soft-skills-bg);
 }
 
-.track-column[data-track="Hobby Track"] {
+.track-column[data-track="🌿 Hobby Grove"] {
     background-color: var(--color-hobby-track-bg);
 }
 
@@ -441,21 +442,21 @@ input:checked + .toggle-slider:before {
 }
 
 .track-badge.active-track {
-    background-color: rgba(64, 192, 87, 0.1);
-    color: var(--color-accent-green);
-    border-color: rgba(64, 192, 87, 0.3);
+    background-color: rgba(253, 126, 20, 0.1);
+    color: var(--color-accent-orange);
+    border-color: rgba(253, 126, 20, 0.3);
 }
 
 .track-badge.soft-skills {
-    background-color: rgba(240, 101, 149, 0.1);
-    color: var(--color-accent-pink);
-    border-color: rgba(240, 101, 149, 0.3);
-}
-
-.track-badge.hobby-track {
     background-color: rgba(121, 80, 242, 0.1);
     color: var(--color-accent-purple);
     border-color: rgba(121, 80, 242, 0.3);
+}
+
+.track-badge.hobby-track {
+    background-color: rgba(64, 192, 87, 0.1);
+    color: var(--color-accent-green);
+    border-color: rgba(64, 192, 87, 0.3);
 }
 
 .track-badge.all-tracks {
@@ -710,15 +711,15 @@ footer {
     }
 
     .mobile-activity.active-track {
-        border-left-color: var(--color-accent-green);
+        border-left-color: var(--color-accent-orange);
     }
 
     .mobile-activity.soft-skills {
-        border-left-color: var(--color-accent-pink);
+        border-left-color: var(--color-accent-purple);
     }
 
     .mobile-activity.hobby-track {
-        border-left-color: var(--color-accent-purple);
+        border-left-color: var(--color-accent-green);
     }
 
     .mobile-activity.all-tracks {

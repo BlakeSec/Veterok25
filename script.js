@@ -232,10 +232,10 @@ function displayDesktopSchedule(activities, timeRange) {
 
     // Define tracks
     const tracksList = [
-        { id: 'Geek Track', name: 'Geek Track', class: 'geek-track' },
-        { id: 'Active Track', name: 'Active Track', class: 'active-track' },
-        { id: 'Soft Skills', name: 'Soft Skills', class: 'soft-skills' },
-        { id: 'Hobby Track', name: 'Hobby Track', class: 'hobby-track' }
+        { id: '🧠 Geek Zone', name: '🧠 Geek Zone', class: 'geek-track' },
+        { id: '🏃‍♂️ Active Arena', name: '🏃‍♂️ Active Arena', class: 'active-track' },
+        { id: '💬 Soft Skills Hub', name: '💬 Soft Skills Hub', class: 'soft-skills' },
+        { id: '🌿 Hobby Grove', name: '🌿 Hobby Grove', class: 'hobby-track' }
     ];
 
     // Create track columns
@@ -273,13 +273,13 @@ function displayDesktopSchedule(activities, timeRange) {
         }
 
         // Add track-specific class
-        if (activity.track === 'Geek Track') {
+        if (activity.track === '🧠 Geek Zone') {
             card.classList.add('geek-track');
-        } else if (activity.track === 'Active Track') {
+        } else if (activity.track === '🏃‍♂️ Active Arena') {
             card.classList.add('active-track');
-        } else if (activity.track === 'Soft Skills') {
+        } else if (activity.track === '💬 Soft Skills Hub') {
             card.classList.add('soft-skills');
-        } else if (activity.track === 'Hobby Track') {
+        } else if (activity.track === '🌿 Hobby Grove') {
             card.classList.add('hobby-track');
         } else if (activity.track === 'Все треки') {
             card.classList.add('all-tracks');
@@ -310,13 +310,13 @@ function displayDesktopSchedule(activities, timeRange) {
         if (!activity.type || activity.type !== 'general') {
             const trackBadge = document.createElement('div');
             trackBadge.className = 'track-badge';
-            if (activity.track === 'Geek Track') {
+            if (activity.track === '🧠 Geek Zone') {
                 trackBadge.classList.add('geek-track');
-            } else if (activity.track === 'Active Track') {
+            } else if (activity.track === '🏃‍♂️ Active Arena') {
                 trackBadge.classList.add('active-track');
-            } else if (activity.track === 'Soft Skills') {
+            } else if (activity.track === '💬 Soft Skills Hub') {
                 trackBadge.classList.add('soft-skills');
-            } else if (activity.track === 'Hobby Track') {
+            } else if (activity.track === '🌿 Hobby Grove') {
                 trackBadge.classList.add('hobby-track');
             } else if (activity.track === 'Все треки') {
                 trackBadge.classList.add('all-tracks');
@@ -449,13 +449,13 @@ function displayMobileSchedule(activities, timeRange) {
                     }
 
                     // Add track-specific class
-                    if (activity.track === 'Geek Track') {
+                    if (activity.track === '🧠 Geek Zone') {
                         mobileActivity.classList.add('geek-track');
-                    } else if (activity.track === 'Active Track') {
+                    } else if (activity.track === '🏃‍♂️ Active Arena') {
                         mobileActivity.classList.add('active-track');
-                    } else if (activity.track === 'Soft Skills') {
+                    } else if (activity.track === '💬 Soft Skills Hub') {
                         mobileActivity.classList.add('soft-skills');
-                    } else if (activity.track === 'Hobby Track') {
+                    } else if (activity.track === '🌿 Hobby Grove') {
                         mobileActivity.classList.add('hobby-track');
                     } else if (activity.track === 'Все треки') {
                         mobileActivity.classList.add('all-tracks');
@@ -486,13 +486,13 @@ function displayMobileSchedule(activities, timeRange) {
                     if (!activity.type || activity.type !== 'general') {
                         const trackBadge = document.createElement('div');
                         trackBadge.className = 'track-badge';
-                        if (activity.track === 'Geek Track') {
+                        if (activity.track === '🧠 Geek Zone') {
                             trackBadge.classList.add('geek-track');
-                        } else if (activity.track === 'Active Track') {
+                        } else if (activity.track === '🏃‍♂️ Active Arena') {
                             trackBadge.classList.add('active-track');
-                        } else if (activity.track === 'Soft Skills') {
+                        } else if (activity.track === '💬 Soft Skills Hub') {
                             trackBadge.classList.add('soft-skills');
-                        } else if (activity.track === 'Hobby Track') {
+                        } else if (activity.track === '🌿 Hobby Grove') {
                             trackBadge.classList.add('hobby-track');
                         } else if (activity.track === 'Все треки') {
                             trackBadge.classList.add('all-tracks');
