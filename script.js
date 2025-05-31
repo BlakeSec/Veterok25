@@ -167,33 +167,54 @@ function displaySchedule() {
     for (let time = timeRange.start; time <= timeRange.end; time += 60) {
         const hour = Math.floor(time / 60);
         const minute = time % 60;
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
         const timeMarker = document.createElement('div');
         timeMarker.className = 'time-marker';
-        timeMarker.textContent = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+
+        // Check if this hour falls within any meal's time range
+        const currentTimeMinutes = timeToMinutes(timeString);
+        const mealAtThisHour = meals.find(meal => {
+            const mealStartMinutes = timeToMinutes(meal.timeStart);
+            const mealEndMinutes = timeToMinutes(meal.timeEnd);
+            return currentTimeMinutes >= mealStartMinutes && currentTimeMinutes < mealEndMinutes;
+        });
+
+        if (mealAtThisHour) {
+            // Add special class for styling
+            timeMarker.classList.add('time-marker-with-meal');
+
+            // Create hour label
+            const hourLabel = document.createElement('div');
+            hourLabel.className = 'hour-label';
+            hourLabel.textContent = timeString;
+
+            // Create meal label
+            const mealLabel = document.createElement('div');
+            mealLabel.className = 'meal-label';
+
+            // Add emoji based on meal type
+            let mealEmoji = '';
+            if (mealAtThisHour.title === 'Завтрак') {
+                mealEmoji = '🍳 ';
+            } else if (mealAtThisHour.title === 'Обед') {
+                mealEmoji = '🍲 ';
+            } else if (mealAtThisHour.title === 'Ужин') {
+                mealEmoji = '🍽️ ';
+            }
+
+            mealLabel.textContent = mealEmoji + mealAtThisHour.title;
+
+            // Add both to the time marker
+            timeMarker.appendChild(hourLabel);
+            timeMarker.appendChild(mealLabel);
+        } else {
+            // Just show the hour
+            timeMarker.textContent = timeString;
+        }
 
         timeColumn.appendChild(timeMarker);
     }
-
-    // Add meal highlights to time column
-    meals.forEach(meal => {
-        const startMinutes = timeToMinutes(meal.timeStart);
-        const endMinutes = timeToMinutes(meal.timeEnd);
-        const top = ((startMinutes - timeRange.start) / 60) * 80; // 80px per 60 minutes
-        const height = ((endMinutes - startMinutes) / 60) * 80;
-
-        const mealHighlight = document.createElement('div');
-        mealHighlight.className = 'meal-highlight';
-        mealHighlight.style.top = `${top}px`;
-        mealHighlight.style.height = `${height}px`;
-
-        const mealTitle = document.createElement('div');
-        mealTitle.className = 'meal-title';
-        mealTitle.textContent = meal.title;
-
-        mealHighlight.appendChild(mealTitle);
-        timeColumn.appendChild(mealHighlight);
-    });
 
     // Check if we're on mobile
     const isMobile = window.innerWidth <= 768;
