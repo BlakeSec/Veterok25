@@ -270,9 +270,9 @@ input:checked + .toggle-slider:before {
 
 .tracks-container {
     display: flex;
-    flex-grow: 1;
     position: relative;
     background-color: var(--color-white);
+    width: calc(var(--track-column-width) * 4); /* Exactly 4 track columns */
 }
 
 .track-column {
@@ -367,6 +367,7 @@ input:checked + .toggle-slider:before {
 .activity-card.all-tracks {
     left: 0;
     right: 0;
+    width: 100%; /* Full width of the tracks container */
     z-index: 1;
     background-color: var(--color-white);
     border-top: 1px solid var(--color-medium-gray);
@@ -375,9 +376,9 @@ input:checked + .toggle-slider:before {
 
 /* General events (spanning all tracks) */
 .activity-card.general-event {
-    left: 8px;
-    right: 8px;
-    width: calc(100% - 16px); /* Full width minus margins to align with grid edges */
+    left: 0;
+    right: 0;
+    width: 100%; /* Full width of the tracks container */
     margin-left: auto;
     margin-right: auto;
     padding: var(--card-padding); /* Add padding like regular cards */
