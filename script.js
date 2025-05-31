@@ -555,11 +555,16 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
     trackBadge.textContent = activity1.track;
     metaContainer.appendChild(trackBadge);
 
+    // Create a wrapper for meta container to add horizontal padding
+    const metaWrapper = document.createElement('div');
+    metaWrapper.className = 'merged-activity-meta-wrapper';
+    metaWrapper.appendChild(metaContainer);
+
     // Add all elements to the card
     card.appendChild(activity1Container);
     card.appendChild(separator);
     card.appendChild(activity2Container);
-    card.appendChild(metaContainer);
+    card.appendChild(metaWrapper);
 
     // Add click event to open merged modal
     card.addEventListener('click', () => {

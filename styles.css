@@ -489,10 +489,16 @@ input:checked + .toggle-slider:before {
     padding: 4px 0 8px;
 }
 
+/* Wrapper for meta container in merged cards to add horizontal padding */
+.merged-activity-meta-wrapper {
+    padding: 0 var(--card-padding);
+    margin-top: 4px;
+}
+
 /* Specific styling for meta container in merged cards to match regular cards */
 .merged-activity-card .activity-meta-container {
     padding: 4px 0 8px;
-    margin-top: 4px;
+    margin-top: 0;
     margin-left: 0;
     margin-right: 0;
 }
