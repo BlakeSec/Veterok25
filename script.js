@@ -252,110 +252,325 @@ function displayDesktopSchedule(activities, timeRange) {
         tracksContainer.appendChild(trackColumn);
     });
 
-    // Add activities to track columns
+    // Group activities by track and date for detecting overlaps
+    const trackDateGroups = {};
+
     activities.forEach(activity => {
-        const startMinutes = timeToMinutes(activity.timeStart);
-        const endMinutes = timeToMinutes(activity.timeEnd);
-        const duration = endMinutes - startMinutes;
-
-        const top = ((startMinutes - timeRange.start) / 60) * 80; // 80px per 60 minutes
-        const height = (duration / 60) * 80;
-
-        const card = document.createElement('div');
-        card.className = 'activity-card';
-        card.style.top = `${top}px`;
-        card.style.minHeight = `${height}px`;
-        card.style.height = 'auto'; // Allow dynamic height based on content
-
-        // Add class for short activities (1 hour or less)
-        if (duration <= 60) {
-            card.classList.add('short-activity');
+        if (activity.type === 'general' || activity.track === 'Все треки') {
+            return; // Skip general events for grouping
         }
 
-        // Add track-specific class
-        if (activity.track === '🧠 Geek Zone') {
-            card.classList.add('geek-track');
-        } else if (activity.track === '🏃‍♂️ Active Arena') {
-            card.classList.add('active-track');
-        } else if (activity.track === '💬 Soft Skills Hub') {
-            card.classList.add('soft-skills');
-        } else if (activity.track === '🌿 Hobby Grove') {
-            card.classList.add('hobby-track');
-        } else if (activity.track === 'Все треки') {
-            card.classList.add('all-tracks');
+        const key = `${activity.date}_${activity.track}`;
+        if (!trackDateGroups[key]) {
+            trackDateGroups[key] = [];
         }
+        trackDateGroups[key].push(activity);
+    });
 
-        // Add special class for general events
-        if (activity.type === 'general') {
-            card.classList.add('general-event');
-            card.style.height = `${height}px`; // Set exact height for general events
-        }
+    // Find overlapping activities within each track/date group
+    const groupedActivities = {};
 
-        // Add favorite class if needed
-        if (favorites.includes(getActivityId(activity))) {
-            card.classList.add('favorite');
-        }
+    Object.entries(trackDateGroups).forEach(([key, trackActivities]) => {
+        // Sort activities by start time
+        trackActivities.sort((a, b) => timeToMinutes(a.timeStart) - timeToMinutes(b.timeStart));
 
-        const title = document.createElement('div');
-        title.className = 'activity-title';
-        title.textContent = activity.title;
+        // Check each pair of activities for overlap
+        for (let i = 0; i < trackActivities.length; i++) {
+            for (let j = i + 1; j < trackActivities.length; j++) {
+                const activity1 = trackActivities[i];
+                const activity2 = trackActivities[j];
 
-        const time = document.createElement('div');
-        time.className = 'activity-time';
-        time.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
+                const start1 = timeToMinutes(activity1.timeStart);
+                const end1 = timeToMinutes(activity1.timeEnd);
+                const start2 = timeToMinutes(activity2.timeStart);
+                const end2 = timeToMinutes(activity2.timeEnd);
 
-        card.appendChild(title);
+                // Check if activities overlap in time
+                if (start1 < end2 && start2 < end1) {
+                    // Create a key for this pair of overlapping activities
+                    const overlapKey = `${key}_${activity1.timeStart}_${activity1.timeEnd}_${activity2.timeStart}_${activity2.timeEnd}`;
+                    groupedActivities[overlapKey] = [activity1, activity2];
 
-        // Create a container for time and track badge
-        const metaContainer = document.createElement('div');
-        metaContainer.className = 'activity-meta-container';
-
-        // Add time to the container
-        metaContainer.appendChild(time);
-
-        // Only add track badge for regular activities (not general events)
-        if (!activity.type || activity.type !== 'general') {
-            const trackBadge = document.createElement('div');
-            trackBadge.className = 'track-badge';
-            if (activity.track === '🧠 Geek Zone') {
-                trackBadge.classList.add('geek-track');
-            } else if (activity.track === '🏃‍♂️ Active Arena') {
-                trackBadge.classList.add('active-track');
-            } else if (activity.track === '💬 Soft Skills Hub') {
-                trackBadge.classList.add('soft-skills');
-            } else if (activity.track === '🌿 Hobby Grove') {
-                trackBadge.classList.add('hobby-track');
-            } else if (activity.track === 'Все треки') {
-                trackBadge.classList.add('all-tracks');
+                    // Mark these activities as processed
+                    activity1.processed = true;
+                    activity2.processed = true;
+                }
             }
-            trackBadge.textContent = activity.track;
-            metaContainer.appendChild(trackBadge);
         }
 
-        // Add the container to the card
-        card.appendChild(metaContainer);
-
-
-        // Add click event to open modal
-        card.addEventListener('click', () => {
-            openActivityModal(activity);
+        // Add non-overlapping activities
+        trackActivities.forEach(activity => {
+            if (!activity.processed) {
+                const singleKey = `${key}_${activity.timeStart}_${activity.timeEnd}`;
+                groupedActivities[singleKey] = [activity];
+            }
         });
+    });
 
-        if (activity.type === 'general') {
-            // For general events (spanning all tracks)
-            tracksContainer.appendChild(card);
-        } else if (activity.track === 'Все треки') {
-            // For activities spanning all tracks (legacy support)
-            card.classList.add('all-tracks');
-            tracksContainer.appendChild(card);
-        } else {
-            // For track-specific activities
-            const trackColumn = tracksContainer.querySelector(`.track-column[data-track="${activity.track}"]`);
-            if (trackColumn) {
-                trackColumn.appendChild(card);
-            }
+    // Process regular activities (non-overlapping or merged)
+    const processedActivities = new Set(); // Track which activities have been processed
+
+    // First, add general events
+    activities.forEach(activity => {
+        if (activity.type === 'general' || activity.track === 'Все треки') {
+            createActivityCard(activity, timeRange, tracksContainer);
+            processedActivities.add(getActivityId(activity));
         }
     });
+
+    // Then process grouped activities (potentially overlapping)
+    Object.values(groupedActivities).forEach(group => {
+        if (group.length === 1) {
+            // Single activity, no overlap
+            const activity = group[0];
+            createActivityCard(activity, timeRange, tracksContainer);
+            processedActivities.add(getActivityId(activity));
+        } else if (group.length === 2) {
+            // Two overlapping activities - create a merged card on desktop
+            createMergedActivityCard(group, timeRange, tracksContainer);
+            group.forEach(activity => {
+                processedActivities.add(getActivityId(activity));
+            });
+        } else {
+            // More than two overlapping activities - handle individually for now
+            // This could be extended to handle more than two activities if needed
+            group.forEach(activity => {
+                createActivityCard(activity, timeRange, tracksContainer);
+                processedActivities.add(getActivityId(activity));
+            });
+        }
+    });
+
+    // Process any remaining activities that weren't grouped
+    activities.forEach(activity => {
+        if (!processedActivities.has(getActivityId(activity)) && 
+            activity.type !== 'general' && 
+            activity.track !== 'Все треки') {
+            createActivityCard(activity, timeRange, tracksContainer);
+        }
+    });
+}
+
+// Create a regular activity card
+function createActivityCard(activity, timeRange, tracksContainer) {
+    const startMinutes = timeToMinutes(activity.timeStart);
+    const endMinutes = timeToMinutes(activity.timeEnd);
+    const duration = endMinutes - startMinutes;
+
+    const top = ((startMinutes - timeRange.start) / 60) * 80; // 80px per 60 minutes
+    const height = (duration / 60) * 80;
+
+    const card = document.createElement('div');
+    card.className = 'activity-card';
+    card.style.top = `${top}px`;
+    card.style.minHeight = `${height}px`;
+    card.style.height = 'auto'; // Allow dynamic height based on content
+
+    // Add class for short activities (1 hour or less)
+    if (duration <= 60) {
+        card.classList.add('short-activity');
+    }
+
+    // Add track-specific class
+    if (activity.track === '🧠 Geek Zone') {
+        card.classList.add('geek-track');
+    } else if (activity.track === '🏃‍♂️ Active Arena') {
+        card.classList.add('active-track');
+    } else if (activity.track === '💬 Soft Skills Hub') {
+        card.classList.add('soft-skills');
+    } else if (activity.track === '🌿 Hobby Grove') {
+        card.classList.add('hobby-track');
+    } else if (activity.track === 'Все треки') {
+        card.classList.add('all-tracks');
+    }
+
+    // Add special class for general events
+    if (activity.type === 'general') {
+        card.classList.add('general-event');
+        card.style.height = `${height}px`; // Set exact height for general events
+    }
+
+    // Add favorite class if needed
+    if (favorites.includes(getActivityId(activity))) {
+        card.classList.add('favorite');
+    }
+
+    const title = document.createElement('div');
+    title.className = 'activity-title';
+    title.textContent = activity.title;
+
+    const time = document.createElement('div');
+    time.className = 'activity-time';
+    time.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
+
+    card.appendChild(title);
+
+    // Create a container for time and track badge
+    const metaContainer = document.createElement('div');
+    metaContainer.className = 'activity-meta-container';
+
+    // Add time to the container
+    metaContainer.appendChild(time);
+
+    // Only add track badge for regular activities (not general events)
+    if (!activity.type || activity.type !== 'general') {
+        const trackBadge = document.createElement('div');
+        trackBadge.className = 'track-badge';
+        if (activity.track === '🧠 Geek Zone') {
+            trackBadge.classList.add('geek-track');
+        } else if (activity.track === '🏃‍♂️ Active Arena') {
+            trackBadge.classList.add('active-track');
+        } else if (activity.track === '💬 Soft Skills Hub') {
+            trackBadge.classList.add('soft-skills');
+        } else if (activity.track === '🌿 Hobby Grove') {
+            trackBadge.classList.add('hobby-track');
+        } else if (activity.track === 'Все треки') {
+            trackBadge.classList.add('all-tracks');
+        }
+        trackBadge.textContent = activity.track;
+        metaContainer.appendChild(trackBadge);
+    }
+
+    // Add the container to the card
+    card.appendChild(metaContainer);
+
+    // Add click event to open modal
+    card.addEventListener('click', () => {
+        openActivityModal(activity);
+    });
+
+    if (activity.type === 'general') {
+        // For general events (spanning all tracks)
+        tracksContainer.appendChild(card);
+    } else if (activity.track === 'Все треки') {
+        // For activities spanning all tracks (legacy support)
+        card.classList.add('all-tracks');
+        tracksContainer.appendChild(card);
+    } else {
+        // For track-specific activities
+        const trackColumn = tracksContainer.querySelector(`.track-column[data-track="${activity.track}"]`);
+        if (trackColumn) {
+            trackColumn.appendChild(card);
+        }
+    }
+}
+
+// Create a merged card for two overlapping activities
+function createMergedActivityCard(activities, timeRange, tracksContainer) {
+    if (activities.length !== 2) return;
+
+    const activity1 = activities[0];
+    const activity2 = activities[1];
+
+    // Use the earliest start time and latest end time for the merged card
+    const startMinutes1 = timeToMinutes(activity1.timeStart);
+    const endMinutes1 = timeToMinutes(activity1.timeEnd);
+    const startMinutes2 = timeToMinutes(activity2.timeStart);
+    const endMinutes2 = timeToMinutes(activity2.timeEnd);
+
+    const startMinutes = Math.min(startMinutes1, startMinutes2);
+    const endMinutes = Math.max(endMinutes1, endMinutes2);
+    const duration = endMinutes - startMinutes;
+
+    // Convert start and end minutes back to time strings for display
+    const startHour = Math.floor(startMinutes / 60);
+    const startMinute = startMinutes % 60;
+    const endHour = Math.floor(endMinutes / 60);
+    const endMinute = endMinutes % 60;
+
+    const startTimeString = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+    const endTimeString = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+
+    const top = ((startMinutes - timeRange.start) / 60) * 80; // 80px per 60 minutes
+    const height = (duration / 60) * 80;
+
+    const card = document.createElement('div');
+    card.className = 'activity-card merged-activity-card';
+    card.style.top = `${top}px`;
+    card.style.minHeight = `${height}px`;
+    card.style.height = 'auto'; // Allow dynamic height based on content
+
+    // Add track-specific class
+    if (activity1.track === '🧠 Geek Zone') {
+        card.classList.add('geek-track');
+    } else if (activity1.track === '🏃‍♂️ Active Arena') {
+        card.classList.add('active-track');
+    } else if (activity1.track === '💬 Soft Skills Hub') {
+        card.classList.add('soft-skills');
+    } else if (activity1.track === '🌿 Hobby Grove') {
+        card.classList.add('hobby-track');
+    }
+
+    // Add favorite class if both activities are favorites
+    if (favorites.includes(getActivityId(activity1)) && favorites.includes(getActivityId(activity2))) {
+        card.classList.add('favorite');
+    }
+
+    // Create container for first activity
+    const activity1Container = document.createElement('div');
+    activity1Container.className = 'merged-activity-item';
+
+    const title1 = document.createElement('div');
+    title1.className = 'activity-title';
+    title1.innerHTML = `1️⃣ ${activity1.title}`;
+
+    activity1Container.appendChild(title1);
+
+    // Create container for second activity
+    const activity2Container = document.createElement('div');
+    activity2Container.className = 'merged-activity-item';
+
+    const title2 = document.createElement('div');
+    title2.className = 'activity-title';
+    title2.innerHTML = `2️⃣ ${activity2.title}`;
+
+    activity2Container.appendChild(title2);
+
+    // Add a separator between activities
+    const separator = document.createElement('div');
+    separator.className = 'merged-activity-separator';
+
+    // Create a container for time and track badge (at the bottom of the card)
+    const metaContainer = document.createElement('div');
+    metaContainer.className = 'activity-meta-container';
+
+    // Add combined time to the container
+    const time = document.createElement('div');
+    time.className = 'activity-time';
+    time.textContent = `${startTimeString} - ${endTimeString}`;
+    metaContainer.appendChild(time);
+
+    // Add track badge
+    const trackBadge = document.createElement('div');
+    trackBadge.className = 'track-badge';
+    if (activity1.track === '🧠 Geek Zone') {
+        trackBadge.classList.add('geek-track');
+    } else if (activity1.track === '🏃‍♂️ Active Arena') {
+        trackBadge.classList.add('active-track');
+    } else if (activity1.track === '💬 Soft Skills Hub') {
+        trackBadge.classList.add('soft-skills');
+    } else if (activity1.track === '🌿 Hobby Grove') {
+        trackBadge.classList.add('hobby-track');
+    }
+    trackBadge.textContent = activity1.track;
+    metaContainer.appendChild(trackBadge);
+
+    // Add all elements to the card
+    card.appendChild(activity1Container);
+    card.appendChild(separator);
+    card.appendChild(activity2Container);
+    card.appendChild(metaContainer);
+
+    // Add click event to open merged modal
+    card.addEventListener('click', () => {
+        openMergedActivityModal(activity1, activity2);
+    });
+
+    // Add the card to the appropriate track column
+    const trackColumn = tracksContainer.querySelector(`.track-column[data-track="${activity1.track}"]`);
+    if (trackColumn) {
+        trackColumn.appendChild(card);
+    }
 }
 
 // Display schedule in mobile view (vertical timeline)
@@ -578,10 +793,155 @@ function openActivityModal(activity) {
     document.body.style.overflow = 'hidden';
 }
 
+// Open modal with merged activity details
+function openMergedActivityModal(activity1, activity2) {
+    const modal = document.getElementById('activityModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalTime = document.getElementById('modalTime');
+    const modalTrack = document.getElementById('modalTrack');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalFooter = document.querySelector('.modal-footer');
+
+    // Set title with both activities
+    modalTitle.innerHTML = `1️⃣ ${activity1.title}<br>2️⃣ ${activity2.title}`;
+
+    // Calculate combined time range
+    const startMinutes1 = timeToMinutes(activity1.timeStart);
+    const endMinutes1 = timeToMinutes(activity1.timeEnd);
+    const startMinutes2 = timeToMinutes(activity2.timeStart);
+    const endMinutes2 = timeToMinutes(activity2.timeEnd);
+
+    const startMinutes = Math.min(startMinutes1, startMinutes2);
+    const endMinutes = Math.max(endMinutes1, endMinutes2);
+
+    // Convert start and end minutes back to time strings for display
+    const startHour = Math.floor(startMinutes / 60);
+    const startMinute = startMinutes % 60;
+    const endHour = Math.floor(endMinutes / 60);
+    const endMinute = endMinutes % 60;
+
+    const startTimeString = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+    const endTimeString = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+
+    // Set single time range
+    modalTime.textContent = `${startTimeString} - ${endTimeString}`;
+
+    // Set track (should be the same for both activities)
+    modalTrack.textContent = activity1.track;
+
+    // Add track-specific class to the track badge
+    modalTrack.className = 'track-badge'; // Reset classes
+    if (activity1.track === '🧠 Geek Zone') {
+        modalTrack.classList.add('geek-track');
+    } else if (activity1.track === '🏃‍♂️ Active Arena') {
+        modalTrack.classList.add('active-track');
+    } else if (activity1.track === '💬 Soft Skills Hub') {
+        modalTrack.classList.add('soft-skills');
+    } else if (activity1.track === '🌿 Hobby Grove') {
+        modalTrack.classList.add('hobby-track');
+    }
+
+    // Create favorite button for first activity
+    const createFavoriteButton = (activity, number) => {
+        const favoriteBtn = document.createElement('button');
+        favoriteBtn.className = 'favorite-btn';
+        if (favorites.includes(getActivityId(activity))) {
+            favoriteBtn.classList.add('active');
+        }
+
+        const starIcon = document.createElement('span');
+        starIcon.className = 'star-icon';
+        starIcon.textContent = '★';
+
+        const favoriteText = document.createElement('span');
+        favoriteText.className = 'favorite-text';
+        favoriteText.textContent = favorites.includes(getActivityId(activity)) ? 
+            'Удалить из избранного' : 'Добавить в избранное';
+
+        favoriteBtn.appendChild(starIcon);
+        favoriteBtn.appendChild(document.createTextNode(` ${number} `));
+        favoriteBtn.appendChild(favoriteText);
+
+        favoriteBtn.dataset.activityId = getActivityId(activity);
+        favoriteBtn.addEventListener('click', () => {
+            toggleSingleFavorite(getActivityId(activity));
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+
+            // Update button state
+            favoriteBtn.classList.toggle('active');
+            favoriteText.textContent = favorites.includes(getActivityId(activity)) ? 
+                'Удалить из избранного' : 'Добавить в избранное';
+        });
+
+        return favoriteBtn;
+    };
+
+    // Set descriptions for both activities
+    let combinedDescription = '';
+
+    if (activity1.description) {
+        combinedDescription += `<div class="merged-activity-description">
+            <h4>1️⃣ ${activity1.title}</h4>
+            <p>${activity1.description}</p>
+            <div class="activity-favorite-container"></div>
+        </div>`;
+    }
+
+    if (activity2.description) {
+        if (combinedDescription) {
+            combinedDescription += '<hr class="merged-description-separator">';
+        }
+
+        combinedDescription += `<div class="merged-activity-description">
+            <h4>2️⃣ ${activity2.title}</h4>
+            <p>${activity2.description}</p>
+            <div class="activity-favorite-container"></div>
+        </div>`;
+    }
+
+    modalDescription.innerHTML = combinedDescription || 'Нет описания';
+
+    // Now insert the favorite buttons into their containers
+    if (activity1.description) {
+        const favoriteBtn1 = createFavoriteButton(activity1, '1️⃣');
+        const container1 = modalDescription.querySelector('.merged-activity-description:first-child .activity-favorite-container');
+        if (container1) container1.appendChild(favoriteBtn1);
+    }
+
+    if (activity2.description) {
+        const favoriteBtn2 = createFavoriteButton(activity2, '2️⃣');
+        const container2 = modalDescription.querySelector('.merged-activity-description:last-child .activity-favorite-container');
+        if (container2) container2.appendChild(favoriteBtn2);
+    }
+
+    // Clear existing footer content - we don't need buttons here anymore
+    modalFooter.innerHTML = '';
+
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
 // Close modal
 function closeModal() {
     document.getElementById('activityModal').style.display = 'none';
     document.body.style.overflow = '';
+
+    // Restore the modal footer to its original state
+    const modalFooter = document.querySelector('.modal-footer');
+    if (modalFooter.innerHTML === '') {
+        modalFooter.innerHTML = `
+            <button id="toggleFavorite" class="favorite-btn">
+                <span class="star-icon">★</span>
+                <span class="favorite-text">Добавить в избранное</span>
+            </button>
+        `;
+
+        // Re-attach event listener to the toggle favorite button
+        document.getElementById('toggleFavorite').addEventListener('click', () => {
+            const activityId = document.getElementById('toggleFavorite').dataset.activityId;
+            if (activityId) toggleFavorite(activityId);
+        });
+    }
 }
 
 // Convert time string (HH:MM) to minutes
@@ -606,6 +966,25 @@ function getActivityId(activity) {
 
 // Toggle favorite status for an activity
 function toggleFavorite(activityId) {
+    // Check if this is a merged activity
+    if (activityId.startsWith('merged_')) {
+        // Extract individual activity IDs
+        const [_, id1, id2] = activityId.split('_');
+
+        // Toggle both activities
+        toggleSingleFavorite(id1);
+        toggleSingleFavorite(id2);
+    } else {
+        // Regular single activity
+        toggleSingleFavorite(activityId);
+    }
+
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    displaySchedule();
+}
+
+// Helper function to toggle a single activity's favorite status
+function toggleSingleFavorite(activityId) {
     const index = favorites.indexOf(activityId);
 
     if (index === -1) {
@@ -613,9 +992,6 @@ function toggleFavorite(activityId) {
     } else {
         favorites.splice(index, 1);
     }
-
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    displaySchedule();
 }
 
 // Load favorites from localStorage

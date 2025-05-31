@@ -333,6 +333,50 @@ input:checked + .toggle-slider:before {
     margin-bottom: 4px; /* Add space between consecutive cards */
 }
 
+/* Merged activity card (desktop only) */
+.merged-activity-card {
+    padding: var(--card-padding) 0; /* Remove horizontal padding */
+}
+
+.merged-activity-item {
+    padding: 0 var(--card-padding); /* Add horizontal padding to items instead */
+    margin-bottom: 4px;
+}
+
+.merged-activity-item .activity-title {
+    font-size: 0.85rem; /* Smaller font size for merged activity titles */
+}
+
+.merged-activity-item:last-child {
+    margin-bottom: 0;
+}
+
+.merged-activity-separator {
+    height: 1px;
+    background-color: var(--color-medium-gray);
+    margin: 8px 0;
+}
+
+/* Merged activity description in modal */
+.merged-activity-description h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    color: var(--color-text);
+}
+
+.merged-description-separator {
+    margin: 16px 0;
+    border: 0;
+    height: 1px;
+    background-color: var(--color-medium-gray);
+}
+
+/* Container for favorite button in merged activity descriptions */
+.activity-favorite-container {
+    margin-top: 12px;
+}
+
 /* Adaptive font sizing for short activities */
 .activity-card.short-activity .activity-title {
     font-size: 0.85rem;
@@ -423,7 +467,7 @@ input:checked + .toggle-slider:before {
 
 .activity-title {
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-size: 0.95rem;
     color: var(--color-text);
     line-height: 1.4;
@@ -441,7 +485,16 @@ input:checked + .toggle-slider:before {
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    gap: 4px;
+    gap: 8px;
+    padding: 4px 0 8px;
+}
+
+/* Specific styling for meta container in merged cards to match regular cards */
+.merged-activity-card .activity-meta-container {
+    padding: 4px 0 8px;
+    margin-top: 4px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 /* Center time in general events by overriding justify-content */
@@ -571,6 +624,8 @@ input:checked + .toggle-slider:before {
 .modal-footer {
     display: flex;
     justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .favorite-btn {
@@ -842,7 +897,8 @@ footer {
     /* Adjust spacing for meta container on mobile */
     .mobile-activity .activity-meta-container {
         gap: 8px;
-        margin-top: 8px;
+        margin-top: 4px;
+        padding: 4px 0 8px;
     }
 
     /* Center time in general events on mobile */
