@@ -78,13 +78,13 @@ function createDayTabs(days) {
     dayTabsContainer.innerHTML = '';
 
     days.forEach(day => {
-        const dayData = scheduleData.find(activity => activity.date === day);
-        const dayName = dayData ? dayData.dayName : formatDate(day);
+        const date = new Date(day);
+        const weekdayName = getWeekdayName(date);
 
         const tab = document.createElement('div');
         tab.className = 'day-tab';
         tab.dataset.date = day;
-        tab.textContent = `${formatDate(day)} (${dayName})`;
+        tab.textContent = `${formatDate(day)} (${weekdayName})`;
 
         tab.addEventListener('click', () => {
             selectDay(day);
@@ -94,10 +94,28 @@ function createDayTabs(days) {
     });
 }
 
-// Format date as DD.MM.YYYY
+// Get weekday name in Russian
+function getWeekdayName(date) {
+    const weekdayNames = [
+        'воскресенье', 'понедельник', 'вторник', 'среда', 
+        'четверг', 'пятница', 'суббота'
+    ];
+    return weekdayNames[date.getDay()];
+}
+
+// Format date as "DD Month"
 function formatDate(dateString) {
-    const [year, month, day] = dateString.split('-');
-    return `${day}.${month}.${year}`;
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+
+    // Array of month names in Russian
+    const monthNames = [
+        'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+    ];
+
+    const month = monthNames[date.getMonth()];
+    return `${day} ${month}`;
 }
 
 // Set default day (today or first available day)
