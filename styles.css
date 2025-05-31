@@ -567,6 +567,11 @@ footer {
         margin-bottom: 16px;
     }
 
+    /* Hide the time column on mobile as per requirements */
+    .time-column {
+        display: none;
+    }
+
     .tracks-container {
         flex-direction: column;
     }
@@ -705,5 +710,24 @@ footer {
         padding-top: 12px;
         border-top: 1px solid var(--color-medium-gray);
         color: var(--color-text-secondary);
+    }
+
+    /* Meal badge styling for mobile time labels */
+    .time-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .meal-badge {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        background-color: var(--color-meal-bg);
+        border: 1px solid var(--color-meal-border);
+        border-radius: 12px;
+        padding: 2px 8px;
+        display: inline-flex;
+        align-items: center;
     }
 }
