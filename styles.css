@@ -579,6 +579,15 @@ footer {
     .day-tabs {
         width: 100%;
         margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .day-tab {
+        margin-bottom: 8px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        border-radius: 8px;
     }
 
     /* Hide the time column on mobile as per requirements */
