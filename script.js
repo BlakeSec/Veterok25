@@ -624,15 +624,18 @@ function displayMobileSchedule(activities, timeRange) {
         return timeA - timeB;
     });
 
-    // Group activities by time blocks
+    // Group activities by time blocks (rounded down to the nearest hour)
     const timeBlocks = {};
 
     activities.forEach(activity => {
         const startTime = activity.timeStart;
-        if (!timeBlocks[startTime]) {
-            timeBlocks[startTime] = [];
+        // Extract the hour part (e.g., "11" from "11:30")
+        const hourPart = startTime.split(':')[0] + ':00';
+
+        if (!timeBlocks[hourPart]) {
+            timeBlocks[hourPart] = [];
         }
-        timeBlocks[startTime].push(activity);
+        timeBlocks[hourPart].push(activity);
     });
 
     // Create time blocks for every hour in the time range
@@ -705,6 +708,9 @@ function displayMobileSchedule(activities, timeRange) {
 
             // Add activities if there are any for this hour
             if (timeActivities.length > 0) {
+                // Sort activities within this time block by their actual start time
+                timeActivities.sort((a, b) => timeToMinutes(a.timeStart) - timeToMinutes(b.timeStart));
+
                 timeActivities.forEach(activity => {
                     const mobileActivity = document.createElement('div');
                     mobileActivity.className = 'mobile-activity';
