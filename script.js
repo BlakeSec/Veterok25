@@ -288,6 +288,7 @@ function displayDesktopSchedule(activities, timeRange) {
         // Add special class for general events
         if (activity.type === 'general') {
             card.classList.add('general-event');
+            card.style.height = `${height}px`; // Set exact height for general events
         }
 
         // Add favorite class if needed
@@ -333,7 +334,6 @@ function displayDesktopSchedule(activities, timeRange) {
 
         if (activity.type === 'general') {
             // For general events (spanning all tracks)
-            card.classList.add('general-event');
             tracksContainer.appendChild(card);
         } else if (activity.track === 'Все треки') {
             // For activities spanning all tracks (legacy support)

@@ -375,16 +375,19 @@ input:checked + .toggle-slider:before {
 
 /* General events (spanning all tracks) */
 .activity-card.general-event {
-    left: 10px;
-    right: 10px;
+    left: 8px;
+    right: 8px;
+    width: calc(100% - 16px); /* Full width minus margins to align with grid edges */
+    margin-left: auto;
+    margin-right: auto;
+    padding: var(--card-padding); /* Add padding like regular cards */
     z-index: 2;
     background-color: var(--color-white);
-    border: 1px solid var(--color-medium-gray);
+    border: 1px solid var(--color-card-border);
     border-left: 3px solid var(--color-accent-green);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius); /* Add border radius like regular cards */
     box-shadow: 0 2px 6px var(--color-shadow);
     font-weight: 500;
-    text-align: center; /* Center the text */
 }
 
 /* Center text elements inside general events */
@@ -744,7 +747,7 @@ footer {
     .mobile-activity.general-event {
         border-left-color: var(--color-accent-green);
         background-color: var(--color-white);
-        border: 1px solid var(--color-medium-gray);
+        border: 1px solid var(--color-card-border);
         border-left: 3px solid var(--color-accent-green);
         border-radius: var(--border-radius);
         box-shadow: 0 2px 6px var(--color-shadow);
