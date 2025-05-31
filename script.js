@@ -398,7 +398,15 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     // Add special class for general events
     if (activity.type === 'general') {
         card.classList.add('general-event');
-        card.style.height = `${height}px !important`; // Set exact height for general events with !important to override CSS
+
+        // For 1-hour general activities, set a specific height without !important
+        if (duration <= 60) {
+            card.style.height = `${height}px`;
+            card.style.minHeight = `${height}px`;
+            card.style.maxHeight = `${height}px`;
+        } else {
+            card.style.height = `${height}px`;
+        }
 
         // Add private class for private activities
         if (activity.private === true) {

@@ -438,7 +438,7 @@ input:checked + .toggle-slider:before {
     flex-direction: column;
     justify-content: center; /* Center content vertically */
     align-items: center; /* Center content horizontally */
-    height: 100%; /* Ensure the card takes full height */
+    /* Height is now controlled by JavaScript for better precision */
 }
 
 /* Private events (gray instead of orange) */
@@ -857,7 +857,7 @@ footer {
         flex-direction: column;
         justify-content: center; /* Center content vertically */
         align-items: center; /* Center content horizontally */
-        min-height: 100%; /* Ensure the card takes full height */
+        /* Height is controlled by content for better display */
     }
 
     /* Private events in mobile view (gray instead of orange) */
