@@ -400,7 +400,7 @@ input:checked + .toggle-slider:before {
 .activity-card.favorite {
     border: 2px solid var(--color-accent-yellow);
     box-shadow: 0 3px 10px rgba(252, 196, 25, 0.3);
-    background-color: rgba(252, 196, 25, 0.05);
+    background-color: #fff8e0;
 }
 
 .activity-card.favorite .activity-title {
@@ -812,7 +812,7 @@ footer {
         border: 2px solid var(--color-accent-yellow);
         border-left: 5px solid var(--color-accent-yellow);
         box-shadow: 0 3px 10px rgba(252, 196, 25, 0.3);
-        background-color: rgba(252, 196, 25, 0.05);
+        background-color: #fff8e0;
     }
 
     .mobile-activity.favorite .activity-title {

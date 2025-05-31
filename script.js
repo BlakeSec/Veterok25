@@ -421,7 +421,7 @@ function createActivityCard(activity, timeRange, tracksContainer) {
 
     const title = document.createElement('div');
     title.className = 'activity-title';
-    title.textContent = activity.title;
+    title.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
 
     const time = document.createElement('div');
     time.className = 'activity-time';
@@ -552,7 +552,7 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
 
     const title1 = document.createElement('div');
     title1.className = 'activity-title';
-    title1.innerHTML = `1️⃣ ${activity1.title}`;
+    title1.innerHTML = `1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}`;
 
     activity1Container.appendChild(title1);
 
@@ -562,7 +562,7 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
 
     const title2 = document.createElement('div');
     title2.className = 'activity-title';
-    title2.innerHTML = `2️⃣ ${activity2.title}`;
+    title2.innerHTML = `2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}`;
 
     activity2Container.appendChild(title2);
 
@@ -763,7 +763,7 @@ function displayMobileSchedule(activities, timeRange) {
 
                     const title = document.createElement('div');
                     title.className = 'activity-title';
-                    title.textContent = activity.title;
+                    title.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
 
                     const time = document.createElement('div');
                     time.className = 'activity-time';
@@ -826,7 +826,7 @@ function openActivityModal(activity) {
     const modalDescription = document.getElementById('modalDescription');
     const toggleFavoriteBtn = document.getElementById('toggleFavorite');
 
-    modalTitle.textContent = activity.title;
+    modalTitle.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
     modalTime.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
     modalTrack.textContent = activity.track;
 
@@ -869,7 +869,7 @@ function openMergedActivityModal(activity1, activity2) {
     const modalFooter = document.querySelector('.modal-footer');
 
     // Set title with both activities
-    modalTitle.innerHTML = `1️⃣ ${activity1.title}<br>2️⃣ ${activity2.title}`;
+    modalTitle.innerHTML = `1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}<br>2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}`;
 
     // Calculate combined time range
     const startMinutes1 = timeToMinutes(activity1.timeStart);
@@ -953,6 +953,26 @@ function openMergedActivityModal(activity1, activity2) {
             favoriteBtn.classList.toggle('active');
             favoriteText.textContent = favorites.includes(getActivityId(activity)) ? 
                 'Удалить из избранного' : 'Добавить в избранное';
+
+            // Update modal title with star emoji
+            const modalTitle = document.getElementById('modalTitle');
+            if (modalTitle) {
+                // Update the merged activity modal title
+                modalTitle.innerHTML = `1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}<br>2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}`;
+            }
+
+            // Update activity description headers with star emoji
+            if (activity === activity1) {
+                const header = modalDescription.querySelector('.merged-activity-description:first-child h4');
+                if (header) {
+                    header.innerHTML = `1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}`;
+                }
+            } else if (activity === activity2) {
+                const header = modalDescription.querySelector('.merged-activity-description:last-child h4');
+                if (header) {
+                    header.innerHTML = `2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}`;
+                }
+            }
         });
 
         return favoriteBtn;
@@ -963,7 +983,7 @@ function openMergedActivityModal(activity1, activity2) {
 
     if (activity1.description) {
         combinedDescription += `<div class="merged-activity-description">
-            <h4>1️⃣ ${activity1.title}</h4>
+            <h4>1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}</h4>
             <p>${activity1.description}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
@@ -975,7 +995,7 @@ function openMergedActivityModal(activity1, activity2) {
         }
 
         combinedDescription += `<div class="merged-activity-description">
-            <h4>2️⃣ ${activity2.title}</h4>
+            <h4>2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}</h4>
             <p>${activity2.description}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
@@ -1073,7 +1093,34 @@ function toggleFavorite(activityId) {
     } else {
         // Regular single activity
         toggleSingleFavorite(activityId);
+
+        // Update the modal title for regular activity
+        const modalTitle = document.getElementById('modalTitle');
+        if (modalTitle) {
+            // Find the activity object from the activityId
+            const activityParts = activityId.split('_');
+            const date = activityParts[0];
+            const timeStart = activityParts[1];
+            const title = activityParts.slice(2).join('_'); // In case title contains underscores
+
+            const activity = scheduleData.find(a => 
+                a.date === date && 
+                a.timeStart === timeStart && 
+                a.title === title
+            );
+
+            if (activity) {
+                modalTitle.textContent = activity.title + (favorites.includes(activityId) ? ' ⭐️' : '');
+            }
+        }
     }
+
+    // Update the button text after toggling
+    const toggleFavoriteBtn = document.getElementById('toggleFavorite');
+    const isFavorite = favorites.includes(activityId);
+    toggleFavoriteBtn.classList.toggle('active', isFavorite);
+    toggleFavoriteBtn.querySelector('.favorite-text').textContent = 
+        isFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
 
     localStorage.setItem('favorites', JSON.stringify(favorites));
     displaySchedule();
