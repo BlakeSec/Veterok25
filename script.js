@@ -165,15 +165,26 @@ function displaySchedule() {
 
     // Create time markers
     for (let time = timeRange.start; time <= timeRange.end; time += 60) {
-        const hour = Math.floor(time / 60);
+        let hour = Math.floor(time / 60);
         const minute = time % 60;
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+
+        // Format time string for display
+        let timeString;
+        if (hour === 24) {
+            timeString = `00:00`;
+        } else if (hour > 24) {
+            // For hours past midnight (e.g., 1 AM becomes 01:00)
+            timeString = `${(hour - 24).toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        } else {
+            timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        }
 
         const timeMarker = document.createElement('div');
         timeMarker.className = 'time-marker';
+        timeMarker.dataset.timeMinutes = time; // Store original time in minutes for correct positioning
 
         // Check if this hour falls within any meal's time range
-        const currentTimeMinutes = timeToMinutes(timeString);
+        const currentTimeMinutes = time; // Use the original time in minutes
         const mealAtThisHour = meals.find(meal => {
             const mealStartMinutes = timeToMinutes(meal.timeStart);
             const mealEndMinutes = timeToMinutes(meal.timeEnd);
@@ -387,7 +398,12 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     // Add special class for general events
     if (activity.type === 'general') {
         card.classList.add('general-event');
-        card.style.height = `${height}px`; // Set exact height for general events
+        card.style.height = `${height}px !important`; // Set exact height for general events with !important to override CSS
+
+        // Add private class for private activities
+        if (activity.private === true) {
+            card.classList.add('private-event');
+        }
     }
 
     // Add favorite class if needed
@@ -478,8 +494,24 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
     const endHour = Math.floor(endMinutes / 60);
     const endMinute = endMinutes % 60;
 
-    const startTimeString = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
-    const endTimeString = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+    // Format time strings with special handling for midnight and times past midnight
+    let startTimeString;
+    if (startHour === 24) {
+        startTimeString = `00:00`;
+    } else if (startHour > 24) {
+        startTimeString = `${(startHour - 24).toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+    } else {
+        startTimeString = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+    }
+
+    let endTimeString;
+    if (endHour === 24) {
+        endTimeString = `00:00`;
+    } else if (endHour > 24) {
+        endTimeString = `${(endHour - 24).toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+    } else {
+        endTimeString = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+    }
 
     const top = ((startMinutes - timeRange.start) / 60) * 80; // 80px per 60 minutes
     const height = (duration / 60) * 80;
@@ -605,15 +637,25 @@ function displayMobileSchedule(activities, timeRange) {
 
     // Create time blocks for every hour in the time range
     for (let time = timeRange.start; time <= timeRange.end; time += 60) {
-        const hour = Math.floor(time / 60);
+        let hour = Math.floor(time / 60);
         const minute = time % 60;
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+
+        // Format time string for display
+        let timeString;
+        if (hour === 24) {
+            timeString = `00:00`;
+        } else if (hour > 24) {
+            // For hours past midnight (e.g., 1 AM becomes 01:00)
+            timeString = `${(hour - 24).toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        } else {
+            timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        }
 
         // Get activities for this hour
         const timeActivities = timeBlocks[timeString] || [];
 
         // Check if this hour falls within any meal's time range
-        const currentTimeMinutes = time;
+        const currentTimeMinutes = time; // Use the original time in minutes
         const mealAtThisHour = mealsData.filter(meal => meal.date === currentDay).find(meal => {
             const mealStartMinutes = timeToMinutes(meal.timeStart);
             const mealEndMinutes = timeToMinutes(meal.timeEnd);
@@ -693,6 +735,11 @@ function displayMobileSchedule(activities, timeRange) {
                     // Add special class for general events
                     if (activity.type === 'general') {
                         mobileActivity.classList.add('general-event');
+
+                        // Add private class for private activities
+                        if (activity.private === true) {
+                            mobileActivity.classList.add('private-event');
+                        }
                     }
 
                     // Add favorite class if needed
@@ -825,8 +872,24 @@ function openMergedActivityModal(activity1, activity2) {
     const endHour = Math.floor(endMinutes / 60);
     const endMinute = endMinutes % 60;
 
-    const startTimeString = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
-    const endTimeString = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+    // Format time strings with special handling for midnight and times past midnight
+    let startTimeString;
+    if (startHour === 24) {
+        startTimeString = `00:00`;
+    } else if (startHour > 24) {
+        startTimeString = `${(startHour - 24).toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+    } else {
+        startTimeString = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+    }
+
+    let endTimeString;
+    if (endHour === 24) {
+        endTimeString = `00:00`;
+    } else if (endHour > 24) {
+        endTimeString = `${(endHour - 24).toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+    } else {
+        endTimeString = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+    }
 
     // Set single time range
     modalTime.textContent = `${startTimeString} - ${endTimeString}`;
@@ -951,15 +1014,29 @@ function closeModal() {
 
 // Convert time string (HH:MM) to minutes
 function timeToMinutes(timeString) {
-    const [hours, minutes] = timeString.split(':').map(Number);
+    // Remove any non-time characters (like meal indicators)
+    const cleanTimeString = timeString.replace(/[^0-9:]/g, '');
+    const [hours, minutes] = cleanTimeString.split(':').map(Number);
+
+    // If the time is 00:00 or 01:00, treat it as after midnight
+    // This assumes activities don't span more than 24 hours
+    // But only if it's an end time for an activity that starts late
+    // For start times or activities that start early, use regular hours
+    if (hours < 2) {
+        // Check if this is likely an end time after midnight
+        // We'll assume it's after midnight if we're processing an end time
+        // This is a heuristic and might need adjustment based on actual data patterns
+        return (hours + 24) * 60 + minutes;
+    }
+
     return hours * 60 + minutes;
 }
 
 // Get time range for a set of activities
 function getTimeRange(activities) {
-    // Fixed time range from 7:00 to 00:00 (midnight)
+    // Fixed time range from 7:00 to 01:00 (1 AM)
     const start = 7 * 60; // 7:00 in minutes
-    const end = 24 * 60; // 00:00 (midnight) in minutes
+    const end = 25 * 60; // 01:00 (1 AM) in minutes
 
     return { start, end };
 }

@@ -6,7 +6,8 @@
       "timeStart": "08:00",
       "timeEnd": "12:00",
       "type": "general",
-      "track": "Общая активность",
+      "private": true,
+      "track": "✨ Общая активность",
       "title": "🚧🚧🚧 Vas3k Camp: Build-up 🚧🚧🚧",
       "description": ""
     },
@@ -16,7 +17,7 @@
       "timeStart": "12:00",
       "timeEnd": "14:00",
       "type": "general",
-      "track": "Общая активность",
+      "track": "✨ Общая активность",
       "title": "👋 WELCOME 👋",
       "description": ""
     },
@@ -26,6 +27,7 @@
       "timeStart": "16:00",
       "timeEnd": "17:00",
       "type": "general",
+      "track": "✨ Общая активность",
       "title": "🤝 SPEED FRIENDING 🤝 ",
       "description": "Легкий формат для знакомства с новыми участниками"
     },
@@ -53,7 +55,18 @@
       "timeStart": "21:00",
       "timeEnd": "23:00",
       "type": "general",
+      "track": "✨ Общая активность",
       "title": "📺 VAS3K QUIZZ",
+      "description": ""
+    },
+    {
+      "date": "2025-06-05",
+      "dayName": "Четверг",
+      "timeStart": "23:00",
+      "timeEnd": "01:00",
+      "type": "general",
+      "track": "✨ Общая активность",
+      "title": "🎵 DJ-Set",
       "description": ""
     },
     {
@@ -80,6 +93,7 @@
       "timeStart": "20:00",
       "timeEnd": "21:00",
       "type": "general",
+      "track": "✨ Общая активность",
       "title": "🤝 Нетворкинг активности",
       "description": ""
     },
@@ -89,6 +103,7 @@
       "timeStart": "21:00",
       "timeEnd": "23:00",
       "type": "general",
+      "track": "✨ Общая активность",
       "title": "❓ Secret Event",
       "description": ""
     },
@@ -98,6 +113,7 @@
       "timeStart": "23:00",
       "timeEnd": "01:00",
       "type": "general",
+      "track": "✨ Общая активность",
       "title": "🎵 DJ-Set",
       "description": ""
     },
@@ -116,6 +132,7 @@
       "timeStart": "15:00",
       "timeEnd": "18:00",
       "type": "general",
+      "track": "✨ Общая активность",
       "title": "🧭 🏃🏻‍♀️ КВЕСТ",
       "description": ""
     },
@@ -134,6 +151,7 @@
       "timeStart": "22:00",
       "timeEnd": "01:00",
       "type":"general",
+      "track": "✨ Общая активность",
       "title": "🪩 👩🏻‍🎤 VAS3K RAVE",
       "description": ""
     },
