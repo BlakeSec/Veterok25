@@ -389,6 +389,12 @@ input:checked + .toggle-slider:before {
     border-radius: var(--border-radius); /* Add border radius like regular cards */
     box-shadow: 0 2px 6px var(--color-shadow);
     font-weight: 500;
+    /* Add vertical centering */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    height: 100%; /* Ensure the card takes full height */
 }
 
 /* Center text elements inside general events (desktop only) */
@@ -441,6 +447,7 @@ input:checked + .toggle-slider:before {
 /* Center time in general events by overriding justify-content */
 .activity-card.general-event .activity-meta-container {
     justify-content: center;
+    margin-top: 5px; /* Override margin-top: auto to allow true vertical centering */
 }
 
 .activity-description {
@@ -776,6 +783,12 @@ footer {
         font-weight: 500;
         margin-left: 8px;
         margin-right: 8px;
+        /* Add vertical centering */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Center content vertically */
+        align-items: center; /* Center content horizontally */
+        min-height: 100%; /* Ensure the card takes full height */
     }
 
     /* Time display for general events on mobile */
@@ -835,6 +848,7 @@ footer {
     /* Center time in general events on mobile */
     .mobile-activity.general-event .activity-meta-container {
         justify-content: center;
+        margin-top: 5px; /* Override margin-top to allow true vertical centering */
     }
 
     /* Adaptive font sizing for short activities on mobile (only for time and badge) */
