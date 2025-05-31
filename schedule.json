@@ -6,6 +6,7 @@
       "timeStart": "12:00",
       "timeEnd": "13:00",
       "type": "general",
+      "track": "Общая активность",
       "title": "👋 Welcome",
       "description": ""
     },
@@ -398,12 +399,6 @@
     }
   ],
   "meals": [
-    {
-      "date": "2025-06-05",
-      "timeStart": "09:00",
-      "timeEnd": "11:00",
-      "title": "Завтрак"
-    },
     {
       "date": "2025-06-05",
       "timeStart": "14:00",

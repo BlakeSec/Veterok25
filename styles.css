@@ -318,6 +318,20 @@ input:checked + .toggle-slider:before {
     margin-bottom: 4px; /* Add space between consecutive cards */
 }
 
+/* Adaptive font sizing for short activities */
+.activity-card.short-activity .activity-title {
+    font-size: 0.85rem;
+}
+
+.activity-card.short-activity .activity-time {
+    font-size: 0.75rem;
+}
+
+.activity-card.short-activity .track-badge {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+}
+
 .activity-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px var(--color-shadow-hover);
@@ -710,6 +724,20 @@ footer {
         padding-top: 12px;
         border-top: 1px solid var(--color-medium-gray);
         color: var(--color-text-secondary);
+    }
+
+    /* Adaptive font sizing for short activities on mobile */
+    .mobile-activity.short-activity .activity-title {
+        font-size: 0.85rem;
+    }
+
+    .mobile-activity.short-activity .activity-time {
+        font-size: 0.75rem;
+    }
+
+    .mobile-activity.short-activity .track-badge {
+        font-size: 0.65rem;
+        padding: 1px 6px;
     }
 
     /* Meal badge styling for mobile time labels */

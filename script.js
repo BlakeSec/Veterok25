@@ -267,6 +267,11 @@ function displayDesktopSchedule(activities, timeRange) {
         card.style.minHeight = `${height}px`;
         card.style.height = 'auto'; // Allow dynamic height based on content
 
+        // Add class for short activities (1 hour or less)
+        if (duration <= 60) {
+            card.classList.add('short-activity');
+        }
+
         // Add track-specific class
         if (activity.track === 'Geek Track') {
             card.classList.add('geek-track');
@@ -378,12 +383,6 @@ function displayMobileSchedule(activities, timeRange) {
         // Get activities for this hour
         const timeActivities = timeBlocks[timeString] || [];
 
-        const timeBlock = document.createElement('div');
-        timeBlock.className = 'time-block';
-
-        const timeLabel = document.createElement('div');
-        timeLabel.className = 'time-label';
-
         // Check if this hour falls within any meal's time range
         const currentTimeMinutes = time;
         const mealAtThisHour = mealsData.filter(meal => meal.date === currentDay).find(meal => {
@@ -392,109 +391,128 @@ function displayMobileSchedule(activities, timeRange) {
             return currentTimeMinutes >= mealStartMinutes && currentTimeMinutes < mealEndMinutes;
         });
 
-        // Create time label with meal badge if needed
-        if (mealAtThisHour) {
-            // Create time text
-            const timeText = document.createElement('span');
-            timeText.textContent = timeString;
-            timeLabel.appendChild(timeText);
+        // Only create time block if there are activities or a meal at this hour
+        if (timeActivities.length > 0 || mealAtThisHour) {
+            const timeBlock = document.createElement('div');
+            timeBlock.className = 'time-block';
 
-            // Create meal badge
-            const mealBadge = document.createElement('span');
-            mealBadge.className = 'meal-badge';
+            const timeLabel = document.createElement('div');
+            timeLabel.className = 'time-label';
 
-            // Add emoji based on meal type
-            let mealEmoji = '';
-            if (mealAtThisHour.title === 'Завтрак') {
-                mealEmoji = '🍳 ';
-            } else if (mealAtThisHour.title === 'Обед') {
-                mealEmoji = '🥗 ';
-            } else if (mealAtThisHour.title === 'Ужин') {
-                mealEmoji = '🍽 ';
+            // Create time label with meal badge if needed
+            if (mealAtThisHour) {
+                // Create time text
+                const timeText = document.createElement('span');
+                timeText.textContent = timeString;
+                timeLabel.appendChild(timeText);
+
+                // Create meal badge
+                const mealBadge = document.createElement('span');
+                mealBadge.className = 'meal-badge';
+
+                // Add emoji based on meal type
+                let mealEmoji = '';
+                if (mealAtThisHour.title === 'Завтрак') {
+                    mealEmoji = '🍳 ';
+                } else if (mealAtThisHour.title === 'Обед') {
+                    mealEmoji = '🥗 ';
+                } else if (mealAtThisHour.title === 'Ужин') {
+                    mealEmoji = '🍽 ';
+                }
+
+                mealBadge.textContent = mealEmoji + mealAtThisHour.title;
+                timeLabel.appendChild(mealBadge);
+            } else {
+                // Just show the time
+                timeLabel.textContent = timeString;
             }
 
-            mealBadge.textContent = mealEmoji + mealAtThisHour.title;
-            timeLabel.appendChild(mealBadge);
-        } else {
-            // Just show the time
-            timeLabel.textContent = timeString;
-        }
+            timeBlock.appendChild(timeLabel);
 
-        timeBlock.appendChild(timeLabel);
+            const activitiesContainer = document.createElement('div');
+            activitiesContainer.className = 'mobile-activities';
 
-        const activitiesContainer = document.createElement('div');
-        activitiesContainer.className = 'mobile-activities';
+            // Add activities if there are any for this hour
+            if (timeActivities.length > 0) {
+                timeActivities.forEach(activity => {
+                    const mobileActivity = document.createElement('div');
+                    mobileActivity.className = 'mobile-activity';
 
-        // Only add activities if there are any for this hour
-        if (timeActivities.length > 0) {
-            timeActivities.forEach(activity => {
-                const mobileActivity = document.createElement('div');
-                mobileActivity.className = 'mobile-activity';
+                    // Calculate duration for mobile view
+                    const startMinutes = timeToMinutes(activity.timeStart);
+                    const endMinutes = timeToMinutes(activity.timeEnd);
+                    const duration = endMinutes - startMinutes;
 
-                // Add track-specific class
-                if (activity.track === 'Geek Track') {
-                    mobileActivity.classList.add('geek-track');
-                } else if (activity.track === 'Active Track') {
-                    mobileActivity.classList.add('active-track');
-                } else if (activity.track === 'Soft Skills') {
-                    mobileActivity.classList.add('soft-skills');
-                } else if (activity.track === 'Hobby Track') {
-                    mobileActivity.classList.add('hobby-track');
-                } else if (activity.track === 'Все треки') {
-                    mobileActivity.classList.add('all-tracks');
-                }
-
-                // Add special class for general events
-                if (activity.type === 'general') {
-                    mobileActivity.classList.add('general-event');
-                }
-
-                // Add favorite class if needed
-                if (favorites.includes(getActivityId(activity))) {
-                    mobileActivity.classList.add('favorite');
-                }
-
-                const title = document.createElement('div');
-                title.className = 'activity-title';
-                title.textContent = activity.title;
-
-                const time = document.createElement('div');
-                time.className = 'activity-time';
-                time.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
-
-                mobileActivity.appendChild(title);
-                mobileActivity.appendChild(time);
-
-                // Only add track badge for regular activities (not general events)
-                if (!activity.type || activity.type !== 'general') {
-                    const trackBadge = document.createElement('div');
-                    trackBadge.className = 'track-badge';
-                    if (activity.track === 'Geek Track') {
-                        trackBadge.classList.add('geek-track');
-                    } else if (activity.track === 'Active Track') {
-                        trackBadge.classList.add('active-track');
-                    } else if (activity.track === 'Soft Skills') {
-                        trackBadge.classList.add('soft-skills');
-                    } else if (activity.track === 'Hobby Track') {
-                        trackBadge.classList.add('hobby-track');
-                    } else if (activity.track === 'Все треки') {
-                        trackBadge.classList.add('all-tracks');
+                    // Add class for short activities (1 hour or less)
+                    if (duration <= 60) {
+                        mobileActivity.classList.add('short-activity');
                     }
-                    trackBadge.textContent = activity.track;
-                    mobileActivity.appendChild(trackBadge);
-                }
 
-                // Add click event to open modal
-                mobileActivity.addEventListener('click', () => {
-                    openActivityModal(activity);
+                    // Add track-specific class
+                    if (activity.track === 'Geek Track') {
+                        mobileActivity.classList.add('geek-track');
+                    } else if (activity.track === 'Active Track') {
+                        mobileActivity.classList.add('active-track');
+                    } else if (activity.track === 'Soft Skills') {
+                        mobileActivity.classList.add('soft-skills');
+                    } else if (activity.track === 'Hobby Track') {
+                        mobileActivity.classList.add('hobby-track');
+                    } else if (activity.track === 'Все треки') {
+                        mobileActivity.classList.add('all-tracks');
+                    }
+
+                    // Add special class for general events
+                    if (activity.type === 'general') {
+                        mobileActivity.classList.add('general-event');
+                    }
+
+                    // Add favorite class if needed
+                    if (favorites.includes(getActivityId(activity))) {
+                        mobileActivity.classList.add('favorite');
+                    }
+
+                    const title = document.createElement('div');
+                    title.className = 'activity-title';
+                    title.textContent = activity.title;
+
+                    const time = document.createElement('div');
+                    time.className = 'activity-time';
+                    time.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
+
+                    mobileActivity.appendChild(title);
+                    mobileActivity.appendChild(time);
+
+                    // Only add track badge for regular activities (not general events)
+                    if (!activity.type || activity.type !== 'general') {
+                        const trackBadge = document.createElement('div');
+                        trackBadge.className = 'track-badge';
+                        if (activity.track === 'Geek Track') {
+                            trackBadge.classList.add('geek-track');
+                        } else if (activity.track === 'Active Track') {
+                            trackBadge.classList.add('active-track');
+                        } else if (activity.track === 'Soft Skills') {
+                            trackBadge.classList.add('soft-skills');
+                        } else if (activity.track === 'Hobby Track') {
+                            trackBadge.classList.add('hobby-track');
+                        } else if (activity.track === 'Все треки') {
+                            trackBadge.classList.add('all-tracks');
+                        }
+                        trackBadge.textContent = activity.track;
+                        mobileActivity.appendChild(trackBadge);
+                    }
+
+                    // Add click event to open modal
+                    mobileActivity.addEventListener('click', () => {
+                        openActivityModal(activity);
+                    });
+
+                    activitiesContainer.appendChild(mobileActivity);
                 });
+            }
 
-                activitiesContainer.appendChild(mobileActivity);
-            });
+            timeBlock.appendChild(activitiesContainer);
+            mobileTimeline.appendChild(timeBlock);
         }
-
-        timeBlock.appendChild(activitiesContainer);
-        mobileTimeline.appendChild(timeBlock);
     }
 
     tracksContainer.appendChild(mobileTimeline);
