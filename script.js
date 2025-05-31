@@ -97,8 +97,8 @@ function createDayTabs(days) {
 // Get weekday name in Russian
 function getWeekdayName(date) {
     const weekdayNames = [
-        'воскресенье', 'понедельник', 'вторник', 'среда', 
-        'четверг', 'пятница', 'суббота'
+        'вс', 'пн', 'вт', 'ср', 
+        'чт', 'пт', 'сб'
     ];
     return weekdayNames[date.getDay()];
 }
