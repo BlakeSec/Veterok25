@@ -82,21 +82,33 @@ h1, h2, h3, h4, h5, h6 {
 header {
     background-color: var(--color-white);
     color: var(--color-text);
-    padding: 24px 0;
+    padding: 16px 0;
     box-shadow: 0 1px 3px var(--color-shadow);
     margin-bottom: 24px;
 }
 
-.site-title {
-    font-size: 2rem;
-    margin-bottom: 0.2em;
-    color: var(--color-text);
-    font-weight: 700;
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.site-description {
-    font-size: 1.1rem;
-    color: var(--color-text-secondary);
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-logo {
+    height: 50px;
+    width: auto;
+}
+
+.site-title {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    color: var(--color-text);
+    font-weight: 600;
 }
 
 /* Controls */
@@ -140,7 +152,9 @@ header {
 
 /* Toggle switch for favorites */
 .favorites-toggle {
-    margin: 12px 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
 }
 
 .toggle {
@@ -563,12 +577,27 @@ footer {
         --hour-height: 80px;
     }
 
-    .site-title {
-        font-size: 1.6rem;
+    .header-content {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
     }
 
-    .site-description {
-        font-size: 1rem;
+    .header-left {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .header-logo {
+        height: 38px;
+    }
+
+    .site-title {
+        font-size: 1.2rem;
+    }
+
+    .favorites-toggle {
+        margin-top: 5px;
     }
 
     .controls {
