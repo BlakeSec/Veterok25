@@ -355,7 +355,13 @@ input:checked + .toggle-slider:before {
 
 .activity-card.favorite {
     border: 2px solid var(--color-accent-yellow);
-    box-shadow: 0 2px 8px rgba(252, 196, 25, 0.2);
+    box-shadow: 0 3px 10px rgba(252, 196, 25, 0.3);
+    background-color: rgba(252, 196, 25, 0.05);
+}
+
+.activity-card.favorite .activity-title {
+    font-weight: 700;
+    color: var(--color-text);
 }
 
 .activity-card.all-tracks {
@@ -639,7 +645,7 @@ footer {
         position: relative;
         left: 0;
         right: 0;
-        margin: 8px 0;
+        margin: 6px 0;
     }
 
     .activity-card.all-tracks {
@@ -656,7 +662,7 @@ footer {
     .mobile-timeline {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
         padding: 16px;
         background-color: var(--color-white);
         border-radius: var(--border-radius);
@@ -664,13 +670,13 @@ footer {
     }
 
     .time-block {
-        margin-bottom: 24px;
+        margin-bottom: 18px;
     }
 
     .time-label {
         font-weight: 600;
-        font-size: 1rem;
-        margin-bottom: 12px;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
         padding-bottom: 8px;
         border-bottom: 1px solid var(--color-medium-gray);
         color: var(--color-text);
@@ -679,7 +685,7 @@ footer {
     .mobile-activities {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
     }
 
     .mobile-activity {
@@ -690,7 +696,7 @@ footer {
         box-shadow: 0 2px 6px var(--color-shadow);
         border-left: 3px solid var(--color-medium-gray);
         transition: all 0.2s ease;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         border: 1px solid var(--color-card-border);
     }
 
@@ -701,9 +707,15 @@ footer {
     }
 
     .mobile-activity.favorite {
-        border: 1px solid var(--color-accent-yellow);
-        border-left: 3px solid var(--color-accent-yellow);
-        box-shadow: 0 2px 8px rgba(252, 196, 25, 0.2);
+        border: 2px solid var(--color-accent-yellow);
+        border-left: 5px solid var(--color-accent-yellow);
+        box-shadow: 0 3px 10px rgba(252, 196, 25, 0.3);
+        background-color: rgba(252, 196, 25, 0.05);
+    }
+
+    .mobile-activity.favorite .activity-title {
+        font-weight: 700;
+        color: var(--color-text);
     }
 
     .mobile-activity.geek-track {
@@ -767,7 +779,7 @@ footer {
 
     /* Consistent font sizing for all activity titles on mobile */
     .mobile-activity .activity-title {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
         line-height: 1.4;
     }
