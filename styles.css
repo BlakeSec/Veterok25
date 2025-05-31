@@ -726,11 +726,14 @@ footer {
         color: var(--color-text-secondary);
     }
 
-    /* Adaptive font sizing for short activities on mobile */
-    .mobile-activity.short-activity .activity-title {
-        font-size: 0.85rem;
+    /* Consistent font sizing for all activity titles on mobile */
+    .mobile-activity .activity-title {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.4;
     }
 
+    /* Adaptive font sizing for short activities on mobile (only for time and badge) */
     .mobile-activity.short-activity .activity-time {
         font-size: 0.75rem;
     }
