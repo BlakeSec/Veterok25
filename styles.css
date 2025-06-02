@@ -380,6 +380,7 @@ input:checked + .toggle-slider:before {
 /* Adaptive font sizing for short activities */
 .activity-card.short-activity .activity-title {
     font-size: 0.85rem;
+    line-height: 1.3; /* Slightly reduced line height for better fit */
 }
 
 .activity-card.short-activity .activity-time {
@@ -389,6 +390,18 @@ input:checked + .toggle-slider:before {
 .activity-card.short-activity .track-badge {
     font-size: 0.55rem;
     padding: 1px 4px;
+}
+
+/* Fix for short activities with two-line titles */
+.activity-card.short-activity {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* Specific fix for soft-skills short activities that tend to have longer titles */
+.activity-card.short-activity.soft-skills {
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .activity-card:hover {
@@ -493,6 +506,12 @@ input:checked + .toggle-slider:before {
     margin-top: auto;
     gap: 8px;
     padding: 4px 0 8px;
+}
+
+/* Reduced top margin for meta container in short activities */
+.activity-card.short-activity .activity-meta-container {
+    margin-top: 2px;
+    padding-bottom: 4px;
 }
 
 /* Wrapper for meta container in merged cards to add horizontal padding */
