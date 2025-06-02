@@ -646,6 +646,33 @@ input:checked + .toggle-slider:before {
     color: var(--color-text-secondary);
 }
 
+/* Author styles */
+.activity-author {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.activity-author a {
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.activity-author a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+}
+
+/* Author in merged activity description */
+.merged-activity-description .activity-author {
+    margin-bottom: 8px;
+    margin-top: -4px;
+}
+
 .modal-body {
     margin-bottom: 24px;
     color: var(--color-text);

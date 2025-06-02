@@ -828,6 +828,37 @@ function openActivityModal(activity) {
 
     modalTitle.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
     modalTime.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
+
+    // Add author information if available
+    if (activity.author) {
+        // Create author element if it doesn't exist
+        let modalAuthor = document.getElementById('modalAuthor');
+        if (!modalAuthor) {
+            modalAuthor = document.createElement('span');
+            modalAuthor.id = 'modalAuthor';
+            modalAuthor.className = 'activity-author';
+
+            // Insert after modalTitle
+            modalTitle.parentNode.insertBefore(modalAuthor, modalTitle.nextSibling);
+        }
+
+        // Set author content - as link if authorUrl exists, otherwise as text
+        if (activity.authorUrl && activity.authorUrl !== "") {
+            modalAuthor.innerHTML = `<a href="${activity.authorUrl}" target="_blank" rel="noopener noreferrer">${activity.author}</a>`;
+        } else {
+            modalAuthor.textContent = activity.author;
+        }
+
+        // Make sure it's visible
+        modalAuthor.style.display = 'block';
+    } else {
+        // Hide author element if it exists
+        const modalAuthor = document.getElementById('modalAuthor');
+        if (modalAuthor) {
+            modalAuthor.style.display = 'none';
+        }
+    }
+
     modalTrack.textContent = activity.track;
 
     // Add track-specific class to the track badge
@@ -908,6 +939,16 @@ function openMergedActivityModal(activity1, activity2) {
     // Set single time range
     modalTime.textContent = `${startTimeString} - ${endTimeString}`;
 
+    // Handle author information
+    // Hide any existing author element first
+    const existingModalAuthor = document.getElementById('modalAuthor');
+    if (existingModalAuthor) {
+        existingModalAuthor.style.display = 'none';
+    }
+
+    // We don't show author in the meta section for merged activities
+    // Authors will be shown in each activity's description section
+
     // Set track (should be the same for both activities)
     modalTrack.textContent = activity1.track;
 
@@ -982,8 +1023,19 @@ function openMergedActivityModal(activity1, activity2) {
     let combinedDescription = '';
 
     if (activity1.description) {
+        // Create author HTML for activity1 if available
+        let authorHtml1 = '';
+        if (activity1.author) {
+            if (activity1.authorUrl && activity1.authorUrl !== "") {
+                authorHtml1 = `<div class="activity-author"><a href="${activity1.authorUrl}" target="_blank" rel="noopener noreferrer">${activity1.author}</a></div>`;
+            } else {
+                authorHtml1 = `<div class="activity-author">${activity1.author}</div>`;
+            }
+        }
+
         combinedDescription += `<div class="merged-activity-description">
             <h4>1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}</h4>
+            ${authorHtml1}
             <p>${activity1.description}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
@@ -994,8 +1046,19 @@ function openMergedActivityModal(activity1, activity2) {
             combinedDescription += '<hr class="merged-description-separator">';
         }
 
+        // Create author HTML for activity2 if available
+        let authorHtml2 = '';
+        if (activity2.author) {
+            if (activity2.authorUrl && activity2.authorUrl !== "") {
+                authorHtml2 = `<div class="activity-author"><a href="${activity2.authorUrl}" target="_blank" rel="noopener noreferrer">${activity2.author}</a></div>`;
+            } else {
+                authorHtml2 = `<div class="activity-author">${activity2.author}</div>`;
+            }
+        }
+
         combinedDescription += `<div class="merged-activity-description">
             <h4>2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}</h4>
+            ${authorHtml2}
             <p>${activity2.description}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
