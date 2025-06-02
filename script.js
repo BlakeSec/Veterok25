@@ -297,7 +297,12 @@ function displayDaySchedule() {
     // Create time column
     const timeColumn = document.querySelector('.time-column');
     timeColumn.innerHTML = '';
-    timeColumn.style.display = 'block'; // Show time column for day schedule
+
+    // Check if we're on mobile
+    const isMobile = window.innerWidth <= 768;
+
+    // Only show time column on desktop
+    timeColumn.style.display = isMobile ? 'none' : 'block';
 
     // Create time markers
     for (let time = timeRange.start; time <= timeRange.end; time += 60) {
@@ -363,9 +368,7 @@ function displayDaySchedule() {
         timeColumn.appendChild(timeMarker);
     }
 
-    // Check if we're on mobile
-    const isMobile = window.innerWidth <= 768;
-
+    // We already checked if we're on mobile above
     if (isMobile) {
         displayMobileSchedule(activities, timeRange);
     } else {
