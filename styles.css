@@ -125,7 +125,7 @@ header {
     display: flex;
     overflow-x: auto;
     gap: 12px;
-    padding-bottom: 12px;
+    padding-bottom: 0;
 }
 
 .day-tab {
@@ -679,6 +679,18 @@ input:checked + .toggle-slider:before {
     line-height: 1.5;
 }
 
+.modal-body a {
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 500;
+}
+
+.modal-body a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+}
+
 .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -714,6 +726,76 @@ input:checked + .toggle-slider:before {
     font-size: 1.1rem;
 }
 
+/* List views for stations and quests */
+.list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    width: 100%;
+}
+
+.list-item {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-card-border);
+    padding: 16px;
+    box-shadow: 0 2px 6px var(--color-shadow);
+    transition: all 0.2s ease;
+    cursor: default;
+    pointer-events: none;
+}
+
+.list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--color-shadow-hover);
+    background-color: var(--color-light-gray);
+}
+
+.list-item-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+    color: var(--color-text);
+}
+
+.list-item-author {
+    display: block;
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.list-item-author:hover {
+    text-decoration: underline;
+}
+
+.list-item-description {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.list-item-description a {
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 500;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.list-item-description a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+}
+
 /* Footer */
 footer {
     background-color: var(--color-white);
@@ -728,6 +810,24 @@ footer {
 @media (max-width: 768px) {
     :root {
         --hour-height: 80px;
+    }
+
+    /* Mobile styles for list views */
+    .list-container {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .list-item {
+        padding: 12px;
+    }
+
+    .list-item-title {
+        font-size: 1.1rem;
+    }
+
+    .list-item-description {
+        font-size: 0.9rem;
     }
 
     .header-content {
@@ -761,7 +861,7 @@ footer {
 
     .day-tabs {
         width: 100%;
-        margin-bottom: 8px; /* Reduced from 16px to 8px */
+        margin-bottom: 0; /* Removed bottom margin */
         flex-wrap: wrap;
         gap: 6px; /* Reduced from 8px to 6px */
     }

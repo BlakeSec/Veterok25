@@ -1,8 +1,31 @@
 // Global variables
 let scheduleData = [];
 let mealsData = [];
+let stationsData = [];
+let questsData = [];
 let currentDay = '';
+let currentTab = 'days'; // 'days', 'stations', or 'quests'
 let favorites = [];
+
+// Function to convert URLs in text to clickable links
+function linkifyText(text) {
+    if (!text) return '';
+
+    // Regular expression to match URLs
+    // Matches http://, https://, www., and common domains without protocol like t.me
+    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|(t\.me\/[^\s]+)/gi;
+
+    return text.replace(urlRegex, function(url) {
+        // Determine if we need to add https:// prefix
+        let href = url;
+        if (url.indexOf('http') !== 0) {
+            href = 'https://' + url;
+        }
+
+        // Create the link with target="_blank" and rel="noopener noreferrer"
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+}
 
 // Helper function for debouncing
 function debounce(func, wait) {
@@ -47,6 +70,22 @@ function setupEventListeners() {
     window.addEventListener('resize', debounce(() => {
         displaySchedule();
     }, 250));
+
+    // Handle browser back/forward navigation
+    window.addEventListener('popstate', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+
+        if (tabParam === 'stations') {
+            selectTab('stations');
+        } else if (tabParam === 'quests') {
+            selectTab('quests');
+        } else {
+            // Get days from schedule
+            const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
+            setDefaultDay(days);
+        }
+    });
 }
 
 // Load schedule data from JSON file
@@ -56,15 +95,17 @@ async function loadSchedule() {
         const data = await response.json();
         scheduleData = data.activities;
         mealsData = data.meals || [];
+        stationsData = data.stations || [];
+        questsData = data.quests || [];
 
         // Get unique days from schedule
         const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
 
-        // Create day tabs
-        createDayTabs(days);
+        // Create tabs (days, stations, quests)
+        createTabs(days);
 
-        // Set default day (today or first day)
-        setDefaultDay(days);
+        // Check URL parameters for tab selection
+        checkUrlParams(days);
 
     } catch (error) {
         console.error('Error loading schedule:', error);
@@ -72,11 +113,27 @@ async function loadSchedule() {
     }
 }
 
-// Create tabs for each day
-function createDayTabs(days) {
+// Check URL parameters for tab selection
+function checkUrlParams(days) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+
+    if (tabParam === 'stations') {
+        selectTab('stations');
+    } else if (tabParam === 'quests') {
+        selectTab('quests');
+    } else {
+        // Default to days tab
+        setDefaultDay(days);
+    }
+}
+
+// Create all tabs (days, stations, quests)
+function createTabs(days) {
     const dayTabsContainer = document.getElementById('dayTabs');
     dayTabsContainer.innerHTML = '';
 
+    // Create day tabs
     days.forEach(day => {
         const date = new Date(day);
         const weekdayName = getWeekdayName(date);
@@ -84,6 +141,7 @@ function createDayTabs(days) {
         const tab = document.createElement('div');
         tab.className = 'day-tab';
         tab.dataset.date = day;
+        tab.dataset.tab = 'days';
         tab.textContent = `${formatDate(day)} (${weekdayName})`;
 
         tab.addEventListener('click', () => {
@@ -92,6 +150,30 @@ function createDayTabs(days) {
 
         dayTabsContainer.appendChild(tab);
     });
+
+    // Create stations tab
+    const stationsTab = document.createElement('div');
+    stationsTab.className = 'day-tab';
+    stationsTab.dataset.tab = 'stations';
+    stationsTab.textContent = 'Станции';
+
+    stationsTab.addEventListener('click', () => {
+        selectTab('stations');
+    });
+
+    dayTabsContainer.appendChild(stationsTab);
+
+    // Create quests tab
+    const questsTab = document.createElement('div');
+    questsTab.className = 'day-tab';
+    questsTab.dataset.tab = 'quests';
+    questsTab.textContent = 'Квесты';
+
+    questsTab.addEventListener('click', () => {
+        selectTab('quests');
+    });
+
+    dayTabsContainer.appendChild(questsTab);
 }
 
 // Get weekday name in Russian
@@ -128,18 +210,71 @@ function setDefaultDay(days) {
 // Select a day and display its schedule
 function selectDay(day) {
     currentDay = day;
+    currentTab = 'days';
+
+    // Update URL with the selected day
+    const url = new URL(window.location);
+    url.searchParams.delete('tab');
+    history.pushState({}, '', url);
 
     // Update active tab
     document.querySelectorAll('.day-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.date === day);
+        if (tab.dataset.tab === 'days') {
+            tab.classList.toggle('active', tab.dataset.date === day);
+        } else {
+            tab.classList.remove('active');
+        }
     });
+
+    // Show favorites toggle
+    document.querySelector('.favorites-toggle').style.display = 'flex';
 
     // Display schedule for selected day
     displaySchedule();
 }
 
-// Display schedule for current day
+// Select a tab (stations or quests) and display its content
+function selectTab(tab) {
+    currentTab = tab;
+
+    // Update URL with the selected tab
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tab);
+    history.pushState({}, '', url);
+
+    // Update active tab
+    document.querySelectorAll('.day-tab').forEach(dayTab => {
+        if (dayTab.dataset.tab === tab) {
+            dayTab.classList.add('active');
+        } else {
+            dayTab.classList.remove('active');
+        }
+    });
+
+    // Hide favorites toggle (not applicable for stations/quests)
+    document.querySelector('.favorites-toggle').style.display = 'none';
+
+    // Display content for selected tab
+    if (tab === 'stations') {
+        displayStations();
+    } else if (tab === 'quests') {
+        displayQuests();
+    }
+}
+
+// Display content based on current tab
 function displaySchedule() {
+    if (currentTab === 'days') {
+        displayDaySchedule();
+    } else if (currentTab === 'stations') {
+        displayStations();
+    } else if (currentTab === 'quests') {
+        displayQuests();
+    }
+}
+
+// Display schedule for current day
+function displayDaySchedule() {
     // Filter activities for current day
     let activities = scheduleData.filter(activity => activity.date === currentDay);
 
@@ -162,6 +297,7 @@ function displaySchedule() {
     // Create time column
     const timeColumn = document.querySelector('.time-column');
     timeColumn.innerHTML = '';
+    timeColumn.style.display = 'block'; // Show time column for day schedule
 
     // Create time markers
     for (let time = timeRange.start; time <= timeRange.end; time += 60) {
@@ -235,6 +371,83 @@ function displaySchedule() {
     } else {
         displayDesktopSchedule(activities, timeRange);
     }
+}
+
+// Display stations list
+function displayStations() {
+    // Clear previous content
+    const tracksContainer = document.getElementById('tracksContainer');
+    tracksContainer.innerHTML = '';
+
+    // Hide time column
+    const timeColumn = document.querySelector('.time-column');
+    timeColumn.style.display = 'none';
+
+    // Create stations list container
+    const stationsContainer = document.createElement('div');
+    stationsContainer.className = 'list-container';
+
+    // Add stations to the list
+    stationsData.forEach(station => {
+        const stationItem = document.createElement('div');
+        stationItem.className = 'list-item station-item';
+
+        const title = document.createElement('h3');
+        title.className = 'list-item-title';
+        title.textContent = station.title;
+
+        const description = document.createElement('p');
+        description.className = 'list-item-description';
+        description.innerHTML = linkifyText(station.description);
+
+        stationItem.appendChild(title);
+        stationItem.appendChild(description);
+        stationsContainer.appendChild(stationItem);
+    });
+
+    tracksContainer.appendChild(stationsContainer);
+}
+
+// Display quests list
+function displayQuests() {
+    // Clear previous content
+    const tracksContainer = document.getElementById('tracksContainer');
+    tracksContainer.innerHTML = '';
+
+    // Hide time column
+    const timeColumn = document.querySelector('.time-column');
+    timeColumn.style.display = 'none';
+
+    // Create quests list container
+    const questsContainer = document.createElement('div');
+    questsContainer.className = 'list-container';
+
+    // Add quests to the list
+    questsData.forEach(quest => {
+        const questItem = document.createElement('div');
+        questItem.className = 'list-item quest-item';
+
+        const title = document.createElement('h3');
+        title.className = 'list-item-title';
+        title.textContent = quest.title;
+
+        const author = document.createElement('a');
+        author.className = 'list-item-author';
+        author.href = quest.authorUrl;
+        author.target = '_blank';
+        author.textContent = quest.author;
+
+        const description = document.createElement('p');
+        description.className = 'list-item-description';
+        description.innerHTML = linkifyText(quest.description);
+
+        questItem.appendChild(title);
+        questItem.appendChild(author);
+        questItem.appendChild(description);
+        questsContainer.appendChild(questItem);
+    });
+
+    tracksContainer.appendChild(questsContainer);
 }
 
 // Display schedule in desktop view (columns for tracks)
@@ -875,7 +1088,7 @@ function openActivityModal(activity) {
         modalTrack.classList.add('all-tracks');
     }
 
-    modalDescription.textContent = activity.description;
+    modalDescription.innerHTML = linkifyText(activity.description);
 
     const activityId = getActivityId(activity);
     const isFavorite = favorites.includes(activityId);
@@ -1036,7 +1249,7 @@ function openMergedActivityModal(activity1, activity2) {
         combinedDescription += `<div class="merged-activity-description">
             <h4>1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}</h4>
             ${authorHtml1}
-            <p>${activity1.description}</p>
+            <p>${linkifyText(activity1.description)}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
     }
@@ -1059,7 +1272,7 @@ function openMergedActivityModal(activity1, activity2) {
         combinedDescription += `<div class="merged-activity-description">
             <h4>2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}</h4>
             ${authorHtml2}
-            <p>${activity2.description}</p>
+            <p>${linkifyText(activity2.description)}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
     }
