@@ -516,8 +516,8 @@ function displayDesktopSchedule(activities, timeRange) {
                 const start2 = timeToMinutes(activity2.timeStart);
                 const end2 = timeToMinutes(activity2.timeEnd);
 
-                // Check if activities overlap in time
-                if (start1 < end2 && start2 < end1) {
+                // Only merge activities if they have exactly the same start and end times
+                if (start1 === start2 && end1 === end2) {
                     // Create a key for this pair of overlapping activities
                     const overlapKey = `${key}_${activity1.timeStart}_${activity1.timeEnd}_${activity2.timeStart}_${activity2.timeEnd}`;
                     groupedActivities[overlapKey] = [activity1, activity2];
@@ -594,8 +594,8 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     const card = document.createElement('div');
     card.className = 'activity-card';
     card.style.top = `${top}px`;
+    card.style.height = `${height}px`; // Set fixed height proportional to duration
     card.style.minHeight = `${height}px`;
-    card.style.height = 'auto'; // Allow dynamic height based on content
 
     // Add class for short activities (1 hour or less)
     if (duration <= 60) {
@@ -653,26 +653,33 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     const metaContainer = document.createElement('div');
     metaContainer.className = 'activity-meta-container';
 
-    // Add time to the container
-    metaContainer.appendChild(time);
+    // Check if we should hide time and track for activities less than an hour on desktop
+    const isMobile = window.innerWidth <= 768;
+    const isLessThanHour = duration < 60;
+    const shouldHideMetaInfo = !isMobile && isLessThanHour;
 
-    // Only add track badge for regular activities (not general events)
-    if (!activity.type || activity.type !== 'general') {
-        const trackBadge = document.createElement('div');
-        trackBadge.className = 'track-badge';
-        if (activity.track === '🧠 Geek Zone') {
-            trackBadge.classList.add('geek-track');
-        } else if (activity.track === '🏃‍♂️ Active Arena') {
-            trackBadge.classList.add('active-track');
-        } else if (activity.track === '💬 Soft Skills Hub') {
-            trackBadge.classList.add('soft-skills');
-        } else if (activity.track === '🌿 Hobby Grove') {
-            trackBadge.classList.add('hobby-track');
-        } else if (activity.track === 'Все треки') {
-            trackBadge.classList.add('all-tracks');
+    if (!shouldHideMetaInfo) {
+        // Add time to the container
+        metaContainer.appendChild(time);
+
+        // Only add track badge for regular activities (not general events)
+        if (!activity.type || activity.type !== 'general') {
+            const trackBadge = document.createElement('div');
+            trackBadge.className = 'track-badge';
+            if (activity.track === '🧠 Geek Zone') {
+                trackBadge.classList.add('geek-track');
+            } else if (activity.track === '🏃‍♂️ Active Arena') {
+                trackBadge.classList.add('active-track');
+            } else if (activity.track === '💬 Soft Skills Hub') {
+                trackBadge.classList.add('soft-skills');
+            } else if (activity.track === '🌿 Hobby Grove') {
+                trackBadge.classList.add('hobby-track');
+            } else if (activity.track === 'Все треки') {
+                trackBadge.classList.add('all-tracks');
+            }
+            trackBadge.textContent = activity.track;
+            metaContainer.appendChild(trackBadge);
         }
-        trackBadge.textContent = activity.track;
-        metaContainer.appendChild(trackBadge);
     }
 
     // Add the container to the card
@@ -747,8 +754,8 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
     const card = document.createElement('div');
     card.className = 'activity-card merged-activity-card';
     card.style.top = `${top}px`;
+    card.style.height = `${height}px`; // Set fixed height proportional to duration
     card.style.minHeight = `${height}px`;
-    card.style.height = 'auto'; // Allow dynamic height based on content
 
     // Add track-specific class
     if (activity1.track === '🧠 Geek Zone') {
@@ -815,10 +822,19 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
     trackBadge.textContent = activity1.track;
     metaContainer.appendChild(trackBadge);
 
+    // Check if we should hide time and track for activities less than an hour on desktop
+    const isMobile = window.innerWidth <= 768;
+    const isLessThanHour = duration < 60;
+    const shouldHideMetaInfo = !isMobile && isLessThanHour;
+
     // Create a wrapper for meta container to add horizontal padding
     const metaWrapper = document.createElement('div');
     metaWrapper.className = 'merged-activity-meta-wrapper';
-    metaWrapper.appendChild(metaContainer);
+
+    // Only add meta container if we shouldn't hide it
+    if (!shouldHideMetaInfo) {
+        metaWrapper.appendChild(metaContainer);
+    }
 
     // Add all elements to the card
     card.appendChild(activity1Container);
