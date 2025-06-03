@@ -7,7 +7,7 @@ let currentDay = '';
 let currentTab = 'days'; // 'days', 'stations', or 'quests'
 let favorites = [];
 
-// Function to convert URLs in text to clickable links
+// Function to convert URLs in text to clickable links and handle newlines
 function linkifyText(text) {
     if (!text) return '';
 
@@ -15,7 +15,11 @@ function linkifyText(text) {
     // Matches http://, https://, www., and common domains without protocol like t.me
     const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|(t\.me\/[^\s]+)/gi;
 
-    return text.replace(urlRegex, function(url) {
+    // First replace newlines with <br> tags
+    let processedText = text.replace(/\n/g, '<br>');
+
+    // Then process URLs
+    return processedText.replace(urlRegex, function(url) {
         // Determine if we need to add https:// prefix
         let href = url;
         if (url.indexOf('http') !== 0) {
