@@ -469,7 +469,6 @@ input:checked + .toggle-slider:before {
 /* Time display for general events */
 .activity-card.general-event .activity-time {
     font-size: 0.85rem;
-    margin-top: 5px;
 }
 
 /* Center only title for mobile general events, time stays left-aligned */
@@ -531,7 +530,9 @@ input:checked + .toggle-slider:before {
 /* Center time in general events by overriding justify-content */
 .activity-card.general-event .activity-meta-container {
     justify-content: center;
+    align-items: center; /* Ensure vertical alignment */
     margin-top: 5px; /* Override margin-top: auto to allow true vertical centering */
+    flex-wrap: nowrap; /* Prevent wrapping */
 }
 
 .activity-description {
@@ -641,9 +642,53 @@ input:checked + .toggle-slider:before {
 
 .modal-meta {
     display: flex;
-    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 12px;
     color: var(--color-text-secondary);
+}
+
+/* Location modal styles */
+.location-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.location-photo-container {
+    width: 100%;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.location-photo-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Location link styles */
+.location-container {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    font-size: 0.8rem; /* Smaller font size */
+}
+
+.location-emoji {
+    text-decoration: none;
+    margin-right: 2px;
+}
+
+.location-link {
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+/* Location link in activity meta container */
+.activity-meta-container .location-container {
+    margin-right: 0;
 }
 
 /* Author styles */
@@ -677,6 +722,22 @@ input:checked + .toggle-slider:before {
     margin-bottom: 24px;
     color: var(--color-text);
     line-height: 1.5;
+}
+
+.time-location-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-location {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.modal-location .location-container {
+    cursor: pointer;
 }
 
 .modal-body a {
@@ -745,7 +806,6 @@ input:checked + .toggle-slider:before {
     box-shadow: 0 2px 6px var(--color-shadow);
     transition: all 0.2s ease;
     cursor: default;
-    pointer-events: none;
 }
 
 .list-item:hover {
@@ -796,6 +856,16 @@ input:checked + .toggle-slider:before {
     text-decoration: underline;
 }
 
+/* Station location link styles */
+.list-item-location {
+    margin: 8px 0 12px;
+}
+
+.list-item-location .location-container {
+    display: inline-flex;
+    font-size: 0.9rem;
+}
+
 /* Footer */
 footer {
     background-color: var(--color-white);
@@ -828,6 +898,44 @@ footer {
 
     .list-item-description {
         font-size: 0.9rem;
+    }
+
+    /* Mobile styles for location links */
+    .mobile-activity .activity-meta-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Create a left group for time and location */
+    .mobile-activity .activity-meta-container::before {
+        content: "";
+        display: flex;
+        flex: 1;
+        order: 1;
+    }
+
+    .mobile-activity .activity-meta-container .activity-time {
+        order: 0;
+        margin-right: 4px;
+    }
+
+    .mobile-activity .activity-meta-container .location-container {
+        order: 0;
+    }
+
+    .mobile-activity .activity-meta-container .track-badge {
+        order: 2;
+        margin-left: auto;
+    }
+
+    /* Location modal adjustments for mobile */
+    .location-content {
+        flex-direction: column;
+    }
+
+    .location-photo-container {
+        margin-top: 12px;
     }
 
     .header-content {
@@ -1070,7 +1178,9 @@ footer {
     /* Center time in general events on mobile */
     .mobile-activity.general-event .activity-meta-container {
         justify-content: center;
+        align-items: center; /* Ensure vertical alignment */
         margin-top: 5px; /* Override margin-top to allow true vertical centering */
+        flex-wrap: nowrap; /* Prevent wrapping */
     }
 
     /* Adaptive font sizing for short activities on mobile (only for time and badge) */

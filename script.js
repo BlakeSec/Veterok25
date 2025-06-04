@@ -3,6 +3,7 @@ let scheduleData = [];
 let mealsData = [];
 let stationsData = [];
 let questsData = [];
+let placesData = []; // Added for location info
 let currentDay = '';
 let currentTab = 'days'; // 'days', 'stations', or 'quests'
 let favorites = [];
@@ -56,8 +57,11 @@ function setupEventListeners() {
     // Favorites toggle
     document.getElementById('favoritesToggle').addEventListener('change', displaySchedule);
 
-    // Close modal
-    document.querySelector('.close-modal').addEventListener('click', closeModal);
+    // Close activity modal
+    document.querySelector('#activityModal .close-modal').addEventListener('click', closeModal);
+
+    // Close location modal
+    document.querySelector('#locationModal .close-modal').addEventListener('click', closeLocationModal);
 
     // Toggle favorite
     document.getElementById('toggleFavorite').addEventListener('click', () => {
@@ -65,9 +69,10 @@ function setupEventListeners() {
         if (activityId) toggleFavorite(activityId);
     });
 
-    // Window click to close modal
+    // Window click to close modals
     window.addEventListener('click', (e) => {
         if (e.target === document.getElementById('activityModal')) closeModal();
+        if (e.target === document.getElementById('locationModal')) closeLocationModal();
     });
 
     // Resize handler with debounce
@@ -101,6 +106,7 @@ async function loadSchedule() {
         mealsData = data.meals || [];
         stationsData = data.stations || [];
         questsData = data.quests || [];
+        placesData = data.places || [];
 
         // Get unique days from schedule
         const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
@@ -403,11 +409,24 @@ function displayStations() {
         title.className = 'list-item-title';
         title.textContent = station.title;
 
+        stationItem.appendChild(title);
+
+        // Create container for location link if exists
+        if (station.placeId) {
+            const locationContainer = document.createElement('div');
+            locationContainer.className = 'list-item-location';
+
+            const locationLink = createLocationLink(station.placeId);
+            if (locationLink) {
+                locationContainer.appendChild(locationLink);
+                stationItem.appendChild(locationContainer);
+            }
+        }
+
         const description = document.createElement('p');
         description.className = 'list-item-description';
         description.innerHTML = linkifyText(station.description);
 
-        stationItem.appendChild(title);
         stationItem.appendChild(description);
         stationsContainer.appendChild(stationItem);
     });
@@ -582,6 +601,40 @@ function displayDesktopSchedule(activities, timeRange) {
     });
 }
 
+// Create a location link element
+function createLocationLink(placeId) {
+    if (!placeId) return null;
+
+    const place = getPlaceById(placeId);
+    if (!place) return null;
+
+    const locationContainer = document.createElement('span');
+    locationContainer.className = 'location-container';
+
+    // Create emoji element (not underlined)
+    const emojiSpan = document.createElement('span');
+    emojiSpan.className = 'location-emoji';
+    emojiSpan.textContent = '📍';
+
+    // Create the actual link (underlined)
+    const locationLink = document.createElement('span');
+    locationLink.className = 'location-link';
+    locationLink.textContent = place.title;
+    locationLink.style.color = place.color || '#000';
+
+    // Add click event to the container
+    locationContainer.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent activity card click
+        openLocationModal(placeId);
+    });
+
+    // Append both elements to the container
+    locationContainer.appendChild(emojiSpan);
+    locationContainer.appendChild(locationLink);
+
+    return locationContainer;
+}
+
 // Create a regular activity card
 function createActivityCard(activity, timeRange, tracksContainer) {
     const startMinutes = timeToMinutes(activity.timeStart);
@@ -662,8 +715,16 @@ function createActivityCard(activity, timeRange, tracksContainer) {
         // Add time to the container
         metaContainer.appendChild(time);
 
-        // Only add track badge for regular activities (not general events)
-        if (!activity.type || activity.type !== 'general') {
+        // Add location link if placeId exists
+        if (activity.placeId) {
+            const locationLink = createLocationLink(activity.placeId);
+            if (locationLink) {
+                metaContainer.appendChild(locationLink);
+            }
+        }
+
+        // Only add track badge for regular activities (not general events) on mobile
+        if (isMobile && (!activity.type || activity.type !== 'general')) {
             const trackBadge = document.createElement('div');
             trackBadge.className = 'track-badge';
             if (activity.track === '🧠 Geek Zone') {
@@ -1014,6 +1075,14 @@ function displayMobileSchedule(activities, timeRange) {
                     // Add time to the container
                     metaContainer.appendChild(time);
 
+                    // Add location link if placeId exists
+                    if (activity.placeId) {
+                        const locationLink = createLocationLink(activity.placeId);
+                        if (locationLink) {
+                            metaContainer.appendChild(locationLink);
+                        }
+                    }
+
                     // Only add track badge for regular activities (not general events)
                     if (!activity.type || activity.type !== 'general') {
                         const trackBadge = document.createElement('div');
@@ -1094,6 +1163,31 @@ function openActivityModal(activity) {
             modalAuthor.style.display = 'none';
         }
     }
+
+    // Create a container for time and location
+    const timeLocationContainer = document.createElement('div');
+    timeLocationContainer.className = 'time-location-container';
+
+    // Move modalTime into the container
+    const modalMeta = document.querySelector('.modal-meta');
+    modalMeta.innerHTML = ''; // Clear the modal-meta
+    timeLocationContainer.appendChild(modalTime);
+
+    // Add location information if available
+    if (activity.placeId) {
+        const locationLink = createLocationLink(activity.placeId);
+        if (locationLink) {
+            const modalLocation = document.createElement('div');
+            modalLocation.id = 'modalLocation';
+            modalLocation.className = 'modal-location';
+            modalLocation.appendChild(locationLink);
+            timeLocationContainer.appendChild(modalLocation);
+        }
+    }
+
+    // Add the time-location container and track badge to the modal-meta
+    modalMeta.appendChild(timeLocationContainer);
+    modalMeta.appendChild(modalTrack);
 
     modalTrack.textContent = activity.track;
 
@@ -1182,6 +1276,63 @@ function openMergedActivityModal(activity1, activity2) {
         existingModalAuthor.style.display = 'none';
     }
 
+    // Create a container for time and location
+    const timeLocationContainer = document.createElement('div');
+    timeLocationContainer.className = 'time-location-container';
+
+    // Move modalTime into the container
+    const modalMeta = document.querySelector('.modal-meta');
+    modalMeta.innerHTML = ''; // Clear the modal-meta
+    timeLocationContainer.appendChild(modalTime);
+
+    // Add location information if either activity has a placeId
+    if (activity1.placeId || activity2.placeId) {
+        const modalLocation = document.createElement('div');
+        modalLocation.id = 'modalLocation';
+        modalLocation.className = 'modal-location';
+
+        // Add location links for both activities if they have placeIds
+        if (activity1.placeId) {
+            const locationLink1 = createLocationLink(activity1.placeId);
+            if (locationLink1) {
+                // Add a label to indicate which activity this location belongs to
+                const label = document.createElement('span');
+                label.textContent = '1️⃣ ';
+                label.style.marginRight = '4px';
+
+                modalLocation.appendChild(label);
+                modalLocation.appendChild(locationLink1);
+
+                // Add a separator if both activities have placeIds
+                if (activity2.placeId) {
+                    const separator = document.createElement('span');
+                    separator.textContent = ' | ';
+                    separator.style.margin = '0 8px';
+                    modalLocation.appendChild(separator);
+                }
+            }
+        }
+
+        if (activity2.placeId) {
+            const locationLink2 = createLocationLink(activity2.placeId);
+            if (locationLink2) {
+                // Add a label to indicate which activity this location belongs to
+                const label = document.createElement('span');
+                label.textContent = '2️⃣ ';
+                label.style.marginRight = '4px';
+
+                modalLocation.appendChild(label);
+                modalLocation.appendChild(locationLink2);
+            }
+        }
+
+        timeLocationContainer.appendChild(modalLocation);
+    }
+
+    // Add the time-location container and track badge to the modal-meta
+    modalMeta.appendChild(timeLocationContainer);
+    modalMeta.appendChild(modalTrack);
+
     // We don't show author in the meta section for merged activities
     // Authors will be shown in each activity's description section
 
@@ -1269,9 +1420,13 @@ function openMergedActivityModal(activity1, activity2) {
             }
         }
 
+        // We no longer need location HTML here as it's now in the modal-meta section
+        let locationHtml1 = '';
+
         combinedDescription += `<div class="merged-activity-description">
             <h4>1️⃣ ${activity1.title}${favorites.includes(getActivityId(activity1)) ? ' ⭐️' : ''}</h4>
             ${authorHtml1}
+            ${locationHtml1}
             <p>${linkifyText(activity1.description)}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
@@ -1292,9 +1447,13 @@ function openMergedActivityModal(activity1, activity2) {
             }
         }
 
+        // We no longer need location HTML here as it's now in the modal-meta section
+        let locationHtml2 = '';
+
         combinedDescription += `<div class="merged-activity-description">
             <h4>2️⃣ ${activity2.title}${favorites.includes(getActivityId(activity2)) ? ' ⭐️' : ''}</h4>
             ${authorHtml2}
+            ${locationHtml2}
             <p>${linkifyText(activity2.description)}</p>
             <div class="activity-favorite-container"></div>
         </div>`;
@@ -1322,7 +1481,7 @@ function openMergedActivityModal(activity1, activity2) {
     document.body.style.overflow = 'hidden';
 }
 
-// Close modal
+// Close activity modal
 function closeModal() {
     document.getElementById('activityModal').style.display = 'none';
     document.body.style.overflow = '';
@@ -1343,6 +1502,45 @@ function closeModal() {
             if (activityId) toggleFavorite(activityId);
         });
     }
+}
+
+// Close location modal
+function closeLocationModal() {
+    document.getElementById('locationModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Get place by ID
+function getPlaceById(placeId) {
+    return placesData.find(place => place.id === placeId);
+}
+
+// Open location modal
+function openLocationModal(placeId) {
+    const place = getPlaceById(placeId);
+    if (!place) return;
+
+    const modal = document.getElementById('locationModal');
+    const modalTitle = document.getElementById('locationModalTitle');
+    const modalDescription = document.getElementById('locationModalDescription');
+    const modalPhoto = document.getElementById('locationModalPhoto');
+
+    modalTitle.textContent = "📍 " + place.title;
+    modalDescription.textContent = place.description || 'Нет описания';
+
+    // Set photo source
+    modalPhoto.src = `/photos/${placeId}.jpg`;
+
+    // Handle image loading error
+    modalPhoto.onerror = function() {
+        this.style.display = 'none';
+    };
+
+    // Reset image display if it was previously hidden
+    modalPhoto.style.display = 'block';
+
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
 // Convert time string (HH:MM) to minutes
