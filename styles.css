@@ -505,7 +505,7 @@ input:checked + .toggle-slider:before {
     align-items: center;
     margin-top: auto;
     gap: 8px;
-    padding: 4px 0 8px;
+    padding: 4px 0 4px;
 }
 
 /* Reduced top margin for meta container in short activities */
@@ -1064,7 +1064,7 @@ footer {
     .mobile-activity .activity-meta-container {
         gap: 8px;
         margin-top: 4px;
-        padding: 4px 0 8px;
+        padding: 4px 0 2px;
     }
 
     /* Center time in general events on mobile */
