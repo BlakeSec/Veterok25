@@ -508,9 +508,9 @@ input:checked + .toggle-slider:before {
     padding: 4px 0 4px;
 }
 
-/* Reduced top margin for meta container in short activities */
+/* Meta container for short activities should still be at the bottom */
 .activity-card.short-activity .activity-meta-container {
-    margin-top: 2px;
+    margin-top: auto;
     padding-bottom: 4px;
 }
 
