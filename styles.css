@@ -439,7 +439,7 @@ input:checked + .toggle-slider:before {
     margin-left: auto;
     margin-right: auto;
     padding: var(--card-padding); /* Add padding like regular cards */
-    z-index: 2;
+    z-index: 0;
     background-color: var(--color-white);
     background-image: linear-gradient(rgba(253, 126, 20, 0.03), rgba(253, 126, 20, 0.03)); /* Very slight orange tint */
     border: 1px solid var(--color-accent-orange);
