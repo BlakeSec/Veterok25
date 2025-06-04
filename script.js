@@ -706,10 +706,10 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     const metaContainer = document.createElement('div');
     metaContainer.className = 'activity-meta-container';
 
-    // We always show time and track for all activities on desktop
+    // Hide meta info for activities less than an hour on desktop
     const isMobile = window.innerWidth <= 768;
     const isLessThanHour = duration < 60;
-    const shouldHideMetaInfo = false; // Always show meta info
+    const shouldHideMetaInfo = !isMobile && isLessThanHour; // Hide meta info for short activities on desktop
 
     if (!shouldHideMetaInfo) {
         // Add time to the container
@@ -883,10 +883,10 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
     trackBadge.textContent = activity1.track;
     metaContainer.appendChild(trackBadge);
 
-    // We always show time and track for all activities on desktop
+    // Hide meta info for activities less than an hour on desktop
     const isMobile = window.innerWidth <= 768;
     const isLessThanHour = duration < 60;
-    const shouldHideMetaInfo = false; // Always show meta info
+    const shouldHideMetaInfo = !isMobile && isLessThanHour; // Hide meta info for short activities on desktop
 
     // Create a wrapper for meta container to add horizontal padding
     const metaWrapper = document.createElement('div');
