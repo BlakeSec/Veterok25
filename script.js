@@ -1529,7 +1529,7 @@ function openLocationModal(placeId) {
     modalDescription.textContent = place.description || 'Нет описания';
 
     // Set photo source
-    modalPhoto.src = `/photos/${placeId}.jpg`;
+    modalPhoto.src = `photos/${placeId}.jpg`;
 
     // Handle image loading error
     modalPhoto.onerror = function() {
