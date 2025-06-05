@@ -51,8 +51,8 @@
     {
       "date": "2025-06-05",
       "dayName": "Четверг",
-      "timeStart": "20:00",
-      "timeEnd": "21:00",
+      "timeStart": "21:00",
+      "timeEnd": "21:30",
       "type": "general",
       "placeId": "main_stage",
       "title": "🎉🎉🎉 ОФИЦИАЛЬНОЕ ОТКРЫТИЕ КЭМПА 🎉🎉🎉",
@@ -61,7 +61,7 @@
     {
       "date": "2025-06-05",
       "dayName": "Четверг",
-      "timeStart": "21:00",
+      "timeStart": "21:30",
       "timeEnd": "23:00",
       "type": "general",
       "track": "✨ Общая активность",
@@ -246,8 +246,8 @@
     {
       "date": "2025-06-05",
       "dayName": "Четверг",
-      "timeStart": "17:00",
-      "timeEnd": "18:00",
+      "timeStart": "20:00",
+      "timeEnd": "21:00",
       "track": "🏃‍♂️ Active Arena",
       "placeId": "restaurant",
       "title": "🍻 🏃🏻‍♀️ Пивная миля",
