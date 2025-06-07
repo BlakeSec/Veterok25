@@ -1551,11 +1551,11 @@ function timeToMinutes(timeString) {
     const cleanTimeString = timeString.replace(/[^0-9:]/g, '');
     const [hours, minutes] = cleanTimeString.split(':').map(Number);
 
-    // If the time is 00:00 or 01:00, treat it as after midnight
+    // If the time is 00:00 to 03:00, treat it as after midnight
     // This assumes activities don't span more than 24 hours
     // But only if it's an end time for an activity that starts late
     // For start times or activities that start early, use regular hours
-    if (hours < 2) {
+    if (hours < 4) {
         // Check if this is likely an end time after midnight
         // We'll assume it's after midnight if we're processing an end time
         // This is a heuristic and might need adjustment based on actual data patterns
@@ -1567,9 +1567,9 @@ function timeToMinutes(timeString) {
 
 // Get time range for a set of activities
 function getTimeRange(activities) {
-    // Fixed time range from 7:00 to 01:00 (1 AM)
+    // Fixed time range from 7:00 to 03:00 (3 AM)
     const start = 7 * 60; // 7:00 in minutes
-    const end = 25 * 60; // 01:00 (1 AM) in minutes
+    const end = 27 * 60; // 03:00 (3 AM) in minutes
 
     return { start, end };
 }
