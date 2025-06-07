@@ -100,7 +100,9 @@ function setupEventListeners() {
 // Load schedule data from JSON file
 async function loadSchedule() {
     try {
-        const response = await fetch('schedule.json');
+        // Add timestamp to prevent caching
+        const timestamp = new Date().getTime();
+        const response = await fetch(`schedule.json?v=${timestamp}`);
         const data = await response.json();
         scheduleData = data.activities;
         mealsData = data.meals || [];
