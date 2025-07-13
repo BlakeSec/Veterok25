@@ -7,6 +7,124 @@ let placesData = []; // Added for location info
 let currentDay = '';
 let currentTab = 'days'; // 'days', 'stations', or 'quests'
 let favorites = [];
+let bannerUpdateInterval;
+
+// Activity Banner Functions
+function updateActivityBanner() {
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    const currentDate = now.toLocaleDateString('ru-RU', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+
+    // Update time display
+    document.querySelector('.time-display').textContent = currentTime;
+    document.querySelector('.date-display').textContent = currentDate;
+
+    // Get current and upcoming activities
+    const activities = getCurrentAndUpcomingActivities();
+    updateUpcomingActivities(activities);
+}
+
+function getCurrentAndUpcomingActivities() {
+    const now = new Date();
+    const currentDateStr = now.toISOString().split('T')[0];
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    // Get today's activities
+    const todayActivities = scheduleData.filter(activity => {
+        const activityDate = new Date(activity.date + 'T00:00:00');
+        const nowDate = new Date(currentDateStr + 'T00:00:00');
+        return activityDate.getTime() === nowDate.getTime();
+    });
+
+    // Sort activities by start time
+    todayActivities.sort((a, b) => {
+        const aTime = timeToMinutes(a.timeStart);
+        const bTime = timeToMinutes(b.timeStart);
+        return aTime - bTime;
+    });
+
+    const result = [];
+    let currentActivity = null;
+    let upcomingCount = 0;
+
+    for (const activity of todayActivities) {
+        const startTime = timeToMinutes(activity.timeStart);
+        const endTime = timeToMinutes(activity.timeEnd);
+
+        // Check if activity is currently happening
+        if (currentTimeMinutes >= startTime && currentTimeMinutes < endTime) {
+            currentActivity = { ...activity, status: 'current' };
+        }
+        // Check if activity is upcoming (within next 4 hours)
+        else if (startTime > currentTimeMinutes && startTime <= currentTimeMinutes + 240) {
+            if (upcomingCount < 2) { // Limit to 2 upcoming activities
+                result.push({ ...activity, status: 'upcoming' });
+                upcomingCount++;
+            }
+        }
+    }
+
+    // If there's a current activity, add it to the beginning
+    if (currentActivity) {
+        result.unshift(currentActivity);
+    }
+
+    return result;
+}
+
+function updateUpcomingActivities(activities) {
+    const container = document.getElementById('upcomingActivities');
+    
+    if (activities.length === 0) {
+        container.innerHTML = '<div class="banner-empty">Нет предстоящих активностей</div>';
+        return;
+    }
+
+    container.innerHTML = activities.map(activity => {
+        const isCurrentClass = activity.status === 'current' ? 'current' : '';
+        const timeRange = `${activity.timeStart} - ${activity.timeEnd}`;
+        const trackName = getTrackShortName(activity.track);
+        
+        return `
+            <div class="upcoming-activity ${isCurrentClass}" onclick="openActivityModal(${JSON.stringify(activity).replace(/"/g, '&quot;')})">
+                <span class="upcoming-time">${timeRange}</span>
+                <span class="upcoming-title">${activity.title}</span>
+                <span class="upcoming-track">${trackName}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function getTrackShortName(track) {
+    const trackMap = {
+        '🧠 Geek Zone': 'Geek',
+        '🏃‍♂️ Active Arena': 'Active',
+        '💬 Soft Skills Hub': 'Soft',
+        '🌿 Hobby Grove': 'Hobby',
+        '✨ Общая активность': 'Общая'
+    };
+    return trackMap[track] || track;
+}
+
+function startBannerUpdates() {
+    // Update immediately
+    updateActivityBanner();
+    
+    // Update every minute
+    bannerUpdateInterval = setInterval(updateActivityBanner, 60000);
+}
+
+function stopBannerUpdates() {
+    if (bannerUpdateInterval) {
+        clearInterval(bannerUpdateInterval);
+        bannerUpdateInterval = null;
+    }
+}
 
 // Function to convert URLs in text to clickable links and handle newlines
 function linkifyText(text) {
@@ -95,6 +213,18 @@ function setupEventListeners() {
             setDefaultDay(days);
         }
     });
+
+    // Clean up banner updates when page is closed
+    window.addEventListener('beforeunload', () => {
+        stopBannerUpdates();
+    });
+
+    // Update banner when page becomes visible (user switches back to tab)
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && scheduleData.length > 0) {
+            updateActivityBanner();
+        }
+    });
 }
 
 // Load schedule data from JSON file
@@ -118,6 +248,9 @@ async function loadSchedule() {
 
         // Check URL parameters for tab selection
         checkUrlParams(days);
+
+        // Start banner updates after data is loaded
+        startBannerUpdates();
 
     } catch (error) {
         console.error('Error loading schedule:', error);
@@ -243,6 +376,9 @@ function selectDay(day) {
 
     // Display schedule for selected day
     displaySchedule();
+    
+    // Update banner to reflect the new day
+    updateActivityBanner();
 }
 
 // Select a tab (stations or quests) and display its content
