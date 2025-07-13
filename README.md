@@ -1,8 +1,8 @@
-# Vas3k Camp 2025 Schedule
+# Veterok / Tramontana'25 Schedule
 
-![Vas3k Camp Logo](images/logo-diamond.svg)
+![Veterok Logo](images/logo-diamond.svg)
 
-This project provides an interactive schedule viewer for Vas3k Camp 2025. Browse through all the exciting activities, workshops, and gatherings planned for the camp.
+This project provides an interactive schedule viewer for Veterok / Tramontana'25. Browse through all the exciting activities, workshops, and gatherings planned for the transformative festival.
 
 ## Features
 
@@ -21,4 +21,4 @@ Simply open `index.html` in your browser to start exploring the schedule.
 
 ## License
 
-© 2025 Vas3k Camp. All rights reserved.
+© 2025 Veterok / Tramontana'25. All rights reserved.
