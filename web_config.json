@@ -34,8 +34,7 @@
   "dataTypes": [
     "activities",
     "meals",
-    "stations",
-    "quests"
+    "stations"
   ],
   "ui": {
     "search": {

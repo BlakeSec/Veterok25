@@ -1109,6 +1109,73 @@ footer {
     font-size: 14px;
 }
 
+/* Enhanced Station Card Styles */
+.station-card {
+    border-left: 4px solid var(--color-accent-green);
+    background: linear-gradient(135deg, rgba(64, 192, 87, 0.02) 0%, rgba(64, 192, 87, 0.08) 100%);
+}
+
+.station-card:hover {
+    border-left: 4px solid var(--color-accent-blue);
+    background: linear-gradient(135deg, rgba(51, 154, 240, 0.02) 0%, rgba(51, 154, 240, 0.08) 100%);
+}
+
+.station-details {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-card-border);
+}
+
+.station-details > div {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.station-details > div:last-child {
+    margin-bottom: 0;
+}
+
+.station-team .team-icon,
+.station-schedule .schedule-icon,
+.station-link .link-icon {
+    color: var(--color-accent-blue);
+    font-size: 0.9rem;
+    margin-top: 0.1rem;
+}
+
+.station-team .team-info,
+.station-schedule .schedule-info {
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.station-link a {
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.station-link a:hover {
+    color: var(--color-accent-purple);
+    border-bottom-color: var(--color-accent-purple);
+}
+
+.station-team .team-info {
+    max-width: 250px;
+}
+
+.station-schedule .schedule-info {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .no-results {
     text-align: center;
     padding: 48px 24px;

@@ -392,8 +392,30 @@ function createSearchResultCard(item) {
     const emoji = generator.getActivityEmoji(item, item._dataType);
     const isFavorite = favorites.includes(getActivityId(item));
     
+    // Enhanced display for stations (camps)
+    let stationDetails = '';
+    if (item._dataType === 'stations') {
+        stationDetails = `
+            <div class="station-details">
+                ${item.team ? `<div class="station-team">
+                    <span class="team-icon">👥</span>
+                    <span class="team-info">Команда: ${item.team.join(', ')}</span>
+                </div>` : ''}
+                ${item.schedule ? `<div class="station-schedule">
+                    <span class="schedule-icon">📅</span>
+                    <span class="schedule-info">Расписание: ${item.schedule.substring(0, 100)}${item.schedule.length > 100 ? '...' : ''}</span>
+                </div>` : ''}
+                ${item.link ? `<div class="station-link">
+                    <span class="link-icon">🔗</span>
+                    <a href="${item.link}" target="_blank" onclick="event.stopPropagation()">Подробнее</a>
+                </div>` : ''}
+            </div>
+        `;
+    }
+    
     return `
-        <div class="search-result-card" onclick="openActivityModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+        <div class="search-result-card ${item._dataType === 'stations' ? 'station-card' : ''}" 
+             onclick="openActivityModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
             <div class="search-result-header">
                 <span class="activity-emoji">${emoji}</span>
                 <h4>${item.title}</h4>
@@ -407,10 +429,11 @@ function createSearchResultCard(item) {
                 <span class="date">${item.dayName || 'All Days'}, ${item.date || 'Camp Period'}</span>
                 ${item.timeStart && item.timeEnd ? `<span class="time">${item.timeStart} - ${item.timeEnd}</span>` : ''}
                 ${item.track ? `<span class="track">${item.track}</span>` : ''}
-                <span class="type">${item._dataType}</span>
+                <span class="type">${item._dataType === 'stations' ? 'Лагерь' : item._dataType}</span>
             </div>
             ${item.author ? `<div class="author">👤 ${item.author}</div>` : ''}
             ${item.description ? `<div class="description">${item.description.substring(0, 150)}${item.description.length > 150 ? '...' : ''}</div>` : ''}
+            ${stationDetails}
         </div>
     `;
 }
@@ -587,14 +610,14 @@ function toggleFavorite(activityId) {
 }
 
 function loadFavorites() {
-    const saved = localStorage.getItem('vas3k-camp-favorites');
+            const saved = localStorage.getItem('veterok-tramontana-favorites');
     if (saved) {
         favorites = JSON.parse(saved);
     }
 }
 
 function saveFavorites() {
-    localStorage.setItem('vas3k-camp-favorites', JSON.stringify(favorites));
+            localStorage.setItem('veterok-tramontana-favorites', JSON.stringify(favorites));
 }
 
 function openActivityModal(activity) {

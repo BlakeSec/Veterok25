@@ -1,14 +1,14 @@
 {
   "event": {
-    "name": "Vas3k Camp 2025",
-    "description": "Расписание мероприятий Vas3k Camp 2025 с эмодзи по типам активности",
+      "name": "Ветерок Трамонтана 2025",
+  "description": "Расписание мероприятий Ветерок Трамонтана 2025 с эмодзи по типам активности",
     "timezone": "Europe/Belgrade",
     "dates": {
       "start": "2025-06-05",
       "end": "2025-06-08"
     },
-    "website": "https://vas3k.club/",
-    "organizer": "Vas3k Camp Team"
+    "website": "https://tramontana.camp/",
+    "organizer": "Ветерок Трамонтана Team"
   },
   "tracks": {
     "auto_detect": true,
@@ -100,7 +100,7 @@
       "create_all_day_events": true
     },
     "quests": {
-      "enabled": true,
+      "enabled": false,
       "default_emoji": "🗺️",
       "calendar_name_suffix": " - Квесты",
       "create_all_day_events": true

@@ -2,7 +2,7 @@
 
 ![Vas3k Camp Logo](images/logo-diamond.svg)
 
-An **adaptive, emoji-colorized event schedule system** that automatically detects tracks and activity types, generating comprehensive ICS calendar files for any event. Originally created for Vas3k Camp 2025, but designed to work with any event configuration.
+An **adaptive, emoji-colorized event schedule system** that automatically detects tracks and activity types, generating comprehensive ICS calendar files for any event. Originally created for Vas3k Camp, enhanced for Ветерок Трамонтана 2025, but designed to work with any event configuration.
 
 ## ✨ Features
 
