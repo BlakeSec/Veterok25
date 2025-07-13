@@ -7,6 +7,267 @@ let placesData = []; // Added for location info
 let currentDay = '';
 let currentTab = 'days'; // 'days', 'stations', or 'quests'
 let favorites = [];
+let timeUpdateInterval;
+let notificationTimeouts = new Map();
+
+// Notification System
+function showNotification(title, message, type = 'info', duration = 5000) {
+    const container = document.getElementById('notificationContainer');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const notificationId = Date.now() + Math.random();
+    notification.id = `notification-${notificationId}`;
+    
+    const icons = {
+        info: 'ℹ️',
+        success: '✅',
+        warning: '⚠️',
+        error: '❌'
+    };
+    
+    notification.innerHTML = `
+        <div class="notification-header">
+            <span class="notification-icon">${icons[type]}</span>
+            <span class="notification-title">${title}</span>
+        </div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="hideNotification('${notificationId}')">&times;</button>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Show notification with animation
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Auto-hide after duration
+    if (duration > 0) {
+        const timeout = setTimeout(() => {
+            hideNotification(notificationId);
+        }, duration);
+        notificationTimeouts.set(notificationId, timeout);
+    }
+    
+    return notificationId;
+}
+
+function hideNotification(notificationId) {
+    const notification = document.getElementById(`notification-${notificationId}`);
+    if (notification) {
+        notification.classList.add('hide');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }
+    
+    // Clear timeout
+    if (notificationTimeouts.has(notificationId)) {
+        clearTimeout(notificationTimeouts.get(notificationId));
+        notificationTimeouts.delete(notificationId);
+    }
+}
+
+// Current Time and Event Tracking
+function updateCurrentTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+    const currentEventDisplay = document.getElementById('currentEventDisplay');
+    
+    if (currentTimeDisplay) {
+        currentTimeDisplay.textContent = timeString;
+    }
+    
+    // Find current event
+    const currentEvent = getCurrentEvent();
+    if (currentEventDisplay) {
+        if (currentEvent) {
+            currentEventDisplay.textContent = `${currentEvent.title}`;
+            currentEventDisplay.className = 'current-event active';
+        } else {
+            currentEventDisplay.textContent = 'Нет текущих событий';
+            currentEventDisplay.className = 'current-event';
+        }
+    }
+    
+    // Update current day tab highlighting
+    updateCurrentDayTab();
+}
+
+function getCurrentEvent() {
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    // Check all activities for current time
+    for (const activity of scheduleData) {
+        if (activity.date === currentDate) {
+            const startTime = timeToMinutes(activity.timeStart);
+            const endTime = timeToMinutes(activity.timeEnd);
+            
+            if (currentTimeMinutes >= startTime && currentTimeMinutes < endTime) {
+                return activity;
+            }
+        }
+    }
+    
+    return null;
+}
+
+function updateCurrentDayTab() {
+    const today = new Date().toISOString().split('T')[0];
+    const tabs = document.querySelectorAll('.day-tab');
+    
+    tabs.forEach(tab => {
+        tab.classList.remove('current-day');
+        if (tab.dataset.day === today) {
+            tab.classList.add('current-day');
+        }
+    });
+}
+
+function startTimeTracking() {
+    // Update immediately
+    updateCurrentTime();
+    
+    // Update every second
+    timeUpdateInterval = setInterval(updateCurrentTime, 1000);
+    
+    // Check for upcoming events every minute
+    setInterval(checkUpcomingEvents, 60000);
+}
+
+function checkUpcomingEvents() {
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    // Check for events starting in the next 15 minutes
+    for (const activity of scheduleData) {
+        if (activity.date === currentDate) {
+            const startTime = timeToMinutes(activity.timeStart);
+            const timeDiff = startTime - currentTimeMinutes;
+            
+            // Notify 15 minutes before
+            if (timeDiff === 15) {
+                showNotification(
+                    'Скоро начнется событие!', 
+                    `${activity.title} начнется через 15 минут`, 
+                    'warning', 
+                    8000
+                );
+            }
+            
+            // Notify 5 minutes before
+            if (timeDiff === 5) {
+                showNotification(
+                    'Событие начинается!', 
+                    `${activity.title} начнется через 5 минут`, 
+                    'info', 
+                    8000
+                );
+            }
+        }
+    }
+}
+
+// Enhanced Station and Quest Display Functions
+function enhanceStationsDisplay() {
+    const stationsContainer = document.querySelector('.list-container');
+    if (stationsContainer) {
+        stationsContainer.innerHTML = '';
+        
+        // Add header
+        const header = document.createElement('div');
+        header.innerHTML = `
+            <h2 style="margin-bottom: 24px; color: var(--text-color); text-align: center;">
+                🏛️ Станции Кэмпа
+            </h2>
+        `;
+        stationsContainer.appendChild(header);
+        
+        // Add stations with enhanced styling
+        stationsData.forEach((station, index) => {
+            const stationItem = document.createElement('div');
+            stationItem.className = 'list-item station-item';
+            stationItem.style.animationDelay = `${index * 0.1}s`;
+            
+            const title = document.createElement('h3');
+            title.className = 'list-item-title';
+            title.textContent = station.title;
+            stationItem.appendChild(title);
+            
+            // Create container for location link if exists
+            if (station.placeId) {
+                const locationContainer = document.createElement('div');
+                locationContainer.className = 'list-item-location';
+                const locationLink = createLocationLink(station.placeId);
+                if (locationLink) {
+                    locationContainer.appendChild(locationLink);
+                    stationItem.appendChild(locationContainer);
+                }
+            }
+            
+            const description = document.createElement('p');
+            description.className = 'list-item-description';
+            description.innerHTML = linkifyText(station.description);
+            stationItem.appendChild(description);
+            
+            stationsContainer.appendChild(stationItem);
+        });
+    }
+}
+
+function enhanceQuestsDisplay() {
+    const questsContainer = document.querySelector('.list-container');
+    if (questsContainer) {
+        questsContainer.innerHTML = '';
+        
+        // Add header
+        const header = document.createElement('div');
+        header.innerHTML = `
+            <h2 style="margin-bottom: 24px; color: var(--text-color); text-align: center;">
+                🎯 Квесты Кэмпа
+            </h2>
+        `;
+        questsContainer.appendChild(header);
+        
+        // Add quests with enhanced styling
+        questsData.forEach((quest, index) => {
+            const questItem = document.createElement('div');
+            questItem.className = 'list-item quest-item';
+            questItem.style.animationDelay = `${index * 0.1}s`;
+            
+            const title = document.createElement('h3');
+            title.className = 'list-item-title';
+            title.textContent = quest.title;
+            questItem.appendChild(title);
+            
+            if (quest.author && quest.authorUrl) {
+                const author = document.createElement('a');
+                author.className = 'list-item-author';
+                author.href = quest.authorUrl;
+                author.target = '_blank';
+                author.textContent = `Автор: ${quest.author}`;
+                questItem.appendChild(author);
+            }
+            
+            const description = document.createElement('p');
+            description.className = 'list-item-description';
+            description.innerHTML = linkifyText(quest.description);
+            questItem.appendChild(description);
+            
+            questsContainer.appendChild(questItem);
+        });
+    }
+}
 
 // Function to convert URLs in text to clickable links and handle newlines
 function linkifyText(text) {
@@ -50,6 +311,17 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSchedule();
     loadFavorites();
     setupEventListeners();
+    startTimeTracking();
+    
+    // Show welcome notification
+    setTimeout(() => {
+        showNotification(
+            'Добро пожаловать!', 
+            'Добро пожаловать в расписание Кибер-Село Кэмп 2025! Уведомления о событиях включены.', 
+            'success', 
+            6000
+        );
+    }, 1000);
 });
 
 // Setup event listeners
@@ -401,39 +673,10 @@ function displayStations() {
     // Create stations list container
     const stationsContainer = document.createElement('div');
     stationsContainer.className = 'list-container';
-
-    // Add stations to the list
-    stationsData.forEach(station => {
-        const stationItem = document.createElement('div');
-        stationItem.className = 'list-item station-item';
-
-        const title = document.createElement('h3');
-        title.className = 'list-item-title';
-        title.textContent = station.title;
-
-        stationItem.appendChild(title);
-
-        // Create container for location link if exists
-        if (station.placeId) {
-            const locationContainer = document.createElement('div');
-            locationContainer.className = 'list-item-location';
-
-            const locationLink = createLocationLink(station.placeId);
-            if (locationLink) {
-                locationContainer.appendChild(locationLink);
-                stationItem.appendChild(locationContainer);
-            }
-        }
-
-        const description = document.createElement('p');
-        description.className = 'list-item-description';
-        description.innerHTML = linkifyText(station.description);
-
-        stationItem.appendChild(description);
-        stationsContainer.appendChild(stationItem);
-    });
-
     tracksContainer.appendChild(stationsContainer);
+
+    // Use enhanced display function
+    enhanceStationsDisplay();
 }
 
 // Display quests list
@@ -449,33 +692,10 @@ function displayQuests() {
     // Create quests list container
     const questsContainer = document.createElement('div');
     questsContainer.className = 'list-container';
-
-    // Add quests to the list
-    questsData.forEach(quest => {
-        const questItem = document.createElement('div');
-        questItem.className = 'list-item quest-item';
-
-        const title = document.createElement('h3');
-        title.className = 'list-item-title';
-        title.textContent = quest.title;
-
-        const author = document.createElement('a');
-        author.className = 'list-item-author';
-        author.href = quest.authorUrl;
-        author.target = '_blank';
-        author.textContent = quest.author;
-
-        const description = document.createElement('p');
-        description.className = 'list-item-description';
-        description.innerHTML = linkifyText(quest.description);
-
-        questItem.appendChild(title);
-        questItem.appendChild(author);
-        questItem.appendChild(description);
-        questsContainer.appendChild(questItem);
-    });
-
     tracksContainer.appendChild(questsContainer);
+
+    // Use enhanced display function
+    enhanceQuestsDisplay();
 }
 
 // Display schedule in desktop view (columns for tracks)
