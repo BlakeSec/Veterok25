@@ -1,0 +1,242 @@
+{
+  "processing_date": "2025-07-13T15:14:45.610Z",
+  "camps_processed": 26,
+  "new_places_added": 10,
+  "source": "Google Sheets TSV",
+  "stations": [
+    {
+      "title": "Зендо",
+      "author": "nikomattews",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Bimbo Beach",
+      "author": "kot_ashot",
+      "teamSize": 3,
+      "placeId": "bimbo_beach",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Рыдальня",
+      "author": "gagarin_luybila",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": false,
+      "hasLink": false
+    },
+    {
+      "title": "Фан-фан",
+      "author": "vsaxon",
+      "teamSize": 3,
+      "placeId": "-",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Шариковая",
+      "author": "greenmur",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Nevesomo",
+      "author": "Artbit17",
+      "teamSize": 3,
+      "placeId": "nevesomo",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": true
+    },
+    {
+      "title": "Картошка",
+      "author": "postiki",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": false,
+      "hasLink": false
+    },
+    {
+      "title": "Сон Алисы",
+      "author": "ledenevapsy",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "drujba / stancia",
+      "author": "harryharry",
+      "teamSize": 3,
+      "placeId": "drujba_stancia",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Тихий Омут",
+      "author": "yatsenkomarina",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Ветер в кронах",
+      "author": "kiralebar",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "ТрамонTouch",
+      "author": "ChooseTema",
+      "teamSize": 3,
+      "placeId": "touch",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Cube",
+      "author": "kseniasch",
+      "teamSize": 3,
+      "placeId": "cube",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "ЛизнуСосну",
+      "author": "kirainwhite",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Полянка",
+      "author": "galaguzka",
+      "teamSize": 2,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": false,
+      "hasLink": false
+    },
+    {
+      "title": "GANZI",
+      "author": "bvs707",
+      "teamSize": 3,
+      "placeId": "ganzi",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Аревик (Солнышко)",
+      "author": "Gavrila_Tzap",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": false,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Бойцовский клуб",
+      "author": "NikitaPankin",
+      "teamSize": 2,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Индейское лето",
+      "author": "vteploo",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "КОЦИКИ tattoo point",
+      "author": "chill_chilitattoo",
+      "teamSize": 3,
+      "placeId": "tattoo_point",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Шампанерия",
+      "author": "nebu_chan",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Slavik Hugs",
+      "author": "julsy_ju",
+      "teamSize": 3,
+      "placeId": "slavik_hugs",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Q.E.D.",
+      "author": "mioulin",
+      "teamSize": 3,
+      "placeId": "qed",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "exit",
+      "author": "Arturmoregorbl",
+      "teamSize": 3,
+      "placeId": "exit",
+      "hasSchedule": false,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Параненормальные",
+      "author": "meilakh",
+      "teamSize": 3,
+      "placeId": "",
+      "hasSchedule": false,
+      "hasDescription": true,
+      "hasLink": false
+    },
+    {
+      "title": "Последний вагон",
+      "author": "YosefBatman",
+      "teamSize": 1,
+      "placeId": "",
+      "hasSchedule": true,
+      "hasDescription": true,
+      "hasLink": false
+    }
+  ]
+}

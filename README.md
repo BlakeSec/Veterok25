@@ -10,6 +10,7 @@ An **adaptive, emoji-colorized event schedule system** that automatically detect
 - **Auto-detects** tracks from your event data
 - **Intelligent emoji assignment** based on keywords and tracks
 - **Flexible data structure** - works with activities, meals, stations, quests
+- **Google Sheets integration** - direct import from Google Sheets with automatic processing
 - **Easy configuration** - just update `config.json` for your event
 
 ### 📅 **Calendar Integration**
