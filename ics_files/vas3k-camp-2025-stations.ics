@@ -1,0 +1,89 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Vas3k Camp Team//Event Schedule//EN
+METHOD:PUBLISH
+X-WR-CALNAME:🏪 Vas3k Camp 2025 - Станции
+X-WR-CALDESC:stations - Vas3k Camp 2025
+X-WR-TIMEZONE:Europe/Belgrade
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Europe/Belgrade
+BEGIN:STANDARD
+DTSTART:20241027T030000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20250330T020000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250605
+DTEND;VALUE=DATE:20250608
+SUMMARY:🏪 ☕️ Чайная-кофейная
+DESCRIPTION:Будем пить всякий вкусный чай и кофе\\n\\n\\nТип: stations
+LOCATION:Нижний бар
+UID:vas3k-camp-2025-stations-allday-0@vas3k-camp-team
+DTSTAMP:20250713T145521Z
+CATEGORIES:stations
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250605
+DTEND;VALUE=DATE:20250608
+SUMMARY:🏪 🍸 Бар
+DESCRIPTION:Вастрик.Бар с авторскими алко и безалко коктейлями от Владика. Открывается вечером 🌚\\n\\n\\nТип: stations
+LOCATION:Лодка
+UID:vas3k-camp-2025-stations-allday-1@vas3k-camp-team
+DTSTAMP:20250713T145521Z
+CATEGORIES:stations
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250605
+DTEND;VALUE=DATE:20250608
+SUMMARY:🏪 💨 Кальянная
+DESCRIPTION:Будем курить кальянчик! Работает по вечерам\\n\\n\\nТип: stations
+LOCATION:Рестик
+UID:vas3k-camp-2025-stations-allday-2@vas3k-camp-team
+DTSTAMP:20250713T145521Z
+CATEGORIES:stations
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250605
+DTEND;VALUE=DATE:20250608
+SUMMARY:🏪 🃏Настолки
+DESCRIPTION:У нас на станции целый набор настолок и даже больше. \nВо-первых\, в расписании у нас игра в blood on the clocktower — не пропустите! \nВо-вторых\, у нас будут отдельные события с игрой в специальную клубную Монополию и классную социальную игру 2 rooms & a boom (мы будем звать в чатике!). \n\nОстальные игры — на станции! Вы можете их брать\, но обязательно возвращать на место и не теряйте компонеты🙃 Несколько игр будут доступны у мастеров по записи (листочек вы найдете тоже на станции). Если вы не знаете\, как играть\, или вам нужна любая помощь с настолкаи — ищите Мишу Коробко\, Женю Костюченко или Егора Огаркова.\n\nСписок настолок: Quest\, Monopoly Deal\, No thanks\, тайное послание\, Secret Hitler\, Saboteurs\, Small World\, Эволюция\, Hive\, Coup\, 6 nimmt!\, Cards against humanity и другие!\\n\\n\\nТип: stations
+LOCATION:Предбанник
+UID:vas3k-camp-2025-stations-allday-3@vas3k-camp-team
+DTSTAMP:20250713T145521Z
+CATEGORIES:stations
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250605
+DTEND;VALUE=DATE:20250608
+SUMMARY:🏪 👩🏻‍🎤Beauty corner
+DESCRIPTION:Место\, где каждый может стать красивее и наряднее: блестки\, аквагрим\, переводные татухи\, светяшки для вечеринок.\nПриносите свои запасы\, пользуйтесь общественными\, просите помочь вам сделать крутой пати-мэйк.\n\nВ это время на бьюти-корнере будут феи красоты\, которые вам помогут:\n\nПервый день\n15.30-16.00\n19.30-20.00\n\nВторой и третий день \n09.30-10.00\n14.30-15.00\n19.30-20.00\n\nПоследний день \n09.30-10.00\n\nА в режиме самообслуживания на корнер можно приходить круглосуточно!\\n\\n\\nТип: stations
+LOCATION:Пляжик
+UID:vas3k-camp-2025-stations-allday-4@vas3k-camp-team
+DTSTAMP:20250713T145521Z
+CATEGORIES:stations
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR

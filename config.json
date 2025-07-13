@@ -1,0 +1,159 @@
+{
+  "event": {
+    "name": "Vas3k Camp 2025",
+    "description": "Расписание мероприятий Vas3k Camp 2025 с эмодзи по типам активности",
+    "timezone": "Europe/Belgrade",
+    "dates": {
+      "start": "2025-06-05",
+      "end": "2025-06-08"
+    },
+    "website": "https://vas3k.club/",
+    "organizer": "Vas3k Camp Team"
+  },
+  "tracks": {
+    "auto_detect": true,
+    "default_emoji": "📅",
+    "mappings": {
+      "✨ Общая активность": {
+        "emoji": "⭐",
+        "color": "#FFD700",
+        "description": "Общие мероприятия для всех участников"
+      },
+      "🧠 Geek Zone": {
+        "emoji": "🤓",
+        "color": "#4169E1",
+        "description": "Техническая зона для гиков"
+      },
+      "🌿 Hobby Grove": {
+        "emoji": "🎨",
+        "color": "#228B22",
+        "description": "Творческие и хобби активности"
+      },
+      "🏃‍♂️ Active Arena": {
+        "emoji": "🏃‍♂️",
+        "color": "#FF6347",
+        "description": "Спортивные и активные мероприятия"
+      },
+      "💬 Soft Skills Hub": {
+        "emoji": "💬",
+        "color": "#9370DB",
+        "description": "Развитие коммуникативных навыков"
+      }
+    }
+  },
+  "activity_types": {
+    "auto_detect": true,
+    "keyword_mappings": {
+      "welcome": "👋",
+      "добро пожаловать": "👋",
+      "приветствие": "👋",
+      "quiz": "🧠",
+      "квиз": "🧠",
+      "викторина": "🧠",
+      "workshop": "🛠️",
+      "воркшоп": "🛠️",
+      "мастер-класс": "🛠️",
+      "keynote": "📢",
+      "открытие": "📢",
+      "закрытие": "📢",
+      "networking": "🤝",
+      "нетворкинг": "🤝",
+      "знакомство": "🤝",
+      "party": "🎉",
+      "вечеринка": "🎉",
+      "праздник": "🎉",
+      "dj": "🎵",
+      "диджей": "🎵",
+      "музыка": "🎵",
+      "sport": "⚽",
+      "спорт": "⚽",
+      "игра": "⚽",
+      "food": "🍽️",
+      "еда": "🍽️",
+      "завтрак": "🍳",
+      "обед": "🍽️",
+      "ужин": "🍽️",
+      "quest": "🗺️",
+      "квест": "🗺️",
+      "station": "🏪",
+      "станция": "🏪",
+      "build": "🚧",
+      "строительство": "🚧",
+      "подготовка": "🚧"
+    }
+  },
+  "data_types": {
+    "activities": {
+      "enabled": true,
+      "default_emoji": "📅",
+      "calendar_name_suffix": ""
+    },
+    "meals": {
+      "enabled": true,
+      "default_emoji": "🍽️",
+      "calendar_name_suffix": " - Питание"
+    },
+    "stations": {
+      "enabled": true,
+      "default_emoji": "🏪",
+      "calendar_name_suffix": " - Станции",
+      "create_all_day_events": true
+    },
+    "quests": {
+      "enabled": true,
+      "default_emoji": "🗺️",
+      "calendar_name_suffix": " - Квесты",
+      "create_all_day_events": true
+    }
+  },
+  "export_options": {
+    "create_combined_calendar": true,
+    "create_separate_calendars": true,
+    "create_track_calendars": true,
+    "create_type_calendars": true,
+    "filename_template": "{event_slug}-{type}-{track_slug}.ics",
+    "include_private_events": false,
+    "include_timezone_info": true,
+    "include_location_info": true,
+    "include_author_info": true,
+    "include_description": true,
+    "max_description_length": 1000
+  },
+  "ui": {
+    "search": {
+      "enabled": true,
+      "debounce_delay": 300,
+      "placeholder": "🔍 Поиск мероприятий..."
+    },
+    "export_buttons": {
+      "show_full_export": true,
+      "show_favorites_export": true,
+      "show_track_exports": true,
+      "show_type_exports": true,
+      "show_search_export": true
+    },
+    "display": {
+      "show_emojis_in_titles": true,
+      "show_track_colors": true,
+      "responsive_design": true
+    }
+  },
+  "localization": {
+    "language": "ru",
+    "strings": {
+      "export_full": "📥 Скачать всё расписание (ICS)",
+      "export_favorites": "❤️ Скачать избранное (ICS)",
+      "export_track": "Скачать трек",
+      "export_search": "📅 Экспорт результатов поиска",
+      "no_favorites": "У вас нет избранных мероприятий для экспорта!",
+      "no_track_events": "Нет мероприятий для трека",
+      "no_search_results": "Ничего не найдено",
+      "search_results": "Результаты поиска",
+      "calendar_export": "📅 Экспорт календаря",
+      "by_tracks": "По трекам:",
+      "by_types": "По типам:",
+      "clear_search": "Очистить поиск",
+      "show_all": "Показать всё расписание"
+    }
+  }
+}

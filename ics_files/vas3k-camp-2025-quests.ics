@@ -1,0 +1,52 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Vas3k Camp Team//Event Schedule//EN
+METHOD:PUBLISH
+X-WR-CALNAME:🗺️ Vas3k Camp 2025 - Квесты
+X-WR-CALDESC:quests - Vas3k Camp 2025
+X-WR-TIMEZONE:Europe/Belgrade
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Europe/Belgrade
+BEGIN:STANDARD
+DTSTART:20241027T030000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20250330T020000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250605
+DTEND;VALUE=DATE:20250608
+SUMMARY:🗺️ 🔐 Capture The Flag
+DESCRIPTION:Чтоб стать хакером\, надо мыслить как хакер! Взломай весь кемп и получи в подарок <что-нибудь!>. Акция действует с 10:00 четверга. Подробности у https://t.me/v3kctf_bot\\n\\nАвтор: Иван Агарков\\nПрофиль: https://vas3k.club/user/annmuor/\\n\\nТип: quests
+LOCATION:TBD
+UID:vas3k-camp-2025-quests-allday-0@vas3k-camp-team
+DTSTAMP:20250713T145521Z
+ORGANIZER:CN=Иван Агарков
+CATEGORIES:quests
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250605
+DTEND;VALUE=DATE:20250608
+SUMMARY:🤝 🤝 Нетворкинг-квест
+DESCRIPTION:Проверь welcome-пак\, там ты найдешь карточку с разными интересными\, необычными\, и веселыми фактами о людях. Тебе нужно найти хозяйку/хозяина каждого факта. Для прува пусть подпишется или сделайте совместное селфи. Потом надо найти t.me/ivanbut и сдать карточку. Если всё верно\, то первые N сдавших (n>10) получат приз!\\n\\nАвтор: Иван Бут\\nПрофиль: https://vas3k.club/user/Ivanbut\\n\\nТип: quests
+LOCATION:TBD
+UID:vas3k-camp-2025-quests-allday-1@vas3k-camp-team
+DTSTAMP:20250713T145521Z
+ORGANIZER:CN=Иван Бут
+CATEGORIES:quests
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR

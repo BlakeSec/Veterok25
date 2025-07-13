@@ -1,0 +1,77 @@
+{
+  "tracks": [
+    {
+      "name": "✨ Общая активность",
+      "emoji": "⭐",
+      "color": "#FFD700",
+      "description": "Общие мероприятия для всех участников"
+    },
+    {
+      "name": "🌿 Hobby Grove",
+      "emoji": "🎨",
+      "color": "#228B22",
+      "description": "Творческие и хобби активности"
+    },
+    {
+      "name": "🧠 Geek Zone",
+      "emoji": "🤓",
+      "color": "#4169E1",
+      "description": "Техническая зона для гиков"
+    },
+    {
+      "name": "🏃‍♂️ Active Arena",
+      "emoji": "🏃‍♂️",
+      "color": "#FF6347",
+      "description": "Спортивные и активные мероприятия"
+    },
+    {
+      "name": "💬 Soft Skills Hub",
+      "emoji": "💬",
+      "color": "#9370DB",
+      "description": "Развитие коммуникативных навыков"
+    }
+  ],
+  "dataTypes": [
+    "activities",
+    "meals",
+    "stations",
+    "quests"
+  ],
+  "ui": {
+    "search": {
+      "enabled": true,
+      "debounce_delay": 300,
+      "placeholder": "🔍 Поиск мероприятий..."
+    },
+    "export_buttons": {
+      "show_full_export": true,
+      "show_favorites_export": true,
+      "show_track_exports": true,
+      "show_type_exports": true,
+      "show_search_export": true
+    },
+    "display": {
+      "show_emojis_in_titles": true,
+      "show_track_colors": true,
+      "responsive_design": true
+    }
+  },
+  "localization": {
+    "language": "ru",
+    "strings": {
+      "export_full": "📥 Скачать всё расписание (ICS)",
+      "export_favorites": "❤️ Скачать избранное (ICS)",
+      "export_track": "Скачать трек",
+      "export_search": "📅 Экспорт результатов поиска",
+      "no_favorites": "У вас нет избранных мероприятий для экспорта!",
+      "no_track_events": "Нет мероприятий для трека",
+      "no_search_results": "Ничего не найдено",
+      "search_results": "Результаты поиска",
+      "calendar_export": "📅 Экспорт календаря",
+      "by_tracks": "По трекам:",
+      "by_types": "По типам:",
+      "clear_search": "Очистить поиск",
+      "show_all": "Показать всё расписание"
+    }
+  }
+}
