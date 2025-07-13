@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Notification container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
     <header>
         <div class="container">
             <div class="header-content">
@@ -17,12 +20,18 @@
                     <img src="images/logo-diamond.svg" alt="Кэмп 2025 Лого" class="header-logo">
                     <h2 class="site-title">Расписание движух Ветерок / Tramontana'25</h2>
                 </div>
-                <div class="favorites-toggle">
-                    <label class="toggle">
-                        <input type="checkbox" id="favoritesToggle">
-                        <span class="toggle-slider"></span>
-                        <span class="toggle-label">Только избранное</span>
-                    </label>
+                <div class="header-right">
+                    <div class="current-time-info">
+                        <div class="current-time" id="currentTimeDisplay"></div>
+                        <div class="current-event" id="currentEventDisplay"></div>
+                    </div>
+                    <div class="favorites-toggle">
+                        <label class="toggle">
+                            <input type="checkbox" id="favoritesToggle">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Только избранное</span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
