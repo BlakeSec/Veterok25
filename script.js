@@ -8,6 +8,290 @@ let currentDay = '';
 let currentTab = 'days'; // 'days', 'stations', or 'quests'
 let favorites = [];
 
+// Track type to emoji mapping for colorization
+const TRACK_EMOJIS = {
+    '✨ Общая активность': '⭐',
+    '🧠 Geek Zone': '🤓',
+    '🌿 Hobby Grove': '🎨',
+    '🏃‍♂️ Active Arena': '🏃‍♂️',
+    '💬 Soft Skills Hub': '💬',
+    'default': '📅'
+};
+
+// ICS Generator functionality
+class ICSGenerator {
+    constructor(scheduleData) {
+        this.scheduleData = scheduleData;
+        this.places = scheduleData.places || [];
+    }
+
+    formatDateTimeForICS(dateString, timeString) {
+        const date = new Date(dateString);
+        const [hours, minutes] = timeString.split(':').map(Number);
+        date.setHours(hours, minutes, 0, 0);
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hour = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}${month}${day}T${hour}${min}00`;
+    }
+
+    getActivityEmoji(activity) {
+        const title = activity.title?.toLowerCase() || '';
+        const track = activity.track || '';
+        
+        if (title.includes('welcome') || title.includes('добро пожаловать')) return '👋';
+        if (title.includes('quiz') || title.includes('квиз')) return '🧠';
+        if (title.includes('workshop') || title.includes('воркшоп')) return '🛠️';
+        if (title.includes('keynote') || title.includes('открытие')) return '📢';
+        if (title.includes('networking') || title.includes('нетворкинг')) return '🤝';
+        if (title.includes('party') || title.includes('вечеринка')) return '🎉';
+        if (title.includes('dj') || title.includes('диджей')) return '🎵';
+        if (title.includes('sport') || title.includes('спорт')) return '⚽';
+        if (title.includes('food') || title.includes('еда')) return '🍽️';
+        
+        return TRACK_EMOJIS[track] || TRACK_EMOJIS.default;
+    }
+
+    escapeICSText(text) {
+        if (!text) return '';
+        return text
+            .replace(/\\/g, '\\\\')
+            .replace(/;/g, '\\;')
+            .replace(/,/g, '\\,')
+            .replace(/\n/g, '\\n')
+            .replace(/\r/g, '');
+    }
+
+    generateEvent(activity, index) {
+        const emoji = this.getActivityEmoji(activity);
+        const title = `${emoji} ${activity.title}`;
+        const startTime = this.formatDateTimeForICS(activity.date, activity.timeStart);
+        const endTime = this.formatDateTimeForICS(activity.date, activity.timeEnd);
+        const location = this.getLocationName(activity.placeId);
+        const description = this.buildEventDescription(activity);
+        const uid = `vas3k-camp-${activity.date}-${index}@vas3k.camp`;
+        
+        return [
+            'BEGIN:VEVENT',
+            `DTSTART:${startTime}`,
+            `DTEND:${endTime}`,
+            `SUMMARY:${this.escapeICSText(title)}`,
+            `DESCRIPTION:${this.escapeICSText(description)}`,
+            `LOCATION:${this.escapeICSText(location)}`,
+            `UID:${uid}`,
+            `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}`,
+            activity.author ? `ORGANIZER:CN=${this.escapeICSText(activity.author)}` : '',
+            activity.track ? `CATEGORIES:${this.escapeICSText(activity.track)}` : '',
+            activity.private ? 'CLASS:PRIVATE' : 'CLASS:PUBLIC',
+            'STATUS:CONFIRMED',
+            'TRANSP:OPAQUE',
+            'END:VEVENT'
+        ].filter(line => line).join('\r\n');
+    }
+
+    getLocationName(placeId) {
+        const place = this.places.find(p => p.id === placeId);
+        return place ? place.title : placeId || 'TBD';
+    }
+
+    buildEventDescription(activity) {
+        let description = '';
+        
+        if (activity.track) {
+            description += `Трек: ${activity.track}\\n\\n`;
+        }
+        
+        if (activity.description) {
+            description += `${activity.description}\\n\\n`;
+        }
+        
+        if (activity.author) {
+            description += `Автор: ${activity.author}\\n`;
+        }
+        
+        if (activity.authorUrl) {
+            description += `Профиль: ${activity.authorUrl}\\n`;
+        }
+        
+        description += `\\nВремя: ${activity.timeStart} - ${activity.timeEnd}`;
+        description += `\\nДень: ${activity.dayName}`;
+        
+        return description;
+    }
+
+    generateICS(activities = null) {
+        const activitiesToExport = activities || this.scheduleData.activities || [];
+        const calendarName = 'Vas3k Camp 2025 📅';
+        
+        const header = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Vas3k Camp//Camp Schedule//EN',
+            'METHOD:PUBLISH',
+            `X-WR-CALNAME:${calendarName}`,
+            'X-WR-CALDESC:Расписание мероприятий Vas3k Camp 2025 с эмодзи по типам активности',
+            'X-WR-TIMEZONE:Europe/Belgrade',
+            'CALSCALE:GREGORIAN',
+            'BEGIN:VTIMEZONE',
+            'TZID:Europe/Belgrade',
+            'BEGIN:STANDARD',
+            'DTSTART:20241027T030000',
+            'TZOFFSETFROM:+0200',
+            'TZOFFSETTO:+0100',
+            'TZNAME:CET',
+            'END:STANDARD',
+            'BEGIN:DAYLIGHT',
+            'DTSTART:20250330T020000',
+            'TZOFFSETFROM:+0100',
+            'TZOFFSETTO:+0200',
+            'TZNAME:CEST',
+            'END:DAYLIGHT',
+            'END:VTIMEZONE'
+        ].join('\r\n');
+        
+        const events = activitiesToExport.map((activity, index) => this.generateEvent(activity, index));
+        
+        const footer = 'END:VCALENDAR';
+        
+        return [header, ...events, footer].join('\r\n');
+    }
+}
+
+// Enhanced download functionality
+function downloadICS(activities = null, filename = 'vas3k-camp-2025.ics') {
+    const generator = new ICSGenerator({
+        activities: activities || scheduleData.activities,
+        places: placesData
+    });
+    
+    const icsContent = generator.generateICS(activities);
+    
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Download favorites as ICS
+function downloadFavoritesICS() {
+    const favoriteActivities = scheduleData.activities.filter(activity => 
+        favorites.includes(getActivityId(activity))
+    );
+    
+    if (favoriteActivities.length === 0) {
+        alert('У вас нет избранных мероприятий для экспорта!');
+        return;
+    }
+    
+    downloadICS(favoriteActivities, 'vas3k-camp-2025-favorites.ics');
+}
+
+// Download track-specific ICS
+function downloadTrackICS(track) {
+    const trackActivities = scheduleData.activities.filter(activity => 
+        activity.track === track
+    );
+    
+    if (trackActivities.length === 0) {
+        alert(`Нет мероприятий для трека "${track}"!`);
+        return;
+    }
+    
+    const trackEmoji = TRACK_EMOJIS[track] || TRACK_EMOJIS.default;
+    const filename = `vas3k-camp-2025-${track.replace(/[^\w\s]/g, '').replace(/\s+/g, '-').toLowerCase()}.ics`;
+    
+    downloadICS(trackActivities, filename);
+}
+
+// Enhanced search functionality
+function searchActivities(query) {
+    if (!query.trim()) {
+        displaySchedule();
+        return;
+    }
+    
+    const searchQuery = query.toLowerCase();
+    const filteredActivities = scheduleData.activities.filter(activity => {
+        return (
+            activity.title?.toLowerCase().includes(searchQuery) ||
+            activity.description?.toLowerCase().includes(searchQuery) ||
+            activity.author?.toLowerCase().includes(searchQuery) ||
+            activity.track?.toLowerCase().includes(searchQuery)
+        );
+    });
+    
+    displaySearchResults(filteredActivities, query);
+}
+
+// Display search results
+function displaySearchResults(activities, query) {
+    const container = document.getElementById('schedule-container');
+    
+    if (activities.length === 0) {
+        container.innerHTML = `
+            <div class="no-results">
+                <h3>🔍 Ничего не найдено</h3>
+                <p>По запросу "${query}" не найдено мероприятий.</p>
+                <button onclick="displaySchedule()" class="btn-primary">Показать всё расписание</button>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="search-results">
+            <h3>🔍 Результаты поиска: "${query}" (${activities.length})</h3>
+            <div class="search-actions">
+                <button onclick="downloadICS(${JSON.stringify(activities)}, 'vas3k-camp-search-results.ics')" 
+                        class="btn-secondary">
+                    📅 Скачать ICS
+                </button>
+                <button onclick="displaySchedule()" class="btn-secondary">Показать всё</button>
+            </div>
+            <div class="search-results-list">
+                ${activities.map(activity => createSearchResultCard(activity)).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Create search result card
+function createSearchResultCard(activity) {
+    const emoji = new ICSGenerator({activities: [], places: placesData}).getActivityEmoji(activity);
+    const isFavorite = favorites.includes(getActivityId(activity));
+    
+    return `
+        <div class="search-result-card" onclick="openActivityModal(${JSON.stringify(activity).replace(/"/g, '&quot;')})">
+            <div class="search-result-header">
+                <span class="activity-emoji">${emoji}</span>
+                <h4>${activity.title}</h4>
+                <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                        onclick="event.stopPropagation(); toggleFavorite('${getActivityId(activity)}')"
+                        title="${isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}">
+                    ${isFavorite ? '❤️' : '🤍'}
+                </button>
+            </div>
+            <div class="search-result-meta">
+                <span class="date">${activity.dayName}, ${activity.date}</span>
+                <span class="time">${activity.timeStart} - ${activity.timeEnd}</span>
+                ${activity.track ? `<span class="track">${activity.track}</span>` : ''}
+            </div>
+            ${activity.author ? `<div class="author">👤 ${activity.author}</div>` : ''}
+            ${activity.description ? `<div class="description">${activity.description.substring(0, 150)}${activity.description.length > 150 ? '...' : ''}</div>` : ''}
+        </div>
+    `;
+}
+
 // Function to convert URLs in text to clickable links and handle newlines
 function linkifyText(text) {
     if (!text) return '';

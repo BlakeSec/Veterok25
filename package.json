@@ -1,0 +1,23 @@
+{
+  "name": "vas3k-camp-2025-schedule",
+  "version": "1.0.0",
+  "description": "Vas3k Camp 2025 Schedule Viewer with ICS Calendar Generation",
+  "main": "script.js",
+  "scripts": {
+    "generate-ics": "node ics_generator.js",
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": [
+    "vas3k",
+    "camp",
+    "schedule",
+    "ics",
+    "calendar",
+    "emoji"
+  ],
+  "author": "Vas3k Camp Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
