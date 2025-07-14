@@ -10,18 +10,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Notification container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
     <header>
         <div class="container">
             <div class="header-content">
                 <div class="header-left">
                     <img src="images/logo-diamond.svg" alt="Кэмп 2025 Лого" class="header-logo">
+                    <h2 class="site-title">Расписание движух Ветерок / Tramontana'25</h2>
+                </div>
+                <div class="header-right">
+                    <div class="current-time-info">
+                        <div class="current-time" id="currentTimeDisplay"></div>
+                        <div class="current-event" id="currentEventDisplay"></div>
+                    </div>
+                    <div class="favorites-toggle">
+                        <label class="toggle">
+                            <input type="checkbox" id="favoritesToggle">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Только избранное</span>
+                        </label>
+                    </div>
                     <h2 class="site-title">Расписание движух Ветерок Трамонтана 2025</h2>
                 </div>
                 <div class="header-right">
                     <div class="search-container">
-                        <input type="text" id="searchInput" placeholder="🔍 Поиск мероприятий..." 
+                        <input type="text" id="searchInput" placeholder="🔍 Поиск мероприятий..."
                                onkeyup="debounce(searchActivities, 300)(this.value)">
-                        <button onclick="document.getElementById('searchInput').value = ''; displaySchedule()" 
+                        <button onclick="document.getElementById('searchInput').value = ''; displaySchedule()"
                                 class="search-clear" title="Очистить поиск">✕</button>
                     </div>
                     <div class="favorites-toggle">
@@ -130,7 +147,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Ветерок Трамонтана. Все права защищены.</p>
+            <p>&copy; 2025 Veterok / Tramontana'25. Все права защищены.</p>
         </div>
     </footer>
 
