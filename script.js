@@ -1,12 +1,167 @@
-// Global variables
-let scheduleData = [];
-let mealsData = [];
-let stationsData = [];
-let questsData = [];
-let placesData = []; // Added for location info
-let currentDay = '';
-let currentTab = 'days'; // 'days', 'stations', or 'quests'
-let favorites = [];
+// Localization system
+let currentLanguage = 'ru'; // Default language
+
+const translations = {
+    ru: {
+        // Page title and header
+        pageTitle: 'Расписание движух Ветерок / Tramontana\'25',
+        logoAlt: 'Кэмп 2025 Лого',
+        
+        // Navigation and controls
+        whatNowBtn: 'Что сейчас?',
+        favoritesOnly: 'Только избранное',
+        camps: 'Кэмпы',
+        
+        // Days of the week (short)
+        weekdays: ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'],
+        
+        // Months
+        months: [
+            'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+        ],
+        
+        // Meals
+        breakfast: 'Завтрак',
+        lunch: 'Обед', 
+        dinner: 'Ужин',
+        
+        // General
+        allTracks: 'Все треки',
+        leads: 'Лиды: ',
+        noDescription: 'Нет описания',
+        currentTime: 'Текущее время',
+        
+        // Favorites
+        addToFavorites: 'Добавить в избранное',
+        removeFromFavorites: 'Удалить из избранного',
+        
+        // Error messages and alerts
+        loadingError: 'Ошибка загрузки расписания. Пожалуйста, попробуйте позже.',
+        whatNowOnlyForDays: 'Функция "Что сейчас?" работает только для расписания по дням',
+        todayNotFound: 'Сегодняшняя дата не найдена в расписании',
+        scheduleNotLoaded: 'Расписание еще не загружено',
+        timeNotFound: 'Не удалось найти подходящее время в расписании',
+        
+        // Footer
+        allRightsReserved: 'Все права защищены',
+        
+        // Language switcher
+        language: 'Язык'
+    },
+    en: {
+        // Page title and header
+        pageTitle: 'Veterok / Tramontana\'25 Activities Schedule',
+        logoAlt: 'Camp 2025 Logo',
+        
+        // Navigation and controls
+        whatNowBtn: 'What\'s Now?',
+        favoritesOnly: 'Favorites Only',
+        camps: 'Camps',
+        
+        // Days of the week (short)
+        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        
+        // Months
+        months: [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ],
+        
+        // Meals
+        breakfast: 'Breakfast',
+        lunch: 'Lunch',
+        dinner: 'Dinner',
+        
+        // General
+        allTracks: 'All Tracks',
+        leads: 'Leads: ',
+        noDescription: 'No description',
+        currentTime: 'Current Time',
+        
+        // Favorites
+        addToFavorites: 'Add to Favorites',
+        removeFromFavorites: 'Remove from Favorites',
+        
+        // Error messages and alerts
+        loadingError: 'Schedule loading error. Please try again later.',
+        whatNowOnlyForDays: 'The "What\'s Now?" function only works for daily schedule',
+        todayNotFound: 'Today\'s date not found in schedule',
+        scheduleNotLoaded: 'Schedule not loaded yet',
+        timeNotFound: 'Could not find suitable time in schedule',
+        
+        // Footer
+        allRightsReserved: 'All Rights Reserved',
+        
+        // Language switcher
+        language: 'Language'
+    }
+};
+
+// Get translated text
+function t(key) {
+    return translations[currentLanguage][key] || key;
+}
+
+// Initialize language from localStorage or default
+function initializeLanguage() {
+    const savedLanguage = localStorage.getItem('scheduleLanguage');
+    if (savedLanguage && translations[savedLanguage]) {
+        currentLanguage = savedLanguage;
+    }
+    updatePageLanguage();
+}
+
+// Switch language
+function switchLanguage(lang) {
+    if (translations[lang]) {
+        currentLanguage = lang;
+        localStorage.setItem('scheduleLanguage', lang);
+        updatePageLanguage();
+        displaySchedule(); // Refresh the schedule display
+    }
+}
+
+// Update page language
+function updatePageLanguage() {
+    // Update document language
+    document.documentElement.lang = currentLanguage;
+    
+    // Update page title
+    document.title = t('pageTitle');
+    
+    // Update header elements
+    const siteTitle = document.querySelector('.site-title');
+    if (siteTitle) siteTitle.textContent = t('pageTitle');
+    
+    const logoAlt = document.querySelector('.header-logo');
+    if (logoAlt) logoAlt.alt = t('logoAlt');
+    
+    // Update control buttons
+    const whatNowBtn = document.querySelector('#scrollToNowBtn .btn-text');
+    if (whatNowBtn) whatNowBtn.textContent = t('whatNowBtn');
+    
+    const favoritesToggle = document.querySelector('.toggle-label');
+    if (favoritesToggle) favoritesToggle.textContent = t('favoritesOnly');
+    
+    const favoriteText = document.querySelector('.favorite-text');
+    if (favoriteText) favoriteText.textContent = t('addToFavorites');
+    
+    // Update footer
+    const footer = document.querySelector('footer p');
+    if (footer) footer.innerHTML = `&copy; 2025 Veterok / Tramontana'25. ${t('allRightsReserved')}.`;
+    
+    // Update language selector
+    updateLanguageSelector();
+}
+
+// Update language selector
+function updateLanguageSelector() {
+    const languageSelector = document.getElementById('languageSelector');
+    if (languageSelector) {
+        languageSelector.value = currentLanguage;
+    }
+}
 
 // Function to convert URLs in text to clickable links and handle newlines
 function linkifyText(text) {
@@ -45,8 +200,19 @@ function debounce(func, wait) {
     };
 }
 
+// Global variables
+let scheduleData = [];
+let mealsData = [];
+let stationsData = [];
+let questsData = [];
+let placesData = []; // Added for location info
+let currentDay = '';
+let currentTab = 'days'; // 'days', 'stations', or 'quests'
+let favorites = [];
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
+    initializeLanguage(); // Initialize language first
     loadSchedule();
     loadFavorites();
     setupEventListeners();
@@ -157,7 +323,7 @@ async function loadSchedule() {
 
     } catch (error) {
         console.error('Error loading schedule:', error);
-        document.getElementById('tracksContainer').innerHTML = '<p class="error-message">Ошибка загрузки расписания. Пожалуйста, попробуйте позже.</p>';
+        document.getElementById('tracksContainer').innerHTML = `<p class="error-message">${t('loadingError')}</p>`;
     }
 }
 
@@ -201,7 +367,7 @@ function createTabs(days) {
     const stationsTab = document.createElement('div');
     stationsTab.className = 'day-tab';
     stationsTab.dataset.tab = 'stations';
-    stationsTab.textContent = 'Кэмпы';
+            stationsTab.textContent = t('camps');
 
     stationsTab.addEventListener('click', () => {
         selectTab('stations');
@@ -214,25 +380,14 @@ function createTabs(days) {
 
 // Get weekday name in Russian
 function getWeekdayName(date) {
-    const weekdayNames = [
-        'вс', 'пн', 'вт', 'ср',
-        'чт', 'пт', 'сб'
-    ];
-    return weekdayNames[date.getDay()];
+    return t('weekdays')[date.getDay()];
 }
 
 // Format date as "DD Month"
 function formatDate(dateString) {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
-
-    // Array of month names in Russian
-    const monthNames = [
-        'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
-    ];
-
-    const month = monthNames[date.getMonth()];
+    const month = t('months')[date.getMonth()];
     return `${day} ${month}`;
 }
 
@@ -381,11 +536,11 @@ function displayDaySchedule() {
 
             // Add emoji based on meal type
             let mealEmoji = '';
-            if (mealAtThisHour.title === 'Завтрак') {
+            if (mealAtThisHour.title === t('breakfast') || mealAtThisHour.title === 'Завтрак') {
                 mealEmoji = '🍳 ';
-            } else if (mealAtThisHour.title === 'Обед') {
+            } else if (mealAtThisHour.title === t('lunch') || mealAtThisHour.title === 'Обед') {
                 mealEmoji = '🍲 ';
-            } else if (mealAtThisHour.title === 'Ужин') {
+            } else if (mealAtThisHour.title === t('dinner') || mealAtThisHour.title === 'Ужин') {
                 mealEmoji = '🍽️ ';
             }
 
@@ -470,7 +625,7 @@ function displayStations() {
 
                 const leadsLabel = document.createElement('span');
                 leadsLabel.className = 'leads-label';
-                leadsLabel.textContent = 'Лиды: ';
+                leadsLabel.textContent = t('leads');
 
                 const leadsText = document.createElement('span');
                 leadsText.className = 'leads-text';
@@ -611,7 +766,7 @@ function displayDesktopSchedule(activities, timeRange) {
     const trackDateGroups = {};
 
     activities.forEach(activity => {
-        if (activity.type === 'general' || activity.track === 'Все треки') {
+        if (activity.type === 'general' || activity.track === t('allTracks') || activity.track === 'Все треки') {
             return; // Skip general events for grouping
         }
 
@@ -667,7 +822,7 @@ function displayDesktopSchedule(activities, timeRange) {
 
     // First, add general events
     activities.forEach(activity => {
-        if (activity.type === 'general' || activity.track === 'Все треки') {
+        if (activity.type === 'general' || activity.track === t('allTracks') || activity.track === 'Все треки') {
             createActivityCard(activity, timeRange, tracksContainer);
             processedActivities.add(getActivityId(activity));
         }
@@ -700,7 +855,7 @@ function displayDesktopSchedule(activities, timeRange) {
     activities.forEach(activity => {
         if (!processedActivities.has(getActivityId(activity)) &&
             activity.type !== 'general' &&
-            activity.track !== 'Все треки') {
+                            activity.track !== t('allTracks') && activity.track !== 'Все треки') {
             createActivityCard(activity, timeRange, tracksContainer);
         }
     });
@@ -714,7 +869,7 @@ function createActivityFavoriteButton(activity) {
     const favoriteBtn = document.createElement('button');
     favoriteBtn.className = 'activity-favorite-star';
     favoriteBtn.innerHTML = isFavorite ? '★' : '☆';
-    favoriteBtn.title = isFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
+    favoriteBtn.title = isFavorite ? t('removeFromFavorites') : t('addToFavorites');
     favoriteBtn.dataset.activityId = activityId;
 
     // Add active class if favorited
@@ -732,7 +887,7 @@ function createActivityFavoriteButton(activity) {
         // Update button appearance
         const nowFavorite = favorites.includes(activityId);
         favoriteBtn.innerHTML = nowFavorite ? '★' : '☆';
-        favoriteBtn.title = nowFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
+        favoriteBtn.title = nowFavorite ? t('removeFromFavorites') : t('addToFavorites');
         favoriteBtn.classList.toggle('active', nowFavorite);
 
         // Update the card appearance and title
@@ -820,7 +975,7 @@ function createActivityCard(activity, timeRange, tracksContainer) {
         card.classList.add('soft-skills');
     } else if (activity.track === '🌿 Hobby Grove') {
         card.classList.add('hobby-track');
-    } else if (activity.track === 'Все треки') {
+    } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
         card.classList.add('all-tracks');
     }
 
@@ -891,7 +1046,7 @@ function createActivityCard(activity, timeRange, tracksContainer) {
                 trackBadge.classList.add('soft-skills');
             } else if (activity.track === '🌿 Hobby Grove') {
                 trackBadge.classList.add('hobby-track');
-            } else if (activity.track === 'Все треки') {
+            } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
                 trackBadge.classList.add('all-tracks');
             }
             trackBadge.textContent = activity.track;
@@ -918,7 +1073,7 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     if (activity.type === 'general') {
         // For general events (spanning all tracks)
         tracksContainer.appendChild(card);
-    } else if (activity.track === 'Все треки') {
+    } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
         // For activities spanning all tracks (legacy support)
         card.classList.add('all-tracks');
         tracksContainer.appendChild(card);
@@ -1170,11 +1325,11 @@ function displayMobileSchedule(activities, timeRange) {
 
                 // Add emoji based on meal type
                 let mealEmoji = '';
-                if (mealAtThisHour.title === 'Завтрак') {
+                if (mealAtThisHour.title === t('breakfast') || mealAtThisHour.title === 'Завтрак') {
                     mealEmoji = '🍳 ';
-                } else if (mealAtThisHour.title === 'Обед') {
+                } else if (mealAtThisHour.title === t('lunch') || mealAtThisHour.title === 'Обед') {
                     mealEmoji = '🥗 ';
-                } else if (mealAtThisHour.title === 'Ужин') {
+                } else if (mealAtThisHour.title === t('dinner') || mealAtThisHour.title === 'Ужин') {
                     mealEmoji = '🍽 ';
                 }
 
@@ -1218,7 +1373,7 @@ function displayMobileSchedule(activities, timeRange) {
                         mobileActivity.classList.add('soft-skills');
                     } else if (activity.track === '🌿 Hobby Grove') {
                         mobileActivity.classList.add('hobby-track');
-                    } else if (activity.track === 'Все треки') {
+                    } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
                         mobileActivity.classList.add('all-tracks');
                     }
 
@@ -1274,7 +1429,7 @@ function displayMobileSchedule(activities, timeRange) {
                             trackBadge.classList.add('soft-skills');
                         } else if (activity.track === '🌿 Hobby Grove') {
                             trackBadge.classList.add('hobby-track');
-                        } else if (activity.track === 'Все треки') {
+                        } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
                             trackBadge.classList.add('all-tracks');
                         }
                         trackBadge.textContent = activity.track;
@@ -1388,7 +1543,7 @@ function openActivityModal(activity) {
         modalTrack.classList.add('soft-skills');
     } else if (activity.track === '🌿 Hobby Grove') {
         modalTrack.classList.add('hobby-track');
-    } else if (activity.track === 'Все треки') {
+    } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
         modalTrack.classList.add('all-tracks');
     }
 
@@ -1399,7 +1554,7 @@ function openActivityModal(activity) {
 
     toggleFavoriteBtn.classList.toggle('active', isFavorite);
     toggleFavoriteBtn.querySelector('.favorite-text').textContent =
-        isFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
+        isFavorite ? t('removeFromFavorites') : t('addToFavorites');
 
     toggleFavoriteBtn.dataset.activityId = activityId;
 
@@ -1553,7 +1708,7 @@ function openMergedActivityModal(activity1, activity2) {
         const favoriteText = document.createElement('span');
         favoriteText.className = 'favorite-text';
         favoriteText.textContent = favorites.includes(getActivityId(activity)) ?
-            'Удалить из избранного' : 'Добавить в избранное';
+            t('removeFromFavorites') : t('addToFavorites');
 
         favoriteBtn.appendChild(starIcon);
         favoriteBtn.appendChild(document.createTextNode(` ${number} `));
@@ -1567,7 +1722,7 @@ function openMergedActivityModal(activity1, activity2) {
             // Update button state
             favoriteBtn.classList.toggle('active');
             favoriteText.textContent = favorites.includes(getActivityId(activity)) ?
-                'Удалить из избранного' : 'Добавить в избранное';
+                t('removeFromFavorites') : t('addToFavorites');
 
             // Update modal title with star emoji
             const modalTitle = document.getElementById('modalTitle');
@@ -1646,7 +1801,7 @@ function openMergedActivityModal(activity1, activity2) {
         </div>`;
     }
 
-    modalDescription.innerHTML = combinedDescription || 'Нет описания';
+    modalDescription.innerHTML = combinedDescription || t('noDescription');
 
     // Now insert the favorite buttons into their containers
     if (activity1.description) {
@@ -1713,7 +1868,7 @@ function openLocationModal(placeId) {
     const modalPhoto = document.getElementById('locationModalPhoto');
 
     modalTitle.textContent = "📍 " + place.title;
-    modalDescription.textContent = place.description || 'Нет описания';
+    modalDescription.textContent = place.description || t('noDescription');
 
     // Set photo source
     modalPhoto.src = `photos/${placeId}.jpg`;
@@ -1804,7 +1959,7 @@ function toggleFavorite(activityId) {
     const isFavorite = favorites.includes(activityId);
     toggleFavoriteBtn.classList.toggle('active', isFavorite);
     toggleFavoriteBtn.querySelector('.favorite-text').textContent =
-        isFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
+        isFavorite ? t('removeFromFavorites') : t('addToFavorites');
 
     localStorage.setItem('favorites', JSON.stringify(favorites));
     displaySchedule();
@@ -1825,7 +1980,7 @@ function toggleSingleFavorite(activityId) {
 function scrollToCurrentTime() {
     // Only works for the days tab
     if (currentTab !== 'days') {
-        alert('Функция "Что сейчас?" работает только для расписания по дням');
+        alert(t('whatNowOnlyForDays'));
         return;
     }
 
@@ -1839,7 +1994,7 @@ function scrollToCurrentTime() {
             // Wait for the schedule to render, then scroll
             setTimeout(() => scrollToCurrentTimeActual(), 100);
         } else {
-            alert('Сегодняшняя дата не найдена в расписании');
+            alert(t('todayNotFound'));
         }
         return;
     }
@@ -1858,7 +2013,7 @@ function scrollToCurrentTimeActual() {
     const timeMarkers = document.querySelectorAll('.time-marker');
 
     if (timeMarkers.length === 0) {
-        alert('Расписание еще не загружено');
+        alert(t('scheduleNotLoaded'));
         return;
     }
 
@@ -1915,7 +2070,7 @@ function scrollToCurrentTimeActual() {
         // Show a brief visual indicator
         showTimeIndicator();
     } else {
-        alert('Не удалось найти подходящее время в расписании');
+        alert(t('timeNotFound'));
     }
 }
 
@@ -1923,7 +2078,7 @@ function scrollToCurrentTimeActual() {
 function showTimeIndicator() {
     // Create a temporary indicator
     const indicator = document.createElement('div');
-    indicator.textContent = 'Текущее время';
+    indicator.textContent = t('currentTime');
     indicator.style.cssText = `
         position: fixed;
         top: 50%;
