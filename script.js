@@ -61,10 +61,18 @@ function setupEventListeners() {
     document.getElementById('scrollToNowBtn').addEventListener('click', scrollToCurrentTime);
 
     // Close activity modal
-    document.querySelector('#activityModal .close-modal').addEventListener('click', closeModal);
+    document.querySelector('#activityModal .close-modal').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeModal();
+    });
 
     // Close location modal
-    document.querySelector('#locationModal .close-modal').addEventListener('click', closeLocationModal);
+    document.querySelector('#locationModal .close-modal').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeLocationModal();
+    });
 
     // Toggle favorite
     document.getElementById('toggleFavorite').addEventListener('click', () => {
@@ -74,8 +82,33 @@ function setupEventListeners() {
 
     // Window click to close modals
     window.addEventListener('click', (e) => {
-        if (e.target === document.getElementById('activityModal')) closeModal();
-        if (e.target === document.getElementById('locationModal')) closeLocationModal();
+        const activityModal = document.getElementById('activityModal');
+        const locationModal = document.getElementById('locationModal');
+
+        // Close activity modal if clicking outside
+        if (e.target === activityModal) {
+            closeModal();
+        }
+
+        // Close location modal if clicking outside
+        if (e.target === locationModal) {
+            closeLocationModal();
+        }
+    });
+
+    // ESC key to close modals
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const activityModal = document.getElementById('activityModal');
+            const locationModal = document.getElementById('locationModal');
+
+            if (activityModal.style.display === 'block') {
+                closeModal();
+            }
+            if (locationModal.style.display === 'block') {
+                closeLocationModal();
+            }
+        }
     });
 
     // Resize handler with debounce
@@ -673,6 +706,57 @@ function displayDesktopSchedule(activities, timeRange) {
     });
 }
 
+// Create a favorite star button for activity cards
+function createActivityFavoriteButton(activity) {
+    const activityId = getActivityId(activity);
+    const isFavorite = favorites.includes(activityId);
+
+    const favoriteBtn = document.createElement('button');
+    favoriteBtn.className = 'activity-favorite-star';
+    favoriteBtn.innerHTML = isFavorite ? '★' : '☆';
+    favoriteBtn.title = isFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
+    favoriteBtn.dataset.activityId = activityId;
+
+    // Add active class if favorited
+    if (isFavorite) {
+        favoriteBtn.classList.add('active');
+    }
+
+    // Add click handler
+    favoriteBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent card click (opening modal)
+
+        toggleSingleFavorite(activityId);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+
+        // Update button appearance
+        const nowFavorite = favorites.includes(activityId);
+        favoriteBtn.innerHTML = nowFavorite ? '★' : '☆';
+        favoriteBtn.title = nowFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
+        favoriteBtn.classList.toggle('active', nowFavorite);
+
+        // Update the card appearance and title
+        const card = favoriteBtn.closest('.activity-card, .mobile-activity');
+        if (card) {
+            card.classList.toggle('favorite', nowFavorite);
+
+            // Update title star emoji
+            const titleElement = card.querySelector('.activity-title');
+            if (titleElement) {
+                const baseTitle = activity.title;
+                titleElement.textContent = baseTitle + (nowFavorite ? ' ⭐️' : '');
+            }
+        }
+
+        // If favorites filter is active, refresh display
+        if (document.getElementById('favoritesToggle').checked) {
+            displaySchedule();
+        }
+    });
+
+    return favoriteBtn;
+}
+
 // Create a location link element
 function createLocationLink(placeId) {
     if (!placeId) return null;
@@ -818,8 +902,16 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     // Add the container to the card
     card.appendChild(metaContainer);
 
+    // Add favorite star button
+    const favoriteButton = createActivityFavoriteButton(activity);
+    card.appendChild(favoriteButton);
+
     // Add click event to open modal
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+        // Don't open modal if clicking on favorite button
+        if (e.target.classList.contains('activity-favorite-star')) {
+            return;
+        }
         openActivityModal(activity);
     });
 
@@ -975,8 +1067,23 @@ function createMergedActivityCard(activities, timeRange, tracksContainer) {
     card.appendChild(activity2Container);
     card.appendChild(metaWrapper);
 
+    // Add favorite buttons for both activities
+    const favoriteButton1 = createActivityFavoriteButton(activity1);
+    favoriteButton1.style.top = '6px';
+    favoriteButton1.style.right = '40px'; // Position to the left of the second button
+    card.appendChild(favoriteButton1);
+
+    const favoriteButton2 = createActivityFavoriteButton(activity2);
+    favoriteButton2.style.top = '6px';
+    favoriteButton2.style.right = '6px';
+    card.appendChild(favoriteButton2);
+
     // Add click event to open merged modal
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+        // Don't open modal if clicking on favorite buttons
+        if (e.target.classList.contains('activity-favorite-star')) {
+            return;
+        }
         openMergedActivityModal(activity1, activity2);
     });
 
@@ -1177,8 +1284,16 @@ function displayMobileSchedule(activities, timeRange) {
                     // Add the container to the mobile activity
                     mobileActivity.appendChild(metaContainer);
 
+                    // Add favorite star button
+                    const favoriteButton = createActivityFavoriteButton(activity);
+                    mobileActivity.appendChild(favoriteButton);
+
                     // Add click event to open modal
-                    mobileActivity.addEventListener('click', () => {
+                    mobileActivity.addEventListener('click', (e) => {
+                        // Don't open modal if clicking on favorite button
+                        if (e.target.classList.contains('activity-favorite-star')) {
+                            return;
+                        }
                         openActivityModal(activity);
                     });
 

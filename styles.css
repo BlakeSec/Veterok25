@@ -825,6 +825,45 @@ input:checked + .toggle-slider:before {
     font-size: 1.1rem;
 }
 
+/* Activity favorite star button (on cards) */
+.activity-favorite-star {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+}
+
+.activity-favorite-star:hover {
+    background-color: var(--color-white);
+    color: var(--color-accent-yellow);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.activity-favorite-star.active {
+    color: var(--color-accent-yellow);
+    background-color: var(--color-white);
+}
+
+.activity-favorite-star.active:hover {
+    color: var(--color-text-secondary);
+}
+
 /* List views for stations and quests */
 .list-container {
     display: flex;
@@ -1416,5 +1455,22 @@ footer {
 
     .camp-leads {
         font-size: 13px;
+    }
+
+    /* Mobile activity favorite star */
+    .mobile-activity .activity-favorite-star {
+        top: 8px;
+        right: 8px;
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+    }
+
+    .activity-card .activity-favorite-star {
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
     }
 }
