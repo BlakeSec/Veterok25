@@ -29,10 +29,18 @@ const translations = {
         // General
         allTracks: 'Все треки',
         leads: 'Лиды: ',
+        author: 'Автор: ',
         noDescription: 'Нет описания',
         currentTime: 'Текущее время',
         currentEvent: 'Текущее событие',
         noCurrentEvent: 'Сейчас нет активных событий',
+        
+        // Camps section
+        festivalCamps: 'Кэмпы фестиваля',
+        allCamps: 'Все кэмпы',
+        selectedCampEvents: 'События выбранного кэмпа',
+        eventsCount: 'событий',
+        moreEvents: 'событий ещё',
         
         // Favorites
         addToFavorites: 'Добавить в избранное',
@@ -78,10 +86,18 @@ const translations = {
         // General
         allTracks: 'All Tracks',
         leads: 'Leads: ',
+        author: 'Author: ',
         noDescription: 'No description',
         currentTime: 'Current Time',
         currentEvent: 'Current Event',
         noCurrentEvent: 'No active events right now',
+        
+        // Camps section
+        festivalCamps: 'Festival Camps',
+        allCamps: 'All Camps',
+        selectedCampEvents: 'Selected Camp Events',
+        eventsCount: 'events',
+        moreEvents: 'more events',
         
         // Favorites
         addToFavorites: 'Add to Favorites',
@@ -592,13 +608,13 @@ function displayStations() {
     const headerContainer = document.createElement('div');
     headerContainer.className = 'camps-header';
     headerContainer.innerHTML = `
-        <h2>Кэмпы фестиваля</h2>
+        <h2>${t('festivalCamps')}</h2>
         <div class="camps-controls">
             <button id="showAllCamps" class="camps-filter-btn ${!selectedCampFilter ? 'active' : ''}">
-                Все кэмпы (${placesData.length})
+                ${t('allCamps')} (${placesData.length})
             </button>
             <button id="showCampActivities" class="camps-filter-btn ${selectedCampFilter ? 'active' : ''}" style="display: ${selectedCampFilter ? 'inline-block' : 'none'}">
-                События выбранного кэмпа
+                ${t('selectedCampEvents')}
             </button>
         </div>
     `;
@@ -657,7 +673,7 @@ function displayStations() {
             if (activityCount > 0) {
                 const countBadge = document.createElement('span');
                 countBadge.className = 'activity-count-badge';
-                countBadge.textContent = `${activityCount} событий`;
+                countBadge.textContent = `${activityCount} ${t('eventsCount')}`;
                 campItem.appendChild(countBadge);
             }
 
@@ -705,7 +721,7 @@ function displayStations() {
                 if (activity.author) {
                     const authorInfo = document.createElement('div');
                     authorInfo.className = 'activity-author';
-                    authorInfo.textContent = `Автор: ${activity.author}`;
+                    authorInfo.textContent = `${t('author')}${activity.author}`;
 
                     activityItem.appendChild(title);
                     activityItem.appendChild(timeInfo);
@@ -1848,7 +1864,7 @@ function closeModal() {
         modalFooter.innerHTML = `
             <button id="toggleFavorite" class="favorite-btn">
                 <span class="star-icon">★</span>
-                <span class="favorite-text">Добавить в избранное</span>
+                <span class="favorite-text">${t('addToFavorites')}</span>
             </button>
         `;
 
@@ -2161,7 +2177,7 @@ function showTimeIndicator(currentEvents = []) {
         });
         
         if (currentEvents.length > 3) {
-            content += `<div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">+${currentEvents.length - 3} more events</div>`;
+            content += `<div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">+${currentEvents.length - 3} ${t('moreEvents')}</div>`;
         }
     } else {
         content += `<div style="font-size: 16px; opacity: 0.9;">${t('noCurrentEvent')}</div>`;
