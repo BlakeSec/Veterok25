@@ -31,6 +31,8 @@ const translations = {
         leads: 'Лиды: ',
         noDescription: 'Нет описания',
         currentTime: 'Текущее время',
+        currentEvent: 'Текущее событие',
+        noCurrentEvent: 'Сейчас нет активных событий',
         
         // Favorites
         addToFavorites: 'Добавить в избранное',
@@ -78,6 +80,8 @@ const translations = {
         leads: 'Leads: ',
         noDescription: 'No description',
         currentTime: 'Current Time',
+        currentEvent: 'Current Event',
+        noCurrentEvent: 'No active events right now',
         
         // Favorites
         addToFavorites: 'Add to Favorites',
@@ -98,9 +102,15 @@ const translations = {
     }
 };
 
-// Get translated text
+// Helper function to get localized text
 function t(key) {
-    return translations[currentLanguage][key] || key;
+    return translations[currentLanguage][key] || translations['ru'][key] || key;
+}
+
+// Helper function to get localized content from activity/place
+function getLocalizedContent(item, field) {
+    const localizedField = field + (currentLanguage === 'en' ? 'En' : '');
+    return item[localizedField] || item[field] || '';
 }
 
 // Initialize language from localStorage or default
@@ -612,11 +622,11 @@ function displayStations() {
 
             const title = document.createElement('h3');
             title.className = 'list-item-title';
-            title.textContent = place.name;
+            title.textContent = getLocalizedContent(place, 'name');
 
             const description = document.createElement('p');
             description.className = 'list-item-description';
-            description.innerHTML = linkifyText(place.description);
+            description.innerHTML = linkifyText(getLocalizedContent(place, 'description'));
 
             // Show leads info if available
             if (place.leads && place.leads.length > 0) {
@@ -1005,7 +1015,8 @@ function createActivityCard(activity, timeRange, tracksContainer) {
 
     const title = document.createElement('div');
     title.className = 'activity-title';
-    title.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
+    const localizedTitle = getLocalizedContent(activity, 'title');
+    title.textContent = localizedTitle + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
 
     const time = document.createElement('div');
     time.className = 'activity-time';
@@ -1394,7 +1405,8 @@ function displayMobileSchedule(activities, timeRange) {
 
                     const title = document.createElement('div');
                     title.className = 'activity-title';
-                    title.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
+                    const localizedTitle = getLocalizedContent(activity, 'title');
+                    title.textContent = localizedTitle + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
 
                     const time = document.createElement('div');
                     time.className = 'activity-time';
@@ -1432,7 +1444,7 @@ function displayMobileSchedule(activities, timeRange) {
                         } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
                             trackBadge.classList.add('all-tracks');
                         }
-                        trackBadge.textContent = activity.track;
+                        trackBadge.textContent = getLocalizedContent(activity, 'track');
                         metaContainer.appendChild(trackBadge);
                     }
 
@@ -1473,7 +1485,8 @@ function openActivityModal(activity) {
     const modalDescription = document.getElementById('modalDescription');
     const toggleFavoriteBtn = document.getElementById('toggleFavorite');
 
-    modalTitle.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
+    const localizedTitle = getLocalizedContent(activity, 'title');
+    modalTitle.textContent = localizedTitle + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
     modalTime.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
 
     // Add author information if available
@@ -1547,7 +1560,8 @@ function openActivityModal(activity) {
         modalTrack.classList.add('all-tracks');
     }
 
-    modalDescription.innerHTML = linkifyText(activity.description);
+    const localizedDescription = getLocalizedContent(activity, 'description');
+    modalDescription.innerHTML = linkifyText(localizedDescription);
 
     const activityId = getActivityId(activity);
     const isFavorite = favorites.includes(activityId);
@@ -1868,7 +1882,8 @@ function openLocationModal(placeId) {
     const modalPhoto = document.getElementById('locationModalPhoto');
 
     modalTitle.textContent = "📍 " + place.title;
-    modalDescription.textContent = place.description || t('noDescription');
+    const localizedDescription = getLocalizedContent(place, 'description');
+    modalDescription.textContent = localizedDescription || t('noDescription');
 
     // Set photo source
     modalPhoto.src = `photos/${placeId}.jpg`;
@@ -2032,6 +2047,9 @@ function scrollToCurrentTimeActual() {
     });
 
     if (closestMarker) {
+        // Find current events
+        const currentEvents = findCurrentEvents(currentTimeInMinutes);
+        
         // Check if we're on mobile
         const isMobile = window.innerWidth <= 768;
 
@@ -2067,51 +2085,97 @@ function scrollToCurrentTimeActual() {
             });
         }
 
-        // Show a brief visual indicator
-        showTimeIndicator();
+        // Show a brief visual indicator with current event description
+        showTimeIndicator(currentEvents);
     } else {
         alert(t('timeNotFound'));
     }
 }
 
+// Find current events happening now
+function findCurrentEvents(currentTimeInMinutes) {
+    if (!scheduleData) return [];
+    
+    const today = new Date().toISOString().split('T')[0];
+    const currentEvents = [];
+    
+    scheduleData.forEach(activity => {
+        if (activity.date !== today) return;
+        
+        const startMinutes = timeToMinutes(activity.timeStart);
+        const endMinutes = timeToMinutes(activity.timeEnd);
+        
+        // Handle events that cross midnight
+        const actualEndMinutes = endMinutes < startMinutes ? endMinutes + 24 * 60 : endMinutes;
+        const actualCurrentMinutes = currentTimeInMinutes < startMinutes && endMinutes < startMinutes 
+            ? currentTimeInMinutes + 24 * 60 
+            : currentTimeInMinutes;
+        
+        if (actualCurrentMinutes >= startMinutes && actualCurrentMinutes <= actualEndMinutes) {
+            currentEvents.push(activity);
+        }
+    });
+    
+    return currentEvents;
+}
+
 // Show a brief visual indicator that we've scrolled to current time
-function showTimeIndicator() {
+function showTimeIndicator(currentEvents = []) {
     // Create a temporary indicator
     const indicator = document.createElement('div');
-    indicator.textContent = t('currentTime');
     indicator.style.cssText = `
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: var(--color-accent-blue);
+        background: var(--color-accent-blue);
         color: white;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        z-index: 1000;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        padding: 16px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        z-index: 10000;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        max-width: 90vw;
+        text-align: center;
+        line-height: 1.4;
     `;
-
+    
+    let content = `<div style="margin-bottom: 8px; font-size: 14px; opacity: 0.9;">${t('currentTime')}</div>`;
+    
+    if (currentEvents.length > 0) {
+        content += `<div style="margin-bottom: 12px; font-size: 18px; font-weight: 700;">${t('currentEvent')}</div>`;
+        
+        currentEvents.slice(0, 3).forEach((event, index) => {
+            const title = getLocalizedContent(event, 'title');
+            const track = getLocalizedContent(event, 'track');
+            const description = getLocalizedContent(event, 'description');
+            
+            content += `
+                <div style="margin-bottom: ${index < currentEvents.length - 1 ? '12px' : '0'}; padding: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">${title}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">${track}</div>
+                    ${description ? `<div style="font-size: 13px; opacity: 0.9; line-height: 1.3;">${description}</div>` : ''}
+                </div>
+            `;
+        });
+        
+        if (currentEvents.length > 3) {
+            content += `<div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">+${currentEvents.length - 3} more events</div>`;
+        }
+    } else {
+        content += `<div style="font-size: 16px; opacity: 0.9;">${t('noCurrentEvent')}</div>`;
+    }
+    
+    indicator.innerHTML = content;
     document.body.appendChild(indicator);
 
-    // Animate in
+    // Remove after 4 seconds
     setTimeout(() => {
-        indicator.style.opacity = '1';
-    }, 10);
-
-    // Remove after 2 seconds
-    setTimeout(() => {
-        indicator.style.opacity = '0';
-        setTimeout(() => {
-            if (indicator.parentNode) {
-                document.body.removeChild(indicator);
-            }
-        }, 300);
-    }, 2000);
+        if (indicator.parentNode) {
+            indicator.parentNode.removeChild(indicator);
+        }
+    }, 4000);
 }
 
 // Load favorites from localStorage
