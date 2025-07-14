@@ -46,6 +46,19 @@ const translations = {
         addToFavorites: 'Добавить в избранное',
         removeFromFavorites: 'Удалить из избранного',
         
+        // Event editing
+        addEvent: 'Добавить событие',
+        editEvent: 'Редактировать',
+        editEventTitle: 'Редактировать событие',
+        addEventTitle: 'Добавить новое событие',
+        save: 'Сохранить',
+        cancel: 'Отменить',
+        delete: 'Удалить',
+        confirmDelete: 'Вы уверены, что хотите удалить это событие?',
+        eventSaved: 'Событие сохранено',
+        eventDeleted: 'Событие удалено',
+        fillRequiredFields: 'Заполните все обязательные поля',
+        
         // Error messages and alerts
         loadingError: 'Ошибка загрузки расписания. Пожалуйста, попробуйте позже.',
         whatNowOnlyForDays: 'Функция "Что сейчас?" работает только для расписания по дням',
@@ -102,6 +115,19 @@ const translations = {
         // Favorites
         addToFavorites: 'Add to Favorites',
         removeFromFavorites: 'Remove from Favorites',
+        
+        // Event editing
+        addEvent: 'Add Event',
+        editEvent: 'Edit',
+        editEventTitle: 'Edit Event',
+        addEventTitle: 'Add New Event',
+        save: 'Save',
+        cancel: 'Cancel',
+        delete: 'Delete',
+        confirmDelete: 'Are you sure you want to delete this event?',
+        eventSaved: 'Event saved',
+        eventDeleted: 'Event deleted',
+        fillRequiredFields: 'Please fill in all required fields',
         
         // Error messages and alerts
         loadingError: 'Schedule loading error. Please try again later.',
@@ -172,6 +198,29 @@ function updatePageLanguage() {
     
     const favoriteText = document.querySelector('.favorite-text');
     if (favoriteText) favoriteText.textContent = t('addToFavorites');
+    
+    // Update edit and add event buttons
+    const addEventBtn = document.querySelector('#addEventBtn .btn-text');
+    if (addEventBtn) addEventBtn.textContent = t('addEvent');
+    
+    const editEventBtn = document.querySelector('#editEvent .edit-text');
+    if (editEventBtn) editEventBtn.textContent = t('editEvent');
+    
+    const editModalTitle = document.getElementById('editModalTitle');
+    if (editModalTitle && editModalTitle.textContent === 'Редактировать событие') {
+        editModalTitle.textContent = t('editEventTitle');
+    } else if (editModalTitle && editModalTitle.textContent === 'Добавить новое событие') {
+        editModalTitle.textContent = t('addEventTitle');
+    }
+    
+    const saveBtn = document.getElementById('saveEvent');
+    if (saveBtn) saveBtn.textContent = t('save');
+    
+    const cancelBtn = document.getElementById('cancelEdit');
+    if (cancelBtn) cancelBtn.textContent = t('cancel');
+    
+    const deleteBtn = document.getElementById('deleteEvent');
+    if (deleteBtn) deleteBtn.textContent = t('delete');
     
     // Update footer
     const footer = document.querySelector('footer p');
@@ -272,10 +321,41 @@ function setupEventListeners() {
         if (activityId) toggleFavorite(activityId);
     });
 
+    // Add event button
+    document.getElementById('addEventBtn').addEventListener('click', () => {
+        openEditEventModal();
+    });
+
+    // Edit event button
+    document.getElementById('editEvent').addEventListener('click', () => {
+        const activityId = document.getElementById('editEvent').dataset.activityId;
+        if (activityId) {
+            const activity = findActivityById(activityId);
+            if (activity) openEditEventModal(activity);
+        }
+    });
+
+    // Close edit modal
+    document.querySelector('#editEventModal .close-modal').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeEditEventModal();
+    });
+
+    // Cancel edit
+    document.getElementById('cancelEdit').addEventListener('click', closeEditEventModal);
+
+    // Save event
+    document.getElementById('saveEvent').addEventListener('click', saveEvent);
+
+    // Delete event
+    document.getElementById('deleteEvent').addEventListener('click', deleteEvent);
+
     // Window click to close modals
     window.addEventListener('click', (e) => {
         const activityModal = document.getElementById('activityModal');
         const locationModal = document.getElementById('locationModal');
+        const editEventModal = document.getElementById('editEventModal');
 
         // Close activity modal if clicking outside
         if (e.target === activityModal) {
@@ -286,6 +366,11 @@ function setupEventListeners() {
         if (e.target === locationModal) {
             closeLocationModal();
         }
+
+        // Close edit event modal if clicking outside
+        if (e.target === editEventModal) {
+            closeEditEventModal();
+        }
     });
 
     // ESC key to close modals
@@ -293,12 +378,16 @@ function setupEventListeners() {
         if (e.key === 'Escape') {
             const activityModal = document.getElementById('activityModal');
             const locationModal = document.getElementById('locationModal');
+            const editEventModal = document.getElementById('editEventModal');
 
             if (activityModal.style.display === 'block') {
                 closeModal();
             }
             if (locationModal.style.display === 'block') {
                 closeLocationModal();
+            }
+            if (editEventModal.style.display === 'block') {
+                closeEditEventModal();
             }
         }
     });
@@ -332,11 +421,27 @@ async function loadSchedule() {
         const timestamp = new Date().getTime();
         const response = await fetch(`schedule.json?v=${timestamp}`);
         const data = await response.json();
-        scheduleData = data.activities;
+        
+        // Load original data
+        const originalScheduleData = data.activities;
         mealsData = data.meals || [];
         stationsData = data.stations || [];
         questsData = data.quests || [];
         placesData = data.places || [];
+
+        // Check for locally modified data
+        const localScheduleData = localStorage.getItem('scheduleData');
+        if (localScheduleData) {
+            try {
+                scheduleData = JSON.parse(localScheduleData);
+                console.log('Loaded modified schedule from localStorage');
+            } catch (e) {
+                console.error('Error parsing local schedule data, using original:', e);
+                scheduleData = originalScheduleData;
+            }
+        } else {
+            scheduleData = originalScheduleData;
+        }
 
         // Get unique days from schedule
         const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
@@ -1473,6 +1578,10 @@ function openActivityModal(activity) {
 
     toggleFavoriteBtn.dataset.activityId = activityId;
 
+    // Setup edit button
+    const editBtn = document.getElementById('editEvent');
+    editBtn.dataset.activityId = activityId;
+
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
 }
@@ -2085,4 +2194,231 @@ function loadFavorites() {
     if (storedFavorites) {
         favorites = JSON.parse(storedFavorites);
     }
+}
+
+// Event editing functionality
+
+let currentEditingActivity = null;
+
+// Find activity by ID
+function findActivityById(activityId) {
+    return scheduleData.find(activity => getActivityId(activity) === activityId);
+}
+
+// Open edit event modal
+function openEditEventModal(activity = null) {
+    const modal = document.getElementById('editEventModal');
+    const modalTitle = document.getElementById('editModalTitle');
+    const deleteBtn = document.getElementById('deleteEvent');
+    
+    currentEditingActivity = activity;
+    
+    if (activity) {
+        modalTitle.textContent = t('editEventTitle');
+        deleteBtn.style.display = 'block';
+        populateEventForm(activity);
+    } else {
+        modalTitle.textContent = t('addEventTitle');
+        deleteBtn.style.display = 'none';
+        clearEventForm();
+    }
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// Close edit event modal
+function closeEditEventModal() {
+    const modal = document.getElementById('editEventModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    currentEditingActivity = null;
+    clearEventForm();
+}
+
+// Populate form with activity data
+function populateEventForm(activity) {
+    document.getElementById('eventTitle').value = activity.title || '';
+    document.getElementById('eventTitleEn').value = activity.titleEn || '';
+    document.getElementById('eventDate').value = activity.date || '';
+    document.getElementById('eventTimeStart').value = activity.timeStart || '';
+    document.getElementById('eventTimeEnd').value = activity.timeEnd || '';
+    document.getElementById('eventType').value = activity.type || 'workshop';
+    document.getElementById('eventTrack').value = activity.track || '';
+    document.getElementById('eventAuthor').value = activity.author || '';
+    document.getElementById('eventAuthorUrl').value = activity.authorUrl || '';
+    document.getElementById('eventDescription').value = activity.description || '';
+    document.getElementById('eventDescriptionEn').value = activity.descriptionEn || '';
+    document.getElementById('eventPlaceId').value = activity.placeId || '';
+}
+
+// Clear event form
+function clearEventForm() {
+    document.getElementById('eventForm').reset();
+    
+    // Set default date to today if adding new event
+    if (!currentEditingActivity) {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('eventDate').value = today;
+    }
+}
+
+// Get form data
+function getFormData() {
+    const formData = {
+        title: document.getElementById('eventTitle').value.trim(),
+        titleEn: document.getElementById('eventTitleEn').value.trim(),
+        date: document.getElementById('eventDate').value,
+        timeStart: document.getElementById('eventTimeStart').value,
+        timeEnd: document.getElementById('eventTimeEnd').value,
+        type: document.getElementById('eventType').value,
+        track: document.getElementById('eventTrack').value,
+        author: document.getElementById('eventAuthor').value.trim(),
+        authorUrl: document.getElementById('eventAuthorUrl').value.trim(),
+        description: document.getElementById('eventDescription').value.trim(),
+        descriptionEn: document.getElementById('eventDescriptionEn').value.trim(),
+        placeId: document.getElementById('eventPlaceId').value.trim()
+    };
+    
+    // Add dayName and dayNameEn based on date
+    if (formData.date) {
+        const date = new Date(formData.date);
+        const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+        const dayNamesEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        formData.dayName = dayNames[date.getDay()];
+        formData.dayNameEn = dayNamesEn[date.getDay()];
+    }
+    
+    return formData;
+}
+
+// Validate form data
+function validateFormData(data) {
+    if (!data.title || !data.date || !data.timeStart || !data.timeEnd || !data.type || !data.track) {
+        return false;
+    }
+    
+    // Validate time format
+    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (!timeRegex.test(data.timeStart) || !timeRegex.test(data.timeEnd)) {
+        return false;
+    }
+    
+    return true;
+}
+
+// Save event
+function saveEvent() {
+    const formData = getFormData();
+    
+    if (!validateFormData(formData)) {
+        alert(t('fillRequiredFields'));
+        return;
+    }
+    
+    try {
+        if (currentEditingActivity) {
+            // Edit existing event
+            const activityIndex = scheduleData.findIndex(activity => 
+                getActivityId(activity) === getActivityId(currentEditingActivity)
+            );
+            
+            if (activityIndex !== -1) {
+                // Update the existing activity with form data
+                scheduleData[activityIndex] = { ...scheduleData[activityIndex], ...formData };
+            }
+        } else {
+            // Add new event
+            scheduleData.push(formData);
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('scheduleData', JSON.stringify(scheduleData));
+        
+        // Refresh display
+        displaySchedule();
+        
+        // Close modal
+        closeEditEventModal();
+        
+        // Show success message
+        showNotification(t('eventSaved'));
+        
+    } catch (error) {
+        console.error('Error saving event:', error);
+        alert('Ошибка при сохранении события');
+    }
+}
+
+// Delete event
+function deleteEvent() {
+    if (!currentEditingActivity) return;
+    
+    if (confirm(t('confirmDelete'))) {
+        try {
+            const activityIndex = scheduleData.findIndex(activity => 
+                getActivityId(activity) === getActivityId(currentEditingActivity)
+            );
+            
+            if (activityIndex !== -1) {
+                scheduleData.splice(activityIndex, 1);
+                
+                // Save to localStorage
+                localStorage.setItem('scheduleData', JSON.stringify(scheduleData));
+                
+                // Refresh display
+                displaySchedule();
+                
+                // Close modals
+                closeEditEventModal();
+                closeModal();
+                
+                // Show success message
+                showNotification(t('eventDeleted'));
+            }
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            alert('Ошибка при удалении события');
+        }
+    }
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--color-accent-blue);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 10001;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+    `;
+    
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }

@@ -28,6 +28,10 @@
                         <span class="clock-icon">🕐</span>
                         <span class="btn-text">Что сейчас?</span>
                     </button>
+                    <button id="addEventBtn" class="add-event-btn">
+                        <span class="plus-icon">➕</span>
+                        <span class="btn-text">Добавить событие</span>
+                    </button>
                     <div class="favorites-toggle">
                         <label class="toggle">
                             <input type="checkbox" id="favoritesToggle">
@@ -72,10 +76,14 @@
                 <p id="modalDescription"></p>
             </div>
             <div class="modal-footer">
-                <button id="toggleFavorite" class="favorite-btn">
-                    <span class="star-icon">★</span>
-                    <span class="favorite-text">Добавить в избранное</span>
-                </button>
+                                    <button id="toggleFavorite" class="favorite-btn">
+                        <span class="star-icon">★</span>
+                        <span class="favorite-text">Добавить в избранное</span>
+                    </button>
+                    <button id="editEvent" class="edit-btn">
+                        <span class="edit-icon">✏️</span>
+                        <span class="edit-text">Редактировать</span>
+                    </button>
             </div>
         </div>
     </div>
@@ -94,6 +102,97 @@
                         <img id="locationModalPhoto" alt="Location Photo">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing/creating events -->
+    <div class="modal" id="editEventModal">
+        <div class="modal-content edit-modal">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h3 id="editModalTitle">Редактировать событие</h3>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm" class="event-form">
+                    <div class="form-group">
+                        <label for="eventTitle">Название (Русский):</label>
+                        <input type="text" id="eventTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTitleEn">Название (English):</label>
+                        <input type="text" id="eventTitleEn" name="titleEn">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">Дата:</label>
+                        <input type="date" id="eventDate" name="date" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventTimeStart">Время начала:</label>
+                            <input type="time" id="eventTimeStart" name="timeStart" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTimeEnd">Время окончания:</label>
+                            <input type="time" id="eventTimeEnd" name="timeEnd" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventType">Тип события:</label>
+                        <select id="eventType" name="type" required>
+                            <option value="workshop">Мастер-класс</option>
+                            <option value="party">Вечеринка</option>
+                            <option value="ritual">Ритуал</option>
+                            <option value="performance">Выступление</option>
+                            <option value="lecture">Лекция</option>
+                            <option value="activity">Активность</option>
+                            <option value="meal">Еда</option>
+                            <option value="competition">Конкурс</option>
+                            <option value="game">Игра</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTrack">Трек:</label>
+                        <select id="eventTrack" name="track" required>
+                            <option value="🧠 Geek Zone">🧠 Geek Zone</option>
+                            <option value="🏃‍♂️ Active Arena">🏃‍♂️ Active Arena</option>
+                            <option value="💬 Soft Skills Hub">💬 Soft Skills Hub</option>
+                            <option value="🌿 Hobby Grove">🌿 Hobby Grove</option>
+                            <option value="🍞 drujba / stancia">🍞 drujba / stancia</option>
+                            <option value="🧚 Тихий Омут">🧚 Тихий Омут</option>
+                            <option value="🎭 Creative Corner">🎭 Creative Corner</option>
+                            <option value="🍽️ Food Court">🍽️ Food Court</option>
+                            <option value="🎵 Music Stage">🎵 Music Stage</option>
+                            <option value="Все треки">Все треки</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventAuthor">Автор:</label>
+                        <input type="text" id="eventAuthor" name="author">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventAuthorUrl">Ссылка на автора:</label>
+                        <input type="url" id="eventAuthorUrl" name="authorUrl">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Описание (Русский):</label>
+                        <textarea id="eventDescription" name="description" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescriptionEn">Описание (English):</label>
+                        <textarea id="eventDescriptionEn" name="descriptionEn" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventPlaceId">Место (ID):</label>
+                        <input type="text" id="eventPlaceId" name="placeId" placeholder="например: drujba_stancia">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelEdit" class="cancel-btn">Отменить</button>
+                <button type="button" id="saveEvent" class="save-btn">Сохранить</button>
+                <button type="button" id="deleteEvent" class="delete-btn" style="display: none;">Удалить</button>
             </div>
         </div>
     </div>
