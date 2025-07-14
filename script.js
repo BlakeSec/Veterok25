@@ -562,11 +562,11 @@ function displayDaySchedule() {
 
             // Add emoji based on meal type
             let mealEmoji = '';
-            if (mealAtThisHour.title === t('breakfast') || mealAtThisHour.title === 'Завтрак') {
+            if (mealAtThisHour.title === t('breakfast')) {
                 mealEmoji = '🍳 ';
-            } else if (mealAtThisHour.title === t('lunch') || mealAtThisHour.title === 'Обед') {
+            } else if (mealAtThisHour.title === t('lunch')) {
                 mealEmoji = '🍲 ';
-            } else if (mealAtThisHour.title === t('dinner') || mealAtThisHour.title === 'Ужин') {
+            } else if (mealAtThisHour.title === t('dinner')) {
                 mealEmoji = '🍽️ ';
             }
 
@@ -958,7 +958,7 @@ function createActivityCard(activity, timeRange, tracksContainer) {
                 trackBadge.classList.add('soft-skills');
             } else if (activity.track === '🌿 Hobby Grove') {
                 trackBadge.classList.add('hobby-track');
-            } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
+            } else if (activity.track === t('allTracks')) {
                 trackBadge.classList.add('all-tracks');
             }
             trackBadge.textContent = activity.track;
@@ -1237,11 +1237,11 @@ function displayMobileSchedule(activities, timeRange) {
 
                 // Add emoji based on meal type
                 let mealEmoji = '';
-                if (mealAtThisHour.title === t('breakfast') || mealAtThisHour.title === 'Завтрак') {
+                if (mealAtThisHour.title === t('breakfast')) {
                     mealEmoji = '🍳 ';
-                } else if (mealAtThisHour.title === t('lunch') || mealAtThisHour.title === 'Обед') {
+                } else if (mealAtThisHour.title === t('lunch')) {
                     mealEmoji = '🥗 ';
-                } else if (mealAtThisHour.title === t('dinner') || mealAtThisHour.title === 'Ужин') {
+                } else if (mealAtThisHour.title === t('dinner')) {
                     mealEmoji = '🍽 ';
                 }
 
@@ -1285,7 +1285,7 @@ function displayMobileSchedule(activities, timeRange) {
                         mobileActivity.classList.add('soft-skills');
                     } else if (activity.track === '🌿 Hobby Grove') {
                         mobileActivity.classList.add('hobby-track');
-                    } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
+                    } else if (activity.track === t('allTracks')) {
                         mobileActivity.classList.add('all-tracks');
                     }
 
@@ -1342,7 +1342,7 @@ function displayMobileSchedule(activities, timeRange) {
                             trackBadge.classList.add('soft-skills');
                         } else if (activity.track === '🌿 Hobby Grove') {
                             trackBadge.classList.add('hobby-track');
-                        } else if (activity.track === t('allTracks') || activity.track === 'Все треки') {
+                        } else if (activity.track === t('allTracks')) {
                             trackBadge.classList.add('all-tracks');
                         }
                         trackBadge.textContent = getLocalizedContent(activity, 'track');
@@ -1949,7 +1949,7 @@ function scrollToCurrentTimeActual() {
 
     if (closestMarker) {
         // Find current events
-        const currentEvents = findCurrentEvents(currentTimeInMinutes);
+        // const currentEvents = findCurrentEvents(currentTimeInMinutes); // Commented out as not needed anymore
         
         // Check if we're on mobile
         const isMobile = window.innerWidth <= 768;
@@ -1987,7 +1987,7 @@ function scrollToCurrentTimeActual() {
         }
 
         // Show a brief visual indicator with current event description
-        showTimeIndicator(currentEvents);
+        // showTimeIndicator(currentEvents); // Disabled per user request - just scroll without popup
     } else {
         alert(t('timeNotFound'));
     }
