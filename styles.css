@@ -151,6 +151,44 @@ header {
     transform: translateY(-1px);
 }
 
+/* Header controls container */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Scroll to now button */
+.scroll-to-now-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: var(--color-accent-blue);
+    color: var(--color-white);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.scroll-to-now-btn:hover {
+    background-color: rgba(51, 154, 240, 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(51, 154, 240, 0.2);
+}
+
+.scroll-to-now-btn:active {
+    transform: translateY(0);
+}
+
+.scroll-to-now-btn .clock-icon {
+    font-size: 16px;
+}
+
 /* Toggle switch for favorites */
 .favorites-toggle {
     margin: 0;
@@ -957,8 +995,30 @@ footer {
         font-size: 1.2rem;
     }
 
+    .header-controls {
+        width: 100%;
+        flex-direction: row;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .scroll-to-now-btn {
+        font-size: 13px;
+        padding: 6px 10px;
+        flex-shrink: 0;
+    }
+
+    .scroll-to-now-btn .btn-text {
+        display: none;
+    }
+
+    .scroll-to-now-btn .clock-icon {
+        font-size: 18px;
+    }
+
     .favorites-toggle {
-        margin-top: 5px;
+        margin-top: 0;
+        flex: 1;
     }
 
     .controls {

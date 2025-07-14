@@ -57,6 +57,9 @@ function setupEventListeners() {
     // Favorites toggle
     document.getElementById('favoritesToggle').addEventListener('change', displaySchedule);
 
+    // Scroll to now button
+    document.getElementById('scrollToNowBtn').addEventListener('click', scrollToCurrentTime);
+
     // Close activity modal
     document.querySelector('#activityModal .close-modal').addEventListener('click', closeModal);
 
@@ -191,7 +194,7 @@ function createTabs(days) {
 // Get weekday name in Russian
 function getWeekdayName(date) {
     const weekdayNames = [
-        'вс', 'пн', 'вт', 'ср', 
+        'вс', 'пн', 'вт', 'ср',
         'чт', 'пт', 'сб'
     ];
     return weekdayNames[date.getDay()];
@@ -238,8 +241,9 @@ function selectDay(day) {
         }
     });
 
-    // Show favorites toggle
+    // Show favorites toggle and scroll to now button
     document.querySelector('.favorites-toggle').style.display = 'flex';
+    document.getElementById('scrollToNowBtn').style.display = 'flex';
 
     // Display schedule for selected day
     displaySchedule();
@@ -263,8 +267,9 @@ function selectTab(tab) {
         }
     });
 
-    // Hide favorites toggle (not applicable for stations/quests)
+    // Hide favorites toggle and scroll to now button (not applicable for stations/quests)
     document.querySelector('.favorites-toggle').style.display = 'none';
+    document.getElementById('scrollToNowBtn').style.display = 'none';
 
     // Display content for selected tab
     if (tab === 'stations') {
@@ -595,8 +600,8 @@ function displayDesktopSchedule(activities, timeRange) {
 
     // Process any remaining activities that weren't grouped
     activities.forEach(activity => {
-        if (!processedActivities.has(getActivityId(activity)) && 
-            activity.type !== 'general' && 
+        if (!processedActivities.has(getActivityId(activity)) &&
+            activity.type !== 'general' &&
             activity.track !== 'Все треки') {
             createActivityCard(activity, timeRange, tracksContainer);
         }
@@ -1213,7 +1218,7 @@ function openActivityModal(activity) {
     const isFavorite = favorites.includes(activityId);
 
     toggleFavoriteBtn.classList.toggle('active', isFavorite);
-    toggleFavoriteBtn.querySelector('.favorite-text').textContent = 
+    toggleFavoriteBtn.querySelector('.favorite-text').textContent =
         isFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
 
     toggleFavoriteBtn.dataset.activityId = activityId;
@@ -1367,7 +1372,7 @@ function openMergedActivityModal(activity1, activity2) {
 
         const favoriteText = document.createElement('span');
         favoriteText.className = 'favorite-text';
-        favoriteText.textContent = favorites.includes(getActivityId(activity)) ? 
+        favoriteText.textContent = favorites.includes(getActivityId(activity)) ?
             'Удалить из избранного' : 'Добавить в избранное';
 
         favoriteBtn.appendChild(starIcon);
@@ -1381,7 +1386,7 @@ function openMergedActivityModal(activity1, activity2) {
 
             // Update button state
             favoriteBtn.classList.toggle('active');
-            favoriteText.textContent = favorites.includes(getActivityId(activity)) ? 
+            favoriteText.textContent = favorites.includes(getActivityId(activity)) ?
                 'Удалить из избранного' : 'Добавить в избранное';
 
             // Update modal title with star emoji
@@ -1602,9 +1607,9 @@ function toggleFavorite(activityId) {
             const timeStart = activityParts[1];
             const title = activityParts.slice(2).join('_'); // In case title contains underscores
 
-            const activity = scheduleData.find(a => 
-                a.date === date && 
-                a.timeStart === timeStart && 
+            const activity = scheduleData.find(a =>
+                a.date === date &&
+                a.timeStart === timeStart &&
                 a.title === title
             );
 
@@ -1618,7 +1623,7 @@ function toggleFavorite(activityId) {
     const toggleFavoriteBtn = document.getElementById('toggleFavorite');
     const isFavorite = favorites.includes(activityId);
     toggleFavoriteBtn.classList.toggle('active', isFavorite);
-    toggleFavoriteBtn.querySelector('.favorite-text').textContent = 
+    toggleFavoriteBtn.querySelector('.favorite-text').textContent =
         isFavorite ? 'Удалить из избранного' : 'Добавить в избранное';
 
     localStorage.setItem('favorites', JSON.stringify(favorites));
@@ -1634,6 +1639,144 @@ function toggleSingleFavorite(activityId) {
     } else {
         favorites.splice(index, 1);
     }
+}
+
+// Scroll to current time in the schedule
+function scrollToCurrentTime() {
+    // Only works for the days tab
+    if (currentTab !== 'days') {
+        alert('Функция "Что сейчас?" работает только для расписания по дням');
+        return;
+    }
+
+    // Check if current day is today
+    const today = new Date().toISOString().split('T')[0];
+    if (currentDay !== today) {
+        // Switch to today if it exists in the schedule
+        const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
+        if (days.includes(today)) {
+            selectDay(today);
+            // Wait for the schedule to render, then scroll
+            setTimeout(() => scrollToCurrentTimeActual(), 100);
+        } else {
+            alert('Сегодняшняя дата не найдена в расписании');
+        }
+        return;
+    }
+
+    scrollToCurrentTimeActual();
+}
+
+// Actually perform the scroll to current time
+function scrollToCurrentTimeActual() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+
+    // Find all time markers
+    const timeMarkers = document.querySelectorAll('.time-marker');
+
+    if (timeMarkers.length === 0) {
+        alert('Расписание еще не загружено');
+        return;
+    }
+
+    // Find the closest time marker to current time
+    let closestMarker = null;
+    let closestDifference = Infinity;
+
+    timeMarkers.forEach(marker => {
+        const markerTimeMinutes = parseInt(marker.dataset.timeMinutes);
+        const difference = Math.abs(markerTimeMinutes - currentTimeInMinutes);
+
+        if (difference < closestDifference) {
+            closestDifference = difference;
+            closestMarker = marker;
+        }
+    });
+
+    if (closestMarker) {
+        // Check if we're on mobile
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // For mobile, scroll to the time block in the mobile timeline
+            const mobileTimeBlocks = document.querySelectorAll('.time-block');
+            const targetTimeMinutes = parseInt(closestMarker.dataset.timeMinutes);
+
+            // Find corresponding mobile time block
+            let targetMobileBlock = null;
+            mobileTimeBlocks.forEach(block => {
+                const timeLabel = block.querySelector('.time-label');
+                if (timeLabel) {
+                    const blockTimeText = timeLabel.textContent;
+                    const blockTimeMinutes = timeToMinutes(blockTimeText);
+                    if (Math.abs(blockTimeMinutes - targetTimeMinutes) < 30) { // Within 30 minutes
+                        targetMobileBlock = block;
+                    }
+                }
+            });
+
+            if (targetMobileBlock) {
+                targetMobileBlock.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        } else {
+            // For desktop, scroll to the time marker
+            closestMarker.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+
+        // Show a brief visual indicator
+        showTimeIndicator();
+    } else {
+        alert('Не удалось найти подходящее время в расписании');
+    }
+}
+
+// Show a brief visual indicator that we've scrolled to current time
+function showTimeIndicator() {
+    // Create a temporary indicator
+    const indicator = document.createElement('div');
+    indicator.textContent = 'Текущее время';
+    indicator.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: var(--color-accent-blue);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 1000;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+
+    document.body.appendChild(indicator);
+
+    // Animate in
+    setTimeout(() => {
+        indicator.style.opacity = '1';
+    }, 10);
+
+    // Remove after 2 seconds
+    setTimeout(() => {
+        indicator.style.opacity = '0';
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                document.body.removeChild(indicator);
+            }
+        }, 300);
+    }, 2000);
 }
 
 // Load favorites from localStorage
