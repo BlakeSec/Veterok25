@@ -31,6 +31,7 @@ const translations = {
         leads: 'Лиды: ',
         noDescription: 'Нет описания',
         currentTime: 'Текущее время',
+        currentTimeLabel: 'Текущее время:',
         
         // Favorites
         addToFavorites: 'Добавить в избранное',
@@ -78,6 +79,7 @@ const translations = {
         leads: 'Leads: ',
         noDescription: 'No description',
         currentTime: 'Current Time',
+        currentTimeLabel: 'Current Time:',
         
         // Favorites
         addToFavorites: 'Add to Favorites',
@@ -146,6 +148,10 @@ function updatePageLanguage() {
     
     const favoriteText = document.querySelector('.favorite-text');
     if (favoriteText) favoriteText.textContent = t('addToFavorites');
+    
+    // Update current time label
+    const timeLabel = document.querySelector('.time-label');
+    if (timeLabel) timeLabel.textContent = t('currentTimeLabel');
     
     // Update footer
     const footer = document.querySelector('footer p');
@@ -296,7 +302,10 @@ function setupEventListeners() {
             const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
             setDefaultDay(days);
         }
-    });
+            });
+
+    // Start the current time display
+    startCurrentTimeDisplay();
 }
 
 // Load schedule data from JSON file
@@ -678,7 +687,8 @@ function displayStations() {
 
                 const title = document.createElement('h3');
                 title.className = 'list-item-title';
-                title.textContent = activity.title;
+                const localizedActivity = getLocalizedActivityData(activity);
+                title.textContent = localizedActivity.title;
 
                 const timeInfo = document.createElement('div');
                 timeInfo.className = 'activity-time-info';
@@ -689,7 +699,7 @@ function displayStations() {
 
                 const description = document.createElement('p');
                 description.className = 'list-item-description';
-                description.innerHTML = linkifyText(activity.description);
+                description.innerHTML = linkifyText(localizedActivity.description);
 
                 // Add author info
                 if (activity.author) {
@@ -948,6 +958,8 @@ function createLocationLink(placeId) {
 
 // Create a regular activity card
 function createActivityCard(activity, timeRange, tracksContainer) {
+    // Get localized activity data
+    const localizedActivity = getLocalizedActivityData(activity);
     const startMinutes = timeToMinutes(activity.timeStart);
     const endMinutes = timeToMinutes(activity.timeEnd);
     const duration = endMinutes - startMinutes;
@@ -1005,7 +1017,7 @@ function createActivityCard(activity, timeRange, tracksContainer) {
 
     const title = document.createElement('div');
     title.className = 'activity-title';
-    title.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
+    title.textContent = localizedActivity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
 
     const time = document.createElement('div');
     time.className = 'activity-time';
@@ -1394,7 +1406,8 @@ function displayMobileSchedule(activities, timeRange) {
 
                     const title = document.createElement('div');
                     title.className = 'activity-title';
-                    title.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
+                    const localizedActivity = getLocalizedActivityData(activity);
+                    title.textContent = localizedActivity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
 
                     const time = document.createElement('div');
                     time.className = 'activity-time';
@@ -1466,6 +1479,9 @@ function displayMobileSchedule(activities, timeRange) {
 
 // Open modal with activity details
 function openActivityModal(activity) {
+    // Get localized activity data
+    const localizedActivity = getLocalizedActivityData(activity);
+    
     const modal = document.getElementById('activityModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalTime = document.getElementById('modalTime');
@@ -1473,7 +1489,7 @@ function openActivityModal(activity) {
     const modalDescription = document.getElementById('modalDescription');
     const toggleFavoriteBtn = document.getElementById('toggleFavorite');
 
-    modalTitle.textContent = activity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
+    modalTitle.textContent = localizedActivity.title + (favorites.includes(getActivityId(activity)) ? ' ⭐️' : '');
     modalTime.textContent = `${activity.timeStart} - ${activity.timeEnd}`;
 
     // Add author information if available
@@ -1547,7 +1563,7 @@ function openActivityModal(activity) {
         modalTrack.classList.add('all-tracks');
     }
 
-    modalDescription.innerHTML = linkifyText(activity.description);
+    modalDescription.innerHTML = linkifyText(localizedActivity.description);
 
     const activityId = getActivityId(activity);
     const isFavorite = favorites.includes(activityId);
@@ -1949,7 +1965,8 @@ function toggleFavorite(activityId) {
             );
 
             if (activity) {
-                modalTitle.textContent = activity.title + (favorites.includes(activityId) ? ' ⭐️' : '');
+                const localizedActivity = getLocalizedActivityData(activity);
+                modalTitle.textContent = localizedActivity.title + (favorites.includes(activityId) ? ' ⭐️' : '');
             }
         }
     }
@@ -2121,3 +2138,142 @@ function loadFavorites() {
         favorites = JSON.parse(storedFavorites);
     }
 }
+
+// Update current time display
+function updateCurrentTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const timeString = `${hours}:${minutes}`;
+    
+    const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+    if (currentTimeDisplay) {
+        currentTimeDisplay.textContent = timeString;
+    }
+}
+
+// Start the current time update interval
+function startCurrentTimeDisplay() {
+    updateCurrentTime(); // Update immediately
+    setInterval(updateCurrentTime, 1000); // Update every second
+}
+
+// Create fallback English translations for activities that don't have them
+function getLocalizedActivityData(activity) {
+    if (currentLanguage === 'en') {
+        // Create basic English translations for Russian content
+        const englishData = { ...activity };
+        
+        // Translate common Russian words/patterns to English
+        if (activity.title) {
+            englishData.title = translateToEnglish(activity.title);
+        }
+        
+        if (activity.description) {
+            englishData.description = translateToEnglish(activity.description);
+        }
+        
+        // Handle day names
+        if (activity.dayName) {
+            const dayTranslations = {
+                'Воскресенье': 'Sunday',
+                'Понедельник': 'Monday', 
+                'Вторник': 'Tuesday',
+                'Среда': 'Wednesday',
+                'Четверг': 'Thursday',
+                'Пятница': 'Friday',
+                'Суббота': 'Saturday'
+            };
+            englishData.dayName = dayTranslations[activity.dayName] || activity.dayName;
+        }
+        
+        return englishData;
+    }
+    
+    return activity;
+}
+
+// Basic translation function for common Russian words/phrases
+function translateToEnglish(text) {
+    if (!text) return text;
+    
+    const translations = {
+        // Meals
+        'Завтрак': 'Breakfast',
+        'Обед': 'Lunch', 
+        'Ужин': 'Dinner',
+        
+        // Common words
+        'Утренняя': 'Morning',
+        'утренняя': 'morning',
+        'Дневная': 'Afternoon',
+        'дневная': 'afternoon',
+        'Вечерняя': 'Evening',
+        'вечерняя': 'evening',
+        'Ночная': 'Night',
+        'ночная': 'night',
+        
+        // Activities
+        'йога': 'yoga',
+        'Йога': 'Yoga',
+        'медитация': 'meditation',
+        'Медитация': 'Meditation',
+        'танец': 'dance',
+        'Танец': 'Dance',
+        'танцы': 'dancing',
+        'Танцы': 'Dancing',
+        'музыка': 'music',
+        'Музыка': 'Music',
+        'мастер-класс': 'workshop',
+        'Мастер-класс': 'Workshop',
+        'лекция': 'lecture',
+        'Лекция': 'Lecture',
+        'ритуал': 'ritual',
+        'Ритуал': 'Ritual',
+        'церемония': 'ceremony',
+        'Церемония': 'Ceremony',
+        'игра': 'game',
+        'Игра': 'Game',
+        'игры': 'games',
+        'Игры': 'Games',
+        'квест': 'quest',
+        'Квест': 'Quest',
+        'концерт': 'concert',
+        'Концерт': 'Concert',
+        'вечеринка': 'party',
+        'Вечеринка': 'Party',
+        'дискотека': 'disco',
+        'Дискотека': 'Disco',
+        'спорт': 'sports',
+        'Спорт': 'Sports',
+        'тренировка': 'training',
+        'Тренировка': 'Training',
+        'зарядка': 'morning exercises',
+        'Зарядка': 'Morning Exercises',
+        'встреча': 'meeting',
+        'Встреча': 'Meeting',
+        'знакомство': 'introduction',
+        'Знакомство': 'Introduction',
+        'круг': 'circle',
+        'Круг': 'Circle',
+        'церемония': 'ceremony',
+        'Церемония': 'Ceremony'
+    };
+    
+    let translatedText = text;
+    
+    // Replace exact matches first
+    for (const [russian, english] of Object.entries(translations)) {
+        const regex = new RegExp(`\\b${russian}\\b`, 'gi');
+        translatedText = translatedText.replace(regex, english);
+    }
+    
+    // If no translation was applied and it's a common meal pattern, add English note
+    if (translatedText === text && (text.includes('Завтрак') || text.includes('Обед') || text.includes('Ужин'))) {
+        return `${text} (${text.replace('Завтрак', 'Breakfast').replace('Обед', 'Lunch').replace('Ужин', 'Dinner')})`;
+    }
+    
+    return translatedText;
+}
+
+// Update existing functions to use localized data

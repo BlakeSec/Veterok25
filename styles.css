@@ -1097,6 +1097,37 @@ footer {
     padding: 0.5rem;
 }
 
+/* Current time display styles */
+.current-time-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 1rem;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    min-width: 100px;
+}
+
+.time-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.current-time {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-accent-green);
+    text-shadow: 0 0 8px rgba(0, 255, 127, 0.3);
+}
+
+/* Scroll to now button styles */
+
 @media (max-width: 768px) {
     .header-controls {
         flex-direction: column;
@@ -1104,9 +1135,22 @@ footer {
         align-items: stretch;
     }
     
-    .language-selector {
+    .language-selector,
+    .current-time-display {
         margin-right: 0;
-        order: -1; /* Place language selector first on mobile */
+        margin-bottom: 0.5rem;
+    }
+    
+    .current-time-display {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        min-width: auto;
+    }
+    
+    .time-label {
+        margin-bottom: 0;
+        margin-right: 8px;
     }
     
     .language-select {
