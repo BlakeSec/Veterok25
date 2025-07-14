@@ -1,6 +1,6 @@
 # Veterok / Tramontana'25 Schedule
 
-![Veterok Logo](images/logo-diamond.svg)
+![Veterok Logo](images/new-logo.jpg)
 
 This project provides an interactive schedule viewer for Veterok / Tramontana'25. Browse through all the exciting activities, workshops, and gatherings planned for the transformative festival.
 
