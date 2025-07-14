@@ -135,8 +135,6 @@ function checkUrlParams(days) {
 
     if (tabParam === 'stations') {
         selectTab('stations');
-    } else if (tabParam === 'quests') {
-        selectTab('quests');
     } else {
         // Default to days tab
         setDefaultDay(days);
@@ -166,11 +164,11 @@ function createTabs(days) {
         dayTabsContainer.appendChild(tab);
     });
 
-    // Create stations tab
+    // Create camps tab (formerly stations)
     const stationsTab = document.createElement('div');
     stationsTab.className = 'day-tab';
     stationsTab.dataset.tab = 'stations';
-    stationsTab.textContent = 'Станции';
+    stationsTab.textContent = 'Кэмпы';
 
     stationsTab.addEventListener('click', () => {
         selectTab('stations');
@@ -178,17 +176,7 @@ function createTabs(days) {
 
     dayTabsContainer.appendChild(stationsTab);
 
-    // Create quests tab
-    const questsTab = document.createElement('div');
-    questsTab.className = 'day-tab';
-    questsTab.dataset.tab = 'quests';
-    questsTab.textContent = 'Квесты';
 
-    questsTab.addEventListener('click', () => {
-        selectTab('quests');
-    });
-
-    dayTabsContainer.appendChild(questsTab);
 }
 
 // Get weekday name in Russian
@@ -274,8 +262,6 @@ function selectTab(tab) {
     // Display content for selected tab
     if (tab === 'stations') {
         displayStations();
-    } else if (tab === 'quests') {
-        displayQuests();
     }
 }
 
@@ -285,8 +271,6 @@ function displaySchedule() {
         displayDaySchedule();
     } else if (currentTab === 'stations') {
         displayStations();
-    } else if (currentTab === 'quests') {
-        displayQuests();
     }
 }
 
@@ -393,7 +377,10 @@ function displayDaySchedule() {
     }
 }
 
-// Display stations list
+// Global variable to track selected camp filter
+let selectedCampFilter = null;
+
+// Display camps list (formerly stations)
 function displayStations() {
     // Clear previous content
     const tracksContainer = document.getElementById('tracksContainer');
@@ -403,85 +390,163 @@ function displayStations() {
     const timeColumn = document.querySelector('.time-column');
     timeColumn.style.display = 'none';
 
-    // Create stations list container
-    const stationsContainer = document.createElement('div');
-    stationsContainer.className = 'list-container';
+    // Create header with controls
+    const headerContainer = document.createElement('div');
+    headerContainer.className = 'camps-header';
+    headerContainer.innerHTML = `
+        <h2>Кэмпы фестиваля</h2>
+        <div class="camps-controls">
+            <button id="showAllCamps" class="camps-filter-btn ${!selectedCampFilter ? 'active' : ''}">
+                Все кэмпы (${placesData.length})
+            </button>
+            <button id="showCampActivities" class="camps-filter-btn ${selectedCampFilter ? 'active' : ''}" style="display: ${selectedCampFilter ? 'inline-block' : 'none'}">
+                События выбранного кэмпа
+            </button>
+        </div>
+    `;
 
-    // Add stations to the list
-    stationsData.forEach(station => {
-        const stationItem = document.createElement('div');
-        stationItem.className = 'list-item station-item';
+    // Create camps list container
+    const campsContainer = document.createElement('div');
+    campsContainer.className = 'list-container camps-list';
 
-        const title = document.createElement('h3');
-        title.className = 'list-item-title';
-        title.textContent = station.title;
+    if (!selectedCampFilter) {
+        // Show all camps
+        placesData.forEach(place => {
+            const campItem = document.createElement('div');
+            campItem.className = 'list-item camp-item';
+            campItem.dataset.campId = place.id;
 
-        stationItem.appendChild(title);
+            // Add click handler to filter activities
+            campItem.addEventListener('click', () => {
+                selectedCampFilter = place.id;
+                displayStations(); // Refresh display
+            });
 
-        // Create container for location link if exists
-        if (station.placeId) {
-            const locationContainer = document.createElement('div');
-            locationContainer.className = 'list-item-location';
+            const title = document.createElement('h3');
+            title.className = 'list-item-title';
+            title.textContent = place.name;
 
-            const locationLink = createLocationLink(station.placeId);
-            if (locationLink) {
-                locationContainer.appendChild(locationLink);
-                stationItem.appendChild(locationContainer);
+            const description = document.createElement('p');
+            description.className = 'list-item-description';
+            description.innerHTML = linkifyText(place.description);
+
+            // Show leads info if available
+            if (place.leads && place.leads.length > 0) {
+                const leadsContainer = document.createElement('div');
+                leadsContainer.className = 'camp-leads';
+
+                const leadsLabel = document.createElement('span');
+                leadsLabel.className = 'leads-label';
+                leadsLabel.textContent = 'Лиды: ';
+
+                const leadsText = document.createElement('span');
+                leadsText.className = 'leads-text';
+                leadsText.textContent = place.leads.join(', ');
+
+                leadsContainer.appendChild(leadsLabel);
+                leadsContainer.appendChild(leadsText);
+
+                campItem.appendChild(title);
+                campItem.appendChild(description);
+                campItem.appendChild(leadsContainer);
+            } else {
+                campItem.appendChild(title);
+                campItem.appendChild(description);
             }
+
+            // Add activity count
+            const activityCount = scheduleData.filter(activity => activity.placeId === place.id).length;
+            if (activityCount > 0) {
+                const countBadge = document.createElement('span');
+                countBadge.className = 'activity-count-badge';
+                countBadge.textContent = `${activityCount} событий`;
+                campItem.appendChild(countBadge);
+            }
+
+            campsContainer.appendChild(campItem);
+        });
+    } else {
+        // Show activities for selected camp
+        const selectedPlace = placesData.find(place => place.id === selectedCampFilter);
+        const campActivities = scheduleData.filter(activity => activity.placeId === selectedCampFilter);
+
+        if (selectedPlace && campActivities.length > 0) {
+            // Sort activities by date and time
+            campActivities.sort((a, b) => {
+                if (a.date !== b.date) {
+                    return a.date.localeCompare(b.date);
+                }
+                return timeToMinutes(a.timeStart) - timeToMinutes(b.timeStart);
+            });
+
+            campActivities.forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'list-item activity-item';
+
+                // Add click handler to open activity modal
+                activityItem.addEventListener('click', () => {
+                    openActivityModal(activity);
+                });
+
+                const title = document.createElement('h3');
+                title.className = 'list-item-title';
+                title.textContent = activity.title;
+
+                const timeInfo = document.createElement('div');
+                timeInfo.className = 'activity-time-info';
+                timeInfo.innerHTML = `
+                    <span class="activity-date">${formatDate(activity.date)}</span>
+                    <span class="activity-time">${activity.timeStart} - ${activity.timeEnd}</span>
+                `;
+
+                const description = document.createElement('p');
+                description.className = 'list-item-description';
+                description.innerHTML = linkifyText(activity.description);
+
+                // Add author info
+                if (activity.author) {
+                    const authorInfo = document.createElement('div');
+                    authorInfo.className = 'activity-author';
+                    authorInfo.textContent = `Автор: ${activity.author}`;
+
+                    activityItem.appendChild(title);
+                    activityItem.appendChild(timeInfo);
+                    activityItem.appendChild(description);
+                    activityItem.appendChild(authorInfo);
+                } else {
+                    activityItem.appendChild(title);
+                    activityItem.appendChild(timeInfo);
+                    activityItem.appendChild(description);
+                }
+
+                campsContainer.appendChild(activityItem);
+            });
         }
+    }
 
-        const description = document.createElement('p');
-        description.className = 'list-item-description';
-        description.innerHTML = linkifyText(station.description);
+    // Add event listeners for filter buttons
+    tracksContainer.appendChild(headerContainer);
+    tracksContainer.appendChild(campsContainer);
 
-        stationItem.appendChild(description);
-        stationsContainer.appendChild(stationItem);
-    });
+    // Setup button event listeners after adding to DOM
+    const showAllBtn = document.getElementById('showAllCamps');
+    const showActivitiesBtn = document.getElementById('showCampActivities');
 
-    tracksContainer.appendChild(stationsContainer);
+    if (showAllBtn) {
+        showAllBtn.addEventListener('click', () => {
+            selectedCampFilter = null;
+            displayStations();
+        });
+    }
+
+    if (showActivitiesBtn) {
+        showActivitiesBtn.addEventListener('click', () => {
+            displayStations();
+        });
+    }
 }
 
-// Display quests list
-function displayQuests() {
-    // Clear previous content
-    const tracksContainer = document.getElementById('tracksContainer');
-    tracksContainer.innerHTML = '';
 
-    // Hide time column
-    const timeColumn = document.querySelector('.time-column');
-    timeColumn.style.display = 'none';
-
-    // Create quests list container
-    const questsContainer = document.createElement('div');
-    questsContainer.className = 'list-container';
-
-    // Add quests to the list
-    questsData.forEach(quest => {
-        const questItem = document.createElement('div');
-        questItem.className = 'list-item quest-item';
-
-        const title = document.createElement('h3');
-        title.className = 'list-item-title';
-        title.textContent = quest.title;
-
-        const author = document.createElement('a');
-        author.className = 'list-item-author';
-        author.href = quest.authorUrl;
-        author.target = '_blank';
-        author.textContent = quest.author;
-
-        const description = document.createElement('p');
-        description.className = 'list-item-description';
-        description.innerHTML = linkifyText(quest.description);
-
-        questItem.appendChild(title);
-        questItem.appendChild(author);
-        questItem.appendChild(description);
-        questsContainer.appendChild(questItem);
-    });
-
-    tracksContainer.appendChild(questsContainer);
-}
 
 // Display schedule in desktop view (columns for tracks)
 function displayDesktopSchedule(activities, timeRange) {

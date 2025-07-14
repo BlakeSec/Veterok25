@@ -904,6 +904,113 @@ input:checked + .toggle-slider:before {
     font-size: 0.9rem;
 }
 
+/* Camps functionality styles */
+.camps-header {
+    margin-bottom: 20px;
+    padding: 16px;
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px var(--color-shadow);
+}
+
+.camps-header h2 {
+    margin: 0 0 12px 0;
+    color: var(--color-text);
+    font-size: 1.5rem;
+}
+
+.camps-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.camps-filter-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--color-medium-gray);
+    background-color: var(--color-white);
+    color: var(--color-text);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.camps-filter-btn:hover {
+    border-color: var(--color-accent-blue);
+    background-color: rgba(51, 154, 240, 0.05);
+}
+
+.camps-filter-btn.active {
+    border-color: var(--color-accent-blue);
+    background-color: var(--color-accent-blue);
+    color: var(--color-white);
+}
+
+.camps-list .camp-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.camps-list .camp-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--color-shadow-hover);
+}
+
+.camp-leads {
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.leads-label {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.leads-text {
+    color: var(--color-accent-blue);
+}
+
+.activity-count-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: var(--color-accent-blue);
+    color: var(--color-white);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.activity-time-info {
+    margin: 8px 0;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.activity-date {
+    background-color: var(--color-light-gray);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+.activity-time {
+    background-color: var(--color-accent-blue);
+    color: var(--color-white);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
 /* Footer */
 footer {
     background-color: var(--color-white);
@@ -1270,5 +1377,44 @@ footer {
         padding: 2px 8px;
         display: inline-flex;
         align-items: center;
+    }
+
+    /* Mobile camps styles */
+    .camps-header {
+        margin-bottom: 16px;
+        padding: 12px;
+    }
+
+    .camps-header h2 {
+        font-size: 1.3rem;
+        margin-bottom: 8px;
+    }
+
+    .camps-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .camps-filter-btn {
+        width: 100%;
+        text-align: center;
+        padding: 10px 16px;
+    }
+
+    .activity-count-badge {
+        position: static;
+        display: inline-block;
+        margin-top: 8px;
+        margin-left: 0;
+    }
+
+    .activity-time-info {
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start;
+    }
+
+    .camp-leads {
+        font-size: 13px;
     }
 }
