@@ -762,129 +762,14 @@ function displayStations() {
 
 
 
-// Display schedule in desktop view (columns for tracks)
+// Display schedule in desktop view (single column list without track headers)
 function displayDesktopSchedule(activities, timeRange) {
     const tracksContainer = document.getElementById('tracksContainer');
-
-    // Define tracks
-    const tracksList = [
-        { id: '🧠 Geek Zone', name: '🧠 Geek Zone', class: 'geek-track' },
-        { id: '🏃‍♂️ Active Arena', name: '🏃‍♂️ Active Arena', class: 'active-track' },
-        { id: '💬 Soft Skills Hub', name: '💬 Soft Skills Hub', class: 'soft-skills' },
-        { id: '🌿 Hobby Grove', name: '🌿 Hobby Grove', class: 'hobby-track' }
-    ];
-
-    // Create track columns
-    tracksList.forEach(track => {
-        const trackColumn = document.createElement('div');
-        trackColumn.className = 'track-column';
-        trackColumn.dataset.track = track.id;
-
-        const trackHeader = document.createElement('div');
-        trackHeader.className = 'track-header';
-        trackHeader.textContent = track.name;
-
-        trackColumn.appendChild(trackHeader);
-        tracksContainer.appendChild(trackColumn);
-    });
-
-    // Group activities by track and date for detecting overlaps
-    const trackDateGroups = {};
-
-    activities.forEach(activity => {
-        if (activity.type === 'general' || activity.track === t('allTracks') || activity.track === 'Все треки') {
-            return; // Skip general events for grouping
-        }
-
-        const key = `${activity.date}_${activity.track}`;
-        if (!trackDateGroups[key]) {
-            trackDateGroups[key] = [];
-        }
-        trackDateGroups[key].push(activity);
-    });
-
-    // Find overlapping activities within each track/date group
-    const groupedActivities = {};
-
-    Object.entries(trackDateGroups).forEach(([key, trackActivities]) => {
-        // Sort activities by start time
-        trackActivities.sort((a, b) => timeToMinutes(a.timeStart) - timeToMinutes(b.timeStart));
-
-        // Check each pair of activities for overlap
-        for (let i = 0; i < trackActivities.length; i++) {
-            for (let j = i + 1; j < trackActivities.length; j++) {
-                const activity1 = trackActivities[i];
-                const activity2 = trackActivities[j];
-
-                const start1 = timeToMinutes(activity1.timeStart);
-                const end1 = timeToMinutes(activity1.timeEnd);
-                const start2 = timeToMinutes(activity2.timeStart);
-                const end2 = timeToMinutes(activity2.timeEnd);
-
-                // Only merge activities if they have exactly the same start and end times
-                if (start1 === start2 && end1 === end2) {
-                    // Create a key for this pair of overlapping activities
-                    const overlapKey = `${key}_${activity1.timeStart}_${activity1.timeEnd}_${activity2.timeStart}_${activity2.timeEnd}`;
-                    groupedActivities[overlapKey] = [activity1, activity2];
-
-                    // Mark these activities as processed
-                    activity1.processed = true;
-                    activity2.processed = true;
-                }
-            }
-        }
-
-        // Add non-overlapping activities
-        trackActivities.forEach(activity => {
-            if (!activity.processed) {
-                const singleKey = `${key}_${activity.timeStart}_${activity.timeEnd}`;
-                groupedActivities[singleKey] = [activity];
-            }
-        });
-    });
-
-    // Process regular activities (non-overlapping or merged)
-    const processedActivities = new Set(); // Track which activities have been processed
-
-    // First, add general events
-    activities.forEach(activity => {
-        if (activity.type === 'general' || activity.track === t('allTracks') || activity.track === 'Все треки') {
-            createActivityCard(activity, timeRange, tracksContainer);
-            processedActivities.add(getActivityId(activity));
-        }
-    });
-
-    // Then process grouped activities (potentially overlapping)
-    Object.values(groupedActivities).forEach(group => {
-        if (group.length === 1) {
-            // Single activity, no overlap
-            const activity = group[0];
-            createActivityCard(activity, timeRange, tracksContainer);
-            processedActivities.add(getActivityId(activity));
-        } else if (group.length === 2) {
-            // Two overlapping activities - create a merged card on desktop
-            createMergedActivityCard(group, timeRange, tracksContainer);
-            group.forEach(activity => {
-                processedActivities.add(getActivityId(activity));
-            });
-        } else {
-            // More than two overlapping activities - handle individually for now
-            // This could be extended to handle more than two activities if needed
-            group.forEach(activity => {
-                createActivityCard(activity, timeRange, tracksContainer);
-                processedActivities.add(getActivityId(activity));
-            });
-        }
-    });
-
-    // Process any remaining activities that weren't grouped
-    activities.forEach(activity => {
-        if (!processedActivities.has(getActivityId(activity)) &&
-            activity.type !== 'general' &&
-                            activity.track !== t('allTracks') && activity.track !== 'Все треки') {
-            createActivityCard(activity, timeRange, tracksContainer);
-        }
-    });
+    // Clear existing content
+    tracksContainer.innerHTML = '';
+    
+    // Use mobile display for desktop as well to show single column without headers
+    displayMobileSchedule(activities, timeRange);
 }
 
 // Create a favorite star button for activity cards
