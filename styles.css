@@ -1699,3 +1699,207 @@ body.modal-open {
         text-align: center;
     }
 }
+
+/* Add Event Button */
+.add-event-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.add-event-btn:hover {
+    background: linear-gradient(135deg, #45a049, #4CAF50);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    transform: translateY(-1px);
+}
+
+.add-event-btn .plus-icon {
+    font-size: 16px;
+}
+
+/* Edit Event Modal */
+#editEventModal .modal-content {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    background-color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Modal Footer Buttons */
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 20px;
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+    background: linear-gradient(135deg, #45a049, #4CAF50);
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #d32f2f, #f44336);
+    transform: translateY(-1px);
+}
+
+.cancel-btn {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 2px solid #e0e0e0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    border-color: var(--color-text-secondary);
+    color: var(--color-text-primary);
+}
+
+/* Edit Event Icon */
+.edit-event-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+    color: var(--color-accent-blue);
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activity-card:hover .edit-event-icon,
+.mobile-activity:hover .edit-event-icon {
+    opacity: 1;
+}
+
+.edit-event-icon:hover {
+    background: rgba(59, 130, 246, 0.2);
+    transform: scale(1.1);
+}
+
+/* Animation for slide in */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive adjustments for new elements */
+@media (max-width: 768px) {
+    .add-event-btn .btn-text {
+        display: none;
+    }
+    
+    .add-event-btn {
+        padding: 10px;
+    }
+    
+    #editEventModal .modal-content {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .modal-footer button {
+        width: 100%;
+    }
+}

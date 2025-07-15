@@ -46,6 +46,30 @@ const translations = {
         addToFavorites: 'Добавить в избранное',
         removeFromFavorites: 'Удалить из избранного',
         
+        // Event editing
+        addEvent: 'Добавить событие',
+        editEvent: 'Редактировать событие',
+        newEvent: 'Добавить новое событие',
+        saveEvent: 'Сохранить',
+        deleteEvent: 'Удалить',
+        cancel: 'Отмена',
+        eventTitle: 'Название',
+        eventAuthor: 'Автор',
+        eventDate: 'Дата',
+        eventTimeStart: 'Время начала',
+        eventTimeEnd: 'Время окончания',
+        eventTrack: 'Кэмп/Трек',
+        eventType: 'Тип события',
+        eventDescription: 'Описание',
+        selectDate: 'Выберите дату',
+        selectTime: 'Выберите время',
+        selectCamp: 'Выберите кэмп',
+        selectType: 'Выберите тип',
+        fillRequiredFields: 'Пожалуйста, заполните все обязательные поля',
+        confirmDelete: 'Вы уверены, что хотите удалить это событие?',
+        eventSaved: 'Событие сохранено успешно!',
+        eventDeleted: 'Событие удалено успешно!',
+        
         // Error messages and alerts
         loadingError: 'Ошибка загрузки расписания. Пожалуйста, попробуйте позже.',
         whatNowOnlyForDays: 'Функция "Что сейчас?" работает только для расписания по дням',
@@ -103,6 +127,30 @@ const translations = {
         addToFavorites: 'Add to Favorites',
         removeFromFavorites: 'Remove from Favorites',
         
+        // Event editing
+        addEvent: 'Add Event',
+        editEvent: 'Edit Event',
+        newEvent: 'Add New Event',
+        saveEvent: 'Save',
+        deleteEvent: 'Delete',
+        cancel: 'Cancel',
+        eventTitle: 'Title',
+        eventAuthor: 'Author',
+        eventDate: 'Date',
+        eventTimeStart: 'Start Time',
+        eventTimeEnd: 'End Time',
+        eventTrack: 'Camp/Track',
+        eventType: 'Event Type',
+        eventDescription: 'Description',
+        selectDate: 'Select date',
+        selectTime: 'Select time',
+        selectCamp: 'Select camp',
+        selectType: 'Select type',
+        fillRequiredFields: 'Please fill in all required fields',
+        confirmDelete: 'Are you sure you want to delete this event?',
+        eventSaved: 'Event saved successfully!',
+        eventDeleted: 'Event deleted successfully!',
+        
         // Error messages and alerts
         loadingError: 'Schedule loading error. Please try again later.',
         whatNowOnlyForDays: 'The "What\'s Now?" function only works for daily schedule',
@@ -144,6 +192,7 @@ function switchLanguage(lang) {
         currentLanguage = lang;
         localStorage.setItem('scheduleLanguage', lang);
         updatePageLanguage();
+        updateEditModalLanguage(); // Update edit modal language
         displaySchedule(); // Refresh the schedule display
     }
 }
@@ -241,6 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeLanguage(); // Initialize language first
     loadSchedule();
     loadFavorites();
+    loadCustomActivities(); // Load custom activities
     setupEventListeners();
 });
 
@@ -318,9 +368,44 @@ function setupEventListeners() {
         } else if (tabParam === 'quests') {
             selectTab('quests');
         } else {
-            // Get days from schedule
-            const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
+            // Get days from schedule (including custom activities)
+            const days = [...new Set(getAllActivities().map(activity => activity.date))].sort();
             setDefaultDay(days);
+        }
+    });
+
+    // Event editing listeners
+    document.getElementById('addEventBtn').addEventListener('click', () => {
+        openEditEventModal();
+    });
+
+    // Close edit event modal
+    document.querySelector('#editEventModal .close-modal').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeEditEventModal();
+    });
+
+    // Edit event modal buttons
+    document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+    document.getElementById('deleteEventBtn').addEventListener('click', deleteEvent);
+    document.getElementById('cancelEventBtn').addEventListener('click', closeEditEventModal);
+
+    // Close edit modal when clicking outside
+    const editModal = document.getElementById('editEventModal');
+    window.addEventListener('click', (e) => {
+        if (e.target === editModal) {
+            closeEditEventModal();
+        }
+    });
+
+    // ESC key to close edit modal (additional handler)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const editModal = document.getElementById('editEventModal');
+            if (editModal && editModal.style.display === 'block') {
+                closeEditEventModal();
+            }
         }
     });
 }
@@ -338,8 +423,8 @@ async function loadSchedule() {
         questsData = data.quests || [];
         placesData = data.places || [];
 
-        // Get unique days from schedule
-        const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
+        // Get unique days from schedule (including custom activities)
+        const days = [...new Set(getAllActivities().map(activity => activity.date))].sort();
 
         // Create tabs (days, stations, quests)
         createTabs(days);
@@ -490,8 +575,20 @@ function displaySchedule() {
 
 // Display schedule for current day
 function displayDaySchedule() {
-    // Filter activities for current day
-    let activities = scheduleData.filter(activity => activity.date === currentDay);
+    // Get hidden activities
+    const hiddenActivities = JSON.parse(localStorage.getItem('hiddenActivities') || '[]');
+    
+    // Filter activities for current day from both original and custom activities
+    let activities = getAllActivities()
+        .filter(activity => activity.date === currentDay)
+        .filter(activity => {
+            // Exclude hidden original activities
+            if (!activity.id || !activity.id.startsWith('custom_')) {
+                const activityId = getActivityId(activity);
+                return !hiddenActivities.includes(activityId);
+            }
+            return true; // Include all custom activities
+        });
 
     // Filter meals for current day
     let meals = mealsData.filter(meal => meal.date === currentDay);
@@ -669,7 +766,17 @@ function displayStations() {
             }
 
             // Add activity count
-            const activityCount = scheduleData.filter(activity => activity.placeId === place.id).length;
+            const hiddenActivities = JSON.parse(localStorage.getItem('hiddenActivities') || '[]');
+            const activityCount = getAllActivities()
+                .filter(activity => activity.placeId === place.id)
+                .filter(activity => {
+                    // Exclude hidden original activities
+                    if (!activity.id || !activity.id.startsWith('custom_')) {
+                        const activityId = getActivityId(activity);
+                        return !hiddenActivities.includes(activityId);
+                    }
+                    return true; // Include all custom activities
+                }).length;
             if (activityCount > 0) {
                 const countBadge = document.createElement('span');
                 countBadge.className = 'activity-count-badge';
@@ -682,7 +789,17 @@ function displayStations() {
     } else {
         // Show activities for selected camp
         const selectedPlace = placesData.find(place => place.id === selectedCampFilter);
-        const campActivities = scheduleData.filter(activity => activity.placeId === selectedCampFilter);
+        const hiddenActivities = JSON.parse(localStorage.getItem('hiddenActivities') || '[]');
+        const campActivities = getAllActivities()
+            .filter(activity => activity.placeId === selectedCampFilter)
+            .filter(activity => {
+                // Exclude hidden original activities
+                if (!activity.id || !activity.id.startsWith('custom_')) {
+                    const activityId = getActivityId(activity);
+                    return !hiddenActivities.includes(activityId);
+                }
+                return true; // Include all custom activities
+            });
 
         if (selectedPlace && campActivities.length > 0) {
             // Sort activities by date and time
@@ -973,10 +1090,22 @@ function createActivityCard(activity, timeRange, tracksContainer) {
     const favoriteButton = createActivityFavoriteButton(activity);
     card.appendChild(favoriteButton);
 
+    // Add edit button
+    const editButton = document.createElement('button');
+    editButton.className = 'edit-event-icon';
+    editButton.innerHTML = '✏️';
+    editButton.title = t('editEvent');
+    editButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEditEventModal(activity);
+    });
+    card.appendChild(editButton);
+
     // Add click event to open modal
     card.addEventListener('click', (e) => {
-        // Don't open modal if clicking on favorite button
-        if (e.target.classList.contains('activity-favorite-star')) {
+        // Don't open modal if clicking on favorite or edit button
+        if (e.target.classList.contains('activity-favorite-star') || 
+            e.target.classList.contains('edit-event-icon')) {
             return;
         }
         openActivityModal(activity);
@@ -1356,10 +1485,22 @@ function displayMobileSchedule(activities, timeRange) {
                     const favoriteButton = createActivityFavoriteButton(activity);
                     mobileActivity.appendChild(favoriteButton);
 
+                    // Add edit button
+                    const editButton = document.createElement('button');
+                    editButton.className = 'edit-event-icon';
+                    editButton.innerHTML = '✏️';
+                    editButton.title = t('editEvent');
+                    editButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openEditEventModal(activity);
+                    });
+                    mobileActivity.appendChild(editButton);
+
                     // Add click event to open modal
                     mobileActivity.addEventListener('click', (e) => {
-                        // Don't open modal if clicking on favorite button
-                        if (e.target.classList.contains('activity-favorite-star')) {
+                        // Don't open modal if clicking on favorite or edit button
+                        if (e.target.classList.contains('activity-favorite-star') || 
+                            e.target.classList.contains('edit-event-icon')) {
                             return;
                         }
                         openActivityModal(activity);
@@ -1903,8 +2044,8 @@ function scrollToCurrentTime() {
     // Check if current day is today
     const today = new Date().toISOString().split('T')[0];
     if (currentDay !== today) {
-        // Switch to today if it exists in the schedule
-        const days = [...new Set(scheduleData.map(activity => activity.date))].sort();
+        // Switch to today if it exists in the schedule (including custom activities)
+        const days = [...new Set(getAllActivities().map(activity => activity.date))].sort();
         if (days.includes(today)) {
             selectDay(today);
             // Wait for the schedule to render, then scroll
@@ -1999,8 +2140,14 @@ function findCurrentEvents(currentTimeInMinutes) {
     
     const today = new Date().toISOString().split('T')[0];
     const currentEvents = [];
+    const hiddenActivities = JSON.parse(localStorage.getItem('hiddenActivities') || '[]');
     
-    scheduleData.forEach(activity => {
+    getAllActivities().forEach(activity => {
+        // Exclude hidden original activities
+        if (!activity.id || !activity.id.startsWith('custom_')) {
+            const activityId = getActivityId(activity);
+            if (hiddenActivities.includes(activityId)) return;
+        }
         if (activity.date !== today) return;
         
         const startMinutes = timeToMinutes(activity.timeStart);
@@ -2085,4 +2232,337 @@ function loadFavorites() {
     if (storedFavorites) {
         favorites = JSON.parse(storedFavorites);
     }
+}
+
+// Event editing functionality
+let editingActivity = null;
+let customActivities = [];
+
+// Load custom activities from localStorage
+function loadCustomActivities() {
+    const stored = localStorage.getItem('customActivities');
+    if (stored) {
+        customActivities = JSON.parse(stored);
+    }
+}
+
+// Save custom activities to localStorage
+function saveCustomActivities() {
+    localStorage.setItem('customActivities', JSON.stringify(customActivities));
+}
+
+// Get all activities (original + custom)
+function getAllActivities() {
+    return [...scheduleData, ...customActivities];
+}
+
+// Generate unique ID for new activities
+function generateActivityId() {
+    return 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Get unique tracks from schedule data
+function getUniqueTracksAndCamps() {
+    const tracks = new Set();
+    scheduleData.forEach(activity => {
+        if (activity.track) {
+            tracks.add(activity.track);
+        }
+    });
+    return Array.from(tracks).sort();
+}
+
+// Get unique dates from schedule data
+function getUniqueDates() {
+    const dates = new Set();
+    scheduleData.forEach(activity => {
+        if (activity.date) {
+            dates.add(activity.date);
+        }
+    });
+    return Array.from(dates).sort();
+}
+
+// Generate time options for dropdowns
+function generateTimeOptions() {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+        for (let minute = 0; minute < 60; minute += 15) {
+            const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            times.push(timeStr);
+        }
+    }
+    return times;
+}
+
+// Open edit event modal
+function openEditEventModal(activity = null) {
+    editingActivity = activity;
+    const modal = document.getElementById('editEventModal');
+    const title = document.getElementById('editEventModalTitle');
+    const deleteBtn = document.getElementById('deleteEventBtn');
+    
+    // Set modal title and delete button visibility
+    if (activity) {
+        title.textContent = t('editEvent');
+        deleteBtn.style.display = 'inline-block';
+    } else {
+        title.textContent = t('newEvent');
+        deleteBtn.style.display = 'none';
+    }
+    
+    // Populate form dropdowns
+    populateFormDropdowns();
+    
+    // Fill form with activity data if editing
+    if (activity) {
+        fillFormWithActivity(activity);
+    } else {
+        clearForm();
+    }
+    
+    modal.style.display = 'block';
+}
+
+// Close edit event modal
+function closeEditEventModal() {
+    const modal = document.getElementById('editEventModal');
+    modal.style.display = 'none';
+    editingActivity = null;
+    clearForm();
+}
+
+// Populate form dropdowns
+function populateFormDropdowns() {
+    // Populate dates
+    const dateSelect = document.getElementById('eventDate');
+    dateSelect.innerHTML = '<option value="">' + t('selectDate') + '</option>';
+    getUniqueDates().forEach(date => {
+        const option = document.createElement('option');
+        option.value = date;
+        option.textContent = formatDate(date);
+        dateSelect.appendChild(option);
+    });
+    
+    // Populate tracks/camps
+    const trackSelect = document.getElementById('eventTrack');
+    trackSelect.innerHTML = '<option value="">' + t('selectCamp') + '</option>';
+    getUniqueTracksAndCamps().forEach(track => {
+        const option = document.createElement('option');
+        option.value = track;
+        option.textContent = track;
+        trackSelect.appendChild(option);
+    });
+    
+    // Populate time options
+    const timeOptions = generateTimeOptions();
+    const startTimeSelect = document.getElementById('eventTimeStart');
+    const endTimeSelect = document.getElementById('eventTimeEnd');
+    
+    startTimeSelect.innerHTML = '<option value="">' + t('selectTime') + '</option>';
+    endTimeSelect.innerHTML = '<option value="">' + t('selectTime') + '</option>';
+    
+    timeOptions.forEach(time => {
+        const startOption = document.createElement('option');
+        startOption.value = time;
+        startOption.textContent = time;
+        startTimeSelect.appendChild(startOption);
+        
+        const endOption = document.createElement('option');
+        endOption.value = time;
+        endOption.textContent = time;
+        endTimeSelect.appendChild(endOption);
+    });
+}
+
+// Format date for display
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    return date.toLocaleDateString(currentLanguage === 'ru' ? 'ru-RU' : 'en-US', options);
+}
+
+// Fill form with activity data
+function fillFormWithActivity(activity) {
+    document.getElementById('eventTitle').value = activity.title || '';
+    document.getElementById('eventTitleEn').value = activity.titleEn || '';
+    document.getElementById('eventAuthor').value = activity.author || '';
+    document.getElementById('eventDate').value = activity.date || '';
+    document.getElementById('eventTimeStart').value = activity.timeStart || '';
+    document.getElementById('eventTimeEnd').value = activity.timeEnd || '';
+    document.getElementById('eventTrack').value = activity.track || '';
+    document.getElementById('eventType').value = activity.type || '';
+    document.getElementById('eventDescription').value = activity.description || '';
+    document.getElementById('eventDescriptionEn').value = activity.descriptionEn || '';
+}
+
+// Clear form
+function clearForm() {
+    document.getElementById('eventForm').reset();
+}
+
+// Save event (create or update)
+function saveEvent() {
+    const form = document.getElementById('eventForm');
+    const formData = new FormData(form);
+    
+    // Validate required fields
+    const requiredFields = ['title', 'date', 'timeStart', 'timeEnd', 'track', 'type'];
+    for (let field of requiredFields) {
+        if (!formData.get(field)) {
+            alert(t('fillRequiredFields'));
+            return;
+        }
+    }
+    
+    // Create activity object
+    const activityData = {
+        title: formData.get('title'),
+        titleEn: formData.get('titleEn') || formData.get('title'),
+        author: formData.get('author') || '',
+        date: formData.get('date'),
+        timeStart: formData.get('timeStart'),
+        timeEnd: formData.get('timeEnd'),
+        track: formData.get('track'),
+        trackEn: formData.get('track'),
+        type: formData.get('type'),
+        description: formData.get('description') || '',
+        descriptionEn: formData.get('descriptionEn') || formData.get('description'),
+        dayName: getDayName(formData.get('date'), 'ru'),
+        dayNameEn: getDayName(formData.get('date'), 'en')
+    };
+    
+    if (editingActivity) {
+        // Update existing activity
+        if (editingActivity.id && editingActivity.id.startsWith('custom_')) {
+            // Update custom activity
+            const index = customActivities.findIndex(a => a.id === editingActivity.id);
+            if (index !== -1) {
+                customActivities[index] = { ...activityData, id: editingActivity.id };
+            }
+        } else {
+            // Convert original activity to custom and update
+            activityData.id = generateActivityId();
+            activityData.originalId = getActivityId(editingActivity);
+            customActivities.push(activityData);
+        }
+    } else {
+        // Create new custom activity
+        activityData.id = generateActivityId();
+        customActivities.push(activityData);
+    }
+    
+    saveCustomActivities();
+    closeEditEventModal();
+    
+    // Refresh the display
+    if (currentView === 'stations') {
+        renderStationsView();
+    } else {
+        renderDayView();
+    }
+    
+    showSuccessMessage(t('eventSaved'));
+}
+
+// Delete event
+function deleteEvent() {
+    if (!editingActivity) return;
+    
+    if (!confirm(t('confirmDelete'))) return;
+    
+    if (editingActivity.id && editingActivity.id.startsWith('custom_')) {
+        // Delete custom activity
+        customActivities = customActivities.filter(a => a.id !== editingActivity.id);
+        saveCustomActivities();
+    } else {
+        // Mark original activity as hidden
+        const hiddenActivities = JSON.parse(localStorage.getItem('hiddenActivities') || '[]');
+        const activityId = getActivityId(editingActivity);
+        if (!hiddenActivities.includes(activityId)) {
+            hiddenActivities.push(activityId);
+            localStorage.setItem('hiddenActivities', JSON.stringify(hiddenActivities));
+        }
+    }
+    
+    closeEditEventModal();
+    
+    // Refresh the display
+    if (currentView === 'stations') {
+        renderStationsView();
+    } else {
+        renderDayView();
+    }
+    
+    showSuccessMessage(t('eventDeleted'));
+}
+
+// Update edit modal language
+function updateEditModalLanguage() {
+    // Update add event button
+    const addEventBtn = document.getElementById('addEventBtn');
+    if (addEventBtn) {
+        const btnText = addEventBtn.querySelector('.btn-text');
+        if (btnText) {
+            btnText.textContent = t('addEvent');
+        }
+    }
+
+    // Update modal form labels and buttons if modal is open
+    const editModal = document.getElementById('editEventModal');
+    if (editModal && editModal.style.display === 'block') {
+        // Update save and cancel button text
+        const saveBtn = document.getElementById('saveEventBtn');
+        const deleteBtn = document.getElementById('deleteEventBtn');
+        const cancelBtn = document.getElementById('cancelEventBtn');
+        
+        if (saveBtn) saveBtn.textContent = t('saveEvent');
+        if (deleteBtn) deleteBtn.textContent = t('deleteEvent');
+        if (cancelBtn) cancelBtn.textContent = t('cancel');
+        
+        // Re-populate dropdowns to update placeholders
+        populateFormDropdowns();
+    }
+}
+
+// Get day name for date
+function getDayName(dateStr, language) {
+    const date = new Date(dateStr);
+    const days = {
+        ru: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+        en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    };
+    return days[language][date.getDay()];
+}
+
+// Show success message
+function showSuccessMessage(message) {
+    const indicator = document.createElement('div');
+    indicator.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        z-index: 10001;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.3s ease;
+    `;
+    
+    indicator.textContent = message;
+    document.body.appendChild(indicator);
+    
+    setTimeout(() => {
+        if (indicator.parentNode) {
+            indicator.parentNode.removeChild(indicator);
+        }
+    }, 3000);
 }

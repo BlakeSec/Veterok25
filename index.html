@@ -35,6 +35,10 @@
                             <span class="toggle-label">Только избранное</span>
                         </label>
                     </div>
+                    <button id="addEventBtn" class="add-event-btn">
+                        <span class="plus-icon">➕</span>
+                        <span class="btn-text">Добавить событие</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -94,6 +98,82 @@
                         <img id="locationModalPhoto" alt="Location Photo">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing/creating events -->
+    <div class="modal" id="editEventModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h3 id="editEventModalTitle">Редактировать событие</h3>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventTitle">Название (RU):</label>
+                        <input type="text" id="eventTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTitleEn">Название (EN):</label>
+                        <input type="text" id="eventTitleEn" name="titleEn">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventAuthor">Автор:</label>
+                        <input type="text" id="eventAuthor" name="author">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">Дата:</label>
+                        <select id="eventDate" name="date" required>
+                            <option value="">Выберите дату</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTimeStart">Время начала:</label>
+                        <select id="eventTimeStart" name="timeStart" required>
+                            <option value="">Выберите время</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTimeEnd">Время окончания:</label>
+                        <select id="eventTimeEnd" name="timeEnd" required>
+                            <option value="">Выберите время</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTrack">Кэмп/Трек:</label>
+                        <select id="eventTrack" name="track" required>
+                            <option value="">Выберите кэмп</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventType">Тип события:</label>
+                        <select id="eventType" name="type" required>
+                            <option value="">Выберите тип</option>
+                            <option value="workshop">Мастерская</option>
+                            <option value="party">Вечеринка</option>
+                            <option value="ritual">Ритуал</option>
+                            <option value="lecture">Лекция</option>
+                            <option value="game">Игра</option>
+                            <option value="meal">Питание</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Описание (RU):</label>
+                        <textarea id="eventDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescriptionEn">Описание (EN):</label>
+                        <textarea id="eventDescriptionEn" name="descriptionEn" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="saveEventBtn" class="save-btn">Сохранить</button>
+                <button type="button" id="deleteEventBtn" class="delete-btn" style="display:none;">Удалить</button>
+                <button type="button" id="cancelEventBtn" class="cancel-btn">Отмена</button>
             </div>
         </div>
     </div>
